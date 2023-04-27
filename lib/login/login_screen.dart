@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<Map<String, dynamic>> getUserList() async {
     // Change this line
     final response =
-        await http.get(Uri.parse('http://192.168.1.9/api/getAccount'));
+        await http.get(Uri.parse('http://192.168.1.4/api/getAccount'));
     if (response.statusCode == 200) {
       setState(() {
         userList = jsonDecode(response.body);
@@ -46,15 +46,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   bool validateUser(String email, String password) {
-    // List<dynamic> users = jsonDecode(userList['Data']);
+    List<dynamic> users = jsonDecode(userList['Data']);
 
-    // for (var user in users) {
-    //   if (email == user['Username'] && password == user['Password']) {
-    return true;
-    //   }
-    // }
+    for (var user in users) {
+      if (email == user['Username'] && password == user['Password']) {
+        return true;
+      }
+    }
 
-    // return false;
+    return false;
   }
 
   void handleLogin() {

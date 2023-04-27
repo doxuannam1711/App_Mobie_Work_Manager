@@ -14,10 +14,10 @@ class BoardModel {
   }) : createdDate = createdDate?.toIso8601String() ?? '';
 
   Map<String, dynamic> toJson() => {
-        'BoardName': boardName,
-        'Labels': labels,
-        'LabelsColor': labelsColor,
-        'CreatedDate': createdDate,
-        'UserID': UserID,
-      };
+    'BoardName': boardName,
+    'Labels': labels,
+    'LabelsColor': labelsColor,
+    'CreatedDate': createdDate,
+    'UserID': UserID,
+  };
 }

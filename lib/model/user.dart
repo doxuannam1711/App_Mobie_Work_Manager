@@ -13,4 +13,19 @@ class User {
     required this.password,
    
   });
+
+  factory User.fromJson(Map<String, dynamic> usersjson) => User(
+    imagePath: usersjson["AvatarUrl"],
+    fullName: usersjson["Fullname"],
+    userName: usersjson["Username"],
+    email: usersjson["Email"],
+    password: usersjson["Password"],
+  );
+  // Map<String, dynamic> toJson() => {
+  //   'AvatarUrl': imagePath,
+  //   'Fullname': fullName,
+  //   'Username': userName,
+  //   'Email': email,
+  //   'Password': password,
+  // };
 }

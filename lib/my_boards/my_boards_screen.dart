@@ -18,6 +18,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
   String _searchKeyword = "";
   late Future<List<Map<String, dynamic>>> _boardListFuture;
   List<Map<String, dynamic>> _searchResult = [];
+  
   @override
   void initState() {
     super.initState();
@@ -26,7 +27,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchBoardList() async {
     final response =
-        await http.get(Uri.parse('http://10.0.2.2:8010/api/getboards'));
+        await http.get(Uri.parse('http://192.168.1.4/api/getboards'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -51,7 +52,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _searchBoards(String keyword) async {
-    final url = Uri.parse('http://10.0.2.2:8010/api/searchBoards/$keyword');
+    final url = Uri.parse('http://192.168.1.4/api/searchBoards/$keyword');
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -64,7 +65,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
   }
 
   Future<void> _deleteBoard(int boardId) async {
-    final url = Uri.parse('http://10.0.2.2:8010/api/deleteBoard/$boardId');
+    final url = Uri.parse('http://192.168.1.4/api/deleteBoard/$boardId');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(

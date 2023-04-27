@@ -41,7 +41,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   String _comment = "test comment";
 
   Future<void> _updateCard(int cardID) async {
-    final url = Uri.parse('http://10.0.2.2:8010/api/updateCard/$cardID');
+    final url = Uri.parse('http://192.168.1.4/api/updateCard/$cardID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -119,34 +119,34 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                           fontSize: 18.0,
                         ),
                       ),
-                      SizedBox(width: 8.0),
-                      Text(
+                      const SizedBox(width: 8.0),
+                      const Text(
                         'Website bán hàng',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0,
                         ),
                       ),
-                      Divider(
+                      const Divider(
                         thickness: 1.0,
                         height: 24.0,
                       ),
-                      SizedBox(height: 16.0),
-                      Text(
+                      const SizedBox(height: 16.0),
+                      const Text(
                         'Quick Actions:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0,
                         ),
                       ),
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Column(
                             children: [
                               IconButton(
-                                icon: Icon(Icons.format_list_numbered_sharp),
+                                icon: const Icon(Icons.format_list_numbered_sharp),
                                 onPressed: () {
                                   _updateCard(widget.cardID);
                                   Navigator.of(context).pop();
@@ -160,27 +160,27 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                   );
                                 },
                               ),
-                              Text('Checklist'),
+                              const Text('Checklist'),
                             ],
                           ),
                           Column(
                             children: [
                               IconButton(
                                 onPressed: () {},
-                                icon: Icon(Icons.attach_file),
+                                icon: const Icon(Icons.attach_file),
                                 tooltip: 'Add Attachment',
                               ),
-                              Text('Attachment'),
+                              const Text('Attachment'),
                             ],
                           ),
                           Column(
                             children: [
                               IconButton(
                                 onPressed: () {},
-                                icon: Icon(Icons.person_add),
+                                icon: const Icon(Icons.person_add),
                                 tooltip: 'Add Member',
                               ),
-                              Text('Member'),
+                              const Text('Member'),
                             ],
                           ),
                         ],
@@ -251,23 +251,23 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                 _expirationDate = null;
                               });
                             },
-                            icon: Icon(Icons.close),
+                            icon: const Icon(Icons.close),
                           ),
                         ],
                       ),
-                      Text(
+                      const Text(
                         'Label Color:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0,
                         ),
                       ),
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
                       DropdownButtonFormField<Color>(
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.grey[200],
-                          border: OutlineInputBorder(),
+                          border: const OutlineInputBorder(),
                         ),
                         value: _label,
                         items: _labelColors.map((color) {
