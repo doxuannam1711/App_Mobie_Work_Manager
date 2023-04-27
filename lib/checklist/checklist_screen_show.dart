@@ -3,8 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../my_cards/my_cards_screen.dart';
 
-
-
 class ChecklistScreenShow extends StatefulWidget {
   final int cardID;
 
@@ -35,16 +33,22 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
 
   Future<void> _fetchChecklistItems() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.9/api/getChecklists/${widget.cardID}'));
+        Uri.parse('http://10.0.2.2:8010/api/getChecklists/${widget.cardID}'));
     final String jsonData = json.decode(response.body)['Data'];
     final List<dynamic> data = json.decode(jsonData);
 
     if (data is List) {
       final List<Map<String, dynamic>> items =
           List<Map<String, dynamic>>.from(data);
+
       setState(() {
         _checklistID = items[0]['ChecklistID'];
         _checklistName = items[0]['ChecklistTitle'];
+
+        if (_items.isNotEmpty) {
+          _items.clear();
+        }
+
         _items.addAll(items.map((item) => {
               'title': item['Title'],
               'isChecked': item['IsChecked'] ?? false,
@@ -55,7 +59,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
 
   Future<void> _deleteChecklistitem(String itemName) async {
     final url =
-        Uri.parse('http://192.168.1.9/api/deleteChecklistitem/$itemName');
+        Uri.parse('http://10.0.2.2:8010/api/deleteChecklistitem/$itemName');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       // Success
@@ -75,7 +79,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
 
     // call the API to add the new checklist item
     final response = await http.post(
-      Uri.parse('http://192.168.1.9/api/addChecklistitem'),
+      Uri.parse('http://10.0.2.2:8010/api/addChecklistitem'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newItem.toJson()),
     );
@@ -126,7 +130,9 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
         actions: [
 // Toggle between displaying the checklist name as text and as an editable text field
           IconButton(
-            icon: _isEditingName ? const Icon(Icons.check) : const Icon(Icons.edit),
+            icon: _isEditingName
+                ? const Icon(Icons.check)
+                : const Icon(Icons.edit),
             onPressed: () {
               setState(() {
                 _isEditingName = !_isEditingName;
@@ -186,28 +192,29 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(
-                      context,
-                      {
-                        'checklistName': _checklistName,
-                        'items': _items,
-                      },
-                    );
-                  },
-                  child: Text('Save'),
-                ),
+                // ElevatedButton(
+                //   onPressed: () {
+                //     Navigator.pop(
+                //       context,
+                //       {
+                //         'checklistName': _checklistName,
+                //         'items': _items,
+                //       },
+                //     );
+                //   },
+                //   child: Text('Save'),
+                // ),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => const MyCardsScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const MyCardsScreen()),
                       (route) =>
                           false, // Xoá tất cả các screen còn lại trên stack
                     );
                   },
-                  child: Text('Cancel'),
+                  child: Text('Save'),
                   style: ElevatedButton.styleFrom(
                     primary: Colors.grey[400],
                   ),
