@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_application/account/account_screen.dart';
+import 'package:flutter_application/profile_and_display/user_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -12,13 +13,17 @@ import 'package:flutter_application/profile_and_display/button_widget.dart';
 import '../model/user.dart';
 
 class ProfileAndDisplayScreen extends StatefulWidget {
-  const ProfileAndDisplayScreen({super.key});
+  final int userID;
+  // const ProfileAndDisplayScreen({super.key});
+  ProfileAndDisplayScreen(this.userID);
+
   @override
   State<ProfileAndDisplayScreen> createState() =>
       _ProfileAndDisplayScreenState();
 }
 
 class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
+  // late User userModal;
   bool _isObscure = true;
   String _updateUsername = "";
   String _updateFullname = "";
@@ -29,7 +34,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   // Future<Map<String, dynamic>> getUserList() async {
   //   final response =
-  //       await http.get(Uri.parse('http://192.168.1.4/api/getAccount'));
+  //       await http.get(Uri.parse('http://192.168.1.7/api/getAccount'));
   //   if (response.statusCode == 200) {
   //     final data = jsonDecode(response.body);
   //     return data;
@@ -40,20 +45,21 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   // Future<User> _fetchUserList() async {
   //   final response =
-  //       await http.get(Uri.parse('http://192.168.1.4/api/getAccount'));
+  //       await http.get(Uri.parse('http://192.168.1.7/api/getAccount'));
   //   final jsonresponse = json.decode(response.body);
   //   return User.fromJson(jsonresponse);
-  
+
   // }
 
   Future<List<Map<String, dynamic>>> getUserList() async {
-    final response =
-        await http.get(Uri.parse('http://192.168.1.4/api/getAccount'));
+    final response = await http
+        .get(Uri.parse('http://192.168.1.7/api/getAccount/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
         // print(response.body);
-        // print(data);
+        print(data);
+        // print(userModal.userID);
 
         final userData = jsonDecode(data);
         List<dynamic> userList = [];
@@ -75,8 +81,8 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
     }
   }
 
-  Future<void> _updateCard(int userID) async {
-    final url = Uri.parse('http://192.168.1.4/api/updateUser/$userID');
+  Future<void> _updateUser(int userID) async {
+    final url = Uri.parse('http://192.168.1.7/api/updateUser/$userID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -100,7 +106,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // const user = UserPreferences.myUser;
+    const userModal = UserPreferences.myUser;
 
     AppBar buildAppBar(BuildContext context) {
       const icon = CupertinoIcons.moon_stars;
@@ -264,6 +270,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
                 child: Text('Failed to load card list'),
               );
             } else {
+              print(userModal.userID);
               final userList = snapshot.data!;
               return ListView.builder(
                   padding:
@@ -447,22 +454,15 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
             ),
           ],
         ),
-        // const SizedBox(height: 24),
-        // TextFieldWidget(
-        //   label: 'About',
-        //   text: user.about,
-        //   maxLines: 5,
-        //   onChanged: (name) {},
-        // ),
         const SizedBox(height: 24),
         ButtonWidget(
           text: 'Save',
           onClicked: () async {
-            _updateCard(userID);
+            _updateUser(userID);
             getUserList();
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const AccountScreen()),
+                  builder: (context) => AccountScreen(widget.userID)),
             );
             setState(() {});
           },

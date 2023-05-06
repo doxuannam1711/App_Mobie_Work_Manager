@@ -1,14 +1,16 @@
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../my_cards/card_detail_screen.dart';
 
-
 class ListScreen extends StatefulWidget {
+  final int userID;
   final String BoardName;
 
-  const ListScreen({Key? key, required this.BoardName}) : super(key: key);
+  // ListScreen(required this.userID, required this.BoardName);
+
+
+  const ListScreen({Key? key,required this.userID, required this.BoardName}) : super(key: key);
 
   @override
   State<ListScreen> createState() => _ListScreenState();
@@ -341,7 +343,7 @@ class _ListScreenState extends State<ListScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CardsDetailScreen('Front End', 1),
+            builder: (context) => CardsDetailScreen('Front End', 1, widget.userID),
           ),
         );
       },

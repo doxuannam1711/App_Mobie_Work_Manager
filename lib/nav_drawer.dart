@@ -10,7 +10,11 @@ import 'notifications/notification_screen.dart';
 import 'profile_and_display/profile_and_display_screen.dart';
 
 class NavDrawer extends StatefulWidget {
-  const NavDrawer({super.key});
+
+  final int userID;
+  const NavDrawer(this.userID);
+
+  // const NavDrawer({super.key});
   @override
   State<NavDrawer> createState() => _NavDrawerState();
 }
@@ -20,7 +24,7 @@ class _NavDrawerState extends State<NavDrawer> {
 
   Future<List<Map<String, dynamic>>> getUserList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.4/api/getAccount'));
+        await http.get(Uri.parse('http://192.168.1.7/api/getAccount/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -182,7 +186,7 @@ class _NavDrawerState extends State<NavDrawer> {
           onDetailsPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const MyBoardsScreen()),
+              MaterialPageRoute(builder: (context) => MyBoardsScreen(widget.userID)),
             );
           },
           accountName: Text(fullName),
@@ -214,7 +218,7 @@ class _NavDrawerState extends State<NavDrawer> {
               onTap: () => {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                      builder: (context) => const MyBoardsScreen()),
+                      builder: (context) => MyBoardsScreen(widget.userID)),
                 )
               },
             ),
@@ -224,10 +228,11 @@ class _NavDrawerState extends State<NavDrawer> {
               onTap: () => {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                      builder: (context) => const MyCardsScreen()),
+                      builder: (context) => MyCardsScreen(widget.userID)),
                 )
               },
             ),
+            
             const Divider(
               thickness: 2,
             ),
@@ -236,7 +241,7 @@ class _NavDrawerState extends State<NavDrawer> {
               title: const Text('Notification'),
               onTap: () => {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => NotificationScreen()),
+                  MaterialPageRoute(builder: (context) => NotificationScreen(widget.userID)),
                 )
               },
             ),
@@ -246,7 +251,7 @@ class _NavDrawerState extends State<NavDrawer> {
               onTap: () => {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                      builder: (context) => const AccountScreen()),
+                      builder: (context) => AccountScreen(widget.userID)),
                 )
               },
             ),

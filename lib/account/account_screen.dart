@@ -9,7 +9,10 @@ import '../profile_and_display/profile_widget.dart';
 import '../profile_and_display/user_preferences.dart';
 
 class AccountScreen extends StatefulWidget {
-  const AccountScreen({super.key});
+  final int userID;
+  // const AccountScreen({super.key});
+  const AccountScreen(this.userID);
+
   @override
   State<AccountScreen> createState() => _AccountScreenState();
 }
@@ -18,12 +21,12 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Future<List<Map<String, dynamic>>> getUserList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.4/api/getAccount'));
+        await http.get(Uri.parse('http://192.168.1.7/api/getAccount/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
         // print(response.body);
-        // print(data);
+        print(data);
 
         final userData = jsonDecode(data);
         List<dynamic> userList = [];
@@ -48,9 +51,8 @@ class _AccountScreenState extends State<AccountScreen> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
-      drawer: const NavDrawer(),
+      drawer:  NavDrawer(widget.userID),
       appBar: AppBar(
         title: const Text('Account Management'),
       ),
@@ -65,20 +67,18 @@ class _AccountScreenState extends State<AccountScreen> {
             } else {
               final userList = snapshot.data!;
               return ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                physics: const BouncingScrollPhysics(),
-                itemCount: userList.length,
-                itemBuilder: (context, index) {
-                  final userData = userList[index];
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: userList.length,
+                  itemBuilder: (context, index) {
+                    final userData = userList[index];
 
-                  return buildAccount(                      
-                    userData["AvatarUrl"],               
-                    userData["Fullname"],
-                    userData["Email"],
-                    
-                  );
-                }
-              );
+                    return buildAccount(
+                      userData["AvatarUrl"],
+                      userData["Fullname"],
+                      userData["Email"],
+                    );
+                  });
             }
           } else {
             return const Center(
@@ -86,7 +86,7 @@ class _AccountScreenState extends State<AccountScreen> {
             );
           }
         },
-      ),   
+      ),
     );
   }
 
@@ -94,7 +94,7 @@ class _AccountScreenState extends State<AccountScreen> {
     String imagePath,
     String fullName,
     String email,
-  ){
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -114,8 +114,7 @@ class _AccountScreenState extends State<AccountScreen> {
           children: [
             Text(
               fullName,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 24),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
             const SizedBox(height: 4),
             Text(
@@ -229,8 +228,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                        builder: (context) =>
-                            const ProfileAndDisplayScreen()),
+                        builder: (context) => ProfileAndDisplayScreen(widget.userID)),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -331,10 +329,7 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
       ],
     );
-      
   }
-  
-
 
   Widget _buildGroupBox(String title, Widget icon, List<Widget> children) {
     return Card(
