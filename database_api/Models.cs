@@ -48,4 +48,12 @@ namespace WebApiDemo.Models
       public string Title { get; set; }
 
    }
+   public class CommentModel
+   {
+      public int CommentID { get; set; }
+      public int UserID { get; set; }
+      public string CardID { get; set; }
+      public string Detail { get; set; }
+
+   }
 }

@@ -403,9 +403,11 @@ VALUES ('tt', 'era', 'sdfaaas', 'dfasde')
 SELECT * from users where users.UserID = 1
 
 
-select users.AvatarUrl, users.Fullname, comments.Detail from users inner join comments
+select users.AvatarUrl, users.Fullname, comments.Detail, comments.CommentID from users inner join comments
 on users.UserID = comments.UserID
 where comments.CardID=1
 
 INSERT INTO comments (UserID, CardID, Detail)
 VALUES (2, 2, 'Mong code không lỗi')
+
+DELETE FROM comments WHERE CommentID = 16

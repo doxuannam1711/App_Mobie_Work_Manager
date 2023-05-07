@@ -275,13 +275,13 @@ public class ValuesController : ApiControllerBase
       {
          Command.ResetAndOpen(CommandType.Text);
          Command.CommandText = @"SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
-FROM cards
-LEFT JOIN checklists ON cards.cardID = checklists.cardID
-LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
-GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
-cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
-cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
-cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor;";
+                                    FROM cards
+                                    LEFT JOIN checklists ON cards.cardID = checklists.cardID
+                                    LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+                                    GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
+                                    cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
+                                    cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+                                    cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor;";
          DataTable tableNhanVien = Command.GetDataTable();
 
          var respone = new ResultModel
@@ -349,6 +349,73 @@ cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor;";
       }
    }
 
+   [Route("api/getComments/{cardID}")]
+   public IHttpActionResult GetComments(int cardID)
+   {
+      try
+      {
+         Command.ResetAndOpen(CommandType.Text);
+         Command.CommandText = @"select users.AvatarUrl, users.Fullname, comments.Detail, comments.CommentID from users inner join comments
+                                    on users.UserID = comments.UserID
+                                    where comments.CardID= @cardID";
+
+         Command.Parameters.AddWithValue("@cardID", cardID);
+         DataTable tableNhanVien = Command.GetDataTable();
+
+         var respone = new ResultModel
+         {
+            Data = JsonConvert.SerializeObject(tableNhanVien)
+
+         };
+         return Ok(respone);
+      }
+      catch (Exception ex)
+      {
+         return Ok(ex.Message);
+      }
+
+   }
+   [HttpPost]
+   [Route("api/addComment")]
+   public IHttpActionResult AddComment([FromBody] CommentModel comment)
+   {
+      try
+      {
+         Command.ResetAndOpen(CommandType.Text);
+         Command.CommandText = @"INSERT INTO comments (UserID, CardID, Detail)
+                                 VALUES (@UserID, @CardID, @Detail)";
+         Command.Parameters.AddWithValue("@UserID", comment.UserID);
+         Command.Parameters.AddWithValue("@CardID", comment.CardID);
+         Command.Parameters.AddWithValue("@Detail", comment.Detail);
+
+         Command.ExecuteNonQuery();
+         var response = new ResultModel { };
+         return Ok(response);
+      }
+      catch (Exception ex)
+      {
+         return Ok(ex.Message);
+      }
+   }
+   [HttpDelete]
+   [Route("api/deleteComment/{commentID}")]
+   public IHttpActionResult DeleteComment(int commentID)
+   {
+      try
+      {
+         Command.ResetAndOpen(CommandType.Text);
+         Command.CommandText = @"DELETE FROM comments WHERE CommentID = @CommentID";
+         Command.Parameters.AddWithValue("@CommentID", commentID);
+         Command.ExecuteNonQuery();
+         var response = new ResultModel { };
+         return Ok(response);
+      }
+      catch (Exception ex)
+      {
+         return Ok(ex.Message);
+      }
+   }
+
 
    [Route("api/getNotifications")]
    public IHttpActionResult GetNotifications()
@@ -357,13 +424,13 @@ cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor;";
       {
          Command.ResetAndOpen(CommandType.Text);
          Command.CommandText = @"select notifications.NotificationID,notifications.NotificationType,Content,notifications.CreatedDate,users.Username,boards.BoardName,cards.CardName from notifications inner join users
-on notifications.UserID = users.UserID
-inner join cards
-on notifications.CardID=cards.CardID
-inner join boards
-on notifications.BoardID=boards.BoardID
-inner join lists
-on notifications.BoardID=lists.BoardID";
+                                    on notifications.UserID = users.UserID
+                                    inner join cards
+                                    on notifications.CardID=cards.CardID
+                                    inner join boards
+                                    on notifications.BoardID=boards.BoardID
+                                    inner join lists
+                                    on notifications.BoardID=lists.BoardID";
          DataTable tableNhanVien = Command.GetDataTable();
 
          var respone = new ResultModel
