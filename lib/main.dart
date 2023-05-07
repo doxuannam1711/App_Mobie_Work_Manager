@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/login/sing_up_screen.dart';
 import 'package:flutter_application/my_boards/my_boards_screen.dart';
 import 'account/account_screen.dart';
 import 'login/login_screen.dart';
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.blue,
       ),
-      home: const AccountScreen(),
+      home: LoginScreen(),
     );
   }
 }

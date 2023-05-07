@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_application/account/account_screen.dart';
+import 'package:flutter_application/profile_and_display/user_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -12,7 +13,10 @@ import 'package:flutter_application/profile_and_display/button_widget.dart';
 import '../model/user.dart';
 
 class ProfileAndDisplayScreen extends StatefulWidget {
-  const ProfileAndDisplayScreen({super.key});
+  final int userID;
+  // const ProfileAndDisplayScreen({super.key});
+  ProfileAndDisplayScreen(this.userID);
+
   @override
   State<ProfileAndDisplayScreen> createState() =>
       _ProfileAndDisplayScreenState();
@@ -43,17 +47,17 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
   //       await http.get(Uri.parse('http://192.168.1.4/api/getAccount'));
   //   final jsonresponse = json.decode(response.body);
   //   return User.fromJson(jsonresponse);
-  
+
   // }
 
   Future<List<Map<String, dynamic>>> getUserList() async {
-    final response =
-        await http.get(Uri.parse('http://192.168.1.4/api/getAccount'));
+    final response = await http
+        .get(Uri.parse('http://192.168.1.4/api/getAccount/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
         // print(response.body);
-        // print(data);
+        print(data);
 
         final userData = jsonDecode(data);
         List<dynamic> userList = [];
@@ -75,7 +79,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
     }
   }
 
-  Future<void> _updateCard(int userID) async {
+  Future<void> _updateUser(int userID) async {
     final url = Uri.parse('http://192.168.1.4/api/updateUser/$userID');
     final response = await http.put(
       url,
@@ -100,7 +104,6 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // const user = UserPreferences.myUser;
 
     AppBar buildAppBar(BuildContext context) {
       const icon = CupertinoIcons.moon_stars;
@@ -266,21 +269,23 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
             } else {
               final userList = snapshot.data!;
               return ListView.builder(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: userList.length,
-                  itemBuilder: (context, index) {
-                    final userData = userList[index];
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                physics: const BouncingScrollPhysics(),
+                itemCount: userList.length,
+                itemBuilder: (context, index) {
+                  final userData = userList[index];
 
-                    return _buildProfile(
-                        userData["UserID"],
-                        userData["AvatarUrl"],
-                        _updateUsername = userData["Username"],
-                        _updateFullname = userData["Fullname"],
-                        _updateEmail = userData["Email"],
-                        _updatePassword = userData["Password"]);
-                  });
+                  return _buildProfile(
+                    userData["UserID"],
+                    userData["AvatarUrl"],
+                    _updateUsername = userData["Username"],
+                    _updateFullname = userData["Fullname"],
+                    _updateEmail = userData["Email"],
+                    _updatePassword = userData["Password"]
+                  );
+                }
+              );
             }
           } else {
             return const Center(
@@ -447,22 +452,15 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
             ),
           ],
         ),
-        // const SizedBox(height: 24),
-        // TextFieldWidget(
-        //   label: 'About',
-        //   text: user.about,
-        //   maxLines: 5,
-        //   onChanged: (name) {},
-        // ),
         const SizedBox(height: 24),
         ButtonWidget(
           text: 'Save',
           onClicked: () async {
-            _updateCard(userID);
+            _updateUser(userID);
             getUserList();
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const AccountScreen()),
+                  builder: (context) => AccountScreen(widget.userID)),
             );
             setState(() {});
           },
@@ -470,4 +468,8 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
       ],
     );
   }
+
+
+
+
 }

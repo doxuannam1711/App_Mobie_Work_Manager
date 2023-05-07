@@ -4,10 +4,11 @@ import 'dart:convert';
 import '../my_cards/my_cards_screen.dart';
 
 class ChecklistScreenShow extends StatefulWidget {
+  final int userID;
   final int cardID;
 
   const ChecklistScreenShow({
-    required this.cardID,
+    required this.cardID,required this.userID
   });
 
   @override
@@ -33,7 +34,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
 
   Future<void> _fetchChecklistItems() async {
     final response = await http.get(
-        Uri.parse('http://10.0.2.2:8010/api/getChecklists/${widget.cardID}'));
+        Uri.parse('http://192.168.1.4/api/getChecklists/${widget.cardID}'));
     final String jsonData = json.decode(response.body)['Data'];
     final List<dynamic> data = json.decode(jsonData);
 
@@ -59,7 +60,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
 
   Future<void> _deleteChecklistitem(String itemName) async {
     final url =
-        Uri.parse('http://10.0.2.2:8010/api/deleteChecklistitem/$itemName');
+        Uri.parse('http://192.168.1.4/api/deleteChecklistitem/$itemName');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       // Success
@@ -79,7 +80,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
 
     // call the API to add the new checklist item
     final response = await http.post(
-      Uri.parse('http://10.0.2.2:8010/api/addChecklistitem'),
+      Uri.parse('http://192.168.1.4/api/addChecklistitem'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newItem.toJson()),
     );
@@ -209,7 +210,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const MyCardsScreen()),
+                          builder: (context) => MyCardsScreen(widget.userID)),
                       (route) =>
                           false, // Xoá tất cả các screen còn lại trên stack
                     );

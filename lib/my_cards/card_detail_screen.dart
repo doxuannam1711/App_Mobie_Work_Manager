@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -5,11 +7,11 @@ import '../checklist/checklist_screen_show.dart';
 import 'my_cards_screen.dart';
 
 class CardsDetailScreen extends StatefulWidget {
-
+  final int userID;
   final String cardName;
   final int cardID;
 
-  CardsDetailScreen(this.cardName, this.cardID);
+  CardsDetailScreen(this.cardName, this.cardID, this.userID);
 
   @override
   State<CardsDetailScreen> createState() => _CardsDetailScreenState();
@@ -39,6 +41,73 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   ];
 
   String _comment = "test comment";
+  Future<List<Map<String, dynamic>>> getComments() async {
+    final response = await http
+        .get(Uri.parse('http://192.168.1.4/api/getComments/${widget.cardID}'));
+    if (response.statusCode == 200) {
+      try {
+        final data = jsonDecode(response.body)['Data'];
+        // print(response.body);
+        print(data);
+        final commentsData = jsonDecode(data);
+        List<dynamic> commentsList = [];
+        if (commentsData is List) {
+          commentsList = commentsData;
+        } else if (commentsData is Map) {
+          commentsList = [commentsData];
+        }
+        final resultList = commentsList
+            .map((board) =>
+                Map<String, dynamic>.from(board as Map<String, dynamic>))
+            .toList();
+        return resultList;
+      } catch (e) {
+        throw Exception('Failed to decode user list');
+      }
+    } else {
+      throw Exception('Failed to load user list');
+    }
+  }
+
+  Future<void> _addComment() async {
+    final url = Uri.parse('http://192.168.1.4/api/addComment');
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'userID': widget.userID,
+        'cardID': widget.cardID,
+        'detail': _comment,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Comment added successfully!')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Comment added failed!')),
+      );
+    }
+  }
+
+  Future<void> _deleteComment(int commentID) async {
+    final url = Uri.parse('http://192.168.1.4/api/deleteComment/$commentID');
+    final response = await http.delete(url);
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Comment deleted successfully!')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to delete comment!')),
+      );
+      print('Failed to delete board. Error: ${response.reasonPhrase}');
+    }
+  }
 
   Future<void> _updateCard(int cardID) async {
     final url = Uri.parse('http://192.168.1.4/api/updateCard/$cardID');
@@ -91,11 +160,11 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
           actions: [
             IconButton(
               icon: const Icon(Icons.check),
-              onPressed: () async{
+              onPressed: () async {
                 _updateCard(widget.cardID);
                 await Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const MyCardsScreen()),
+                      builder: (context) => MyCardsScreen(widget.userID)),
                 );
                 setState(() {});
               },
@@ -146,7 +215,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                           Column(
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.format_list_numbered_sharp),
+                                icon: const Icon(
+                                    Icons.format_list_numbered_sharp),
                                 onPressed: () {
                                   _updateCard(widget.cardID);
                                   Navigator.of(context).pop();
@@ -154,7 +224,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => ChecklistScreenShow(
-                                          cardID: widget.cardID),
+                                          cardID: widget.cardID,
+                                          userID: widget.userID),
                                     ),
                                     (route) => false,
                                   );
@@ -185,21 +256,21 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 16.0),
-                      Text(
+                      const SizedBox(height: 16.0),
+                      const Text(
                         'Description:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0,
                         ),
                       ),
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
                       Stack(
                         alignment: Alignment.centerRight,
                         children: [
                           TextField(
                             maxLines: null,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               hintText: 'Chạm để thêm một mô tả',
                             ),
@@ -209,18 +280,18 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                               });
                             },
                           ),
-                          Icon(Icons.description),
+                          const Icon(Icons.description),
                         ],
                       ),
-                      SizedBox(height: 16.0),
-                      Text(
+                      const SizedBox(height: 16.0),
+                      const Text(
                         'DueDate :',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0,
                         ),
                       ),
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -285,10 +356,10 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 8.0),
+                                const SizedBox(width: 8.0),
                                 Text(
                                   getColorName(color),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.black,
                                   ),
                                 ),
@@ -302,8 +373,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                           });
                         },
                       ),
-                      SizedBox(height: 16.0),
-                      Text(
+                      const SizedBox(height: 16.0),
+                      const Text(
                         'Assigned Member:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -312,30 +383,30 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                       ),
                       Row(
                         children: [
-                          CircleAvatar(
+                          const CircleAvatar(
                             backgroundImage: AssetImage(
                               'assets/images/avatar_user1.jpg',
-// Here you can add image that will represent member
+                              // Here you can add image that will represent member
                             ),
                           ),
-                          SizedBox(width: 8.0),
+                          const SizedBox(width: 8.0),
                           Text(_member),
-                          Spacer(),
-                          CircleAvatar(
+                          const Spacer(),
+                          const CircleAvatar(
                             backgroundImage: AssetImage(
                               'assets/images/avatar_user2.jpg',
-// Here you can add image that will represent the other member
+                              // Here you can add image that will represent the other member
                             ),
                           ),
-                          CircleAvatar(
+                          const CircleAvatar(
                             backgroundImage: AssetImage(
                               'assets/images/avatar_user3.png',
-// Here you can add image that will represent the other member
+                              // Here you can add image that will represent the other member
                             ),
                           ),
                           PopupMenuButton(
                             itemBuilder: (BuildContext context) => [
-                              PopupMenuItem(
+                              const PopupMenuItem(
                                 child: Text('Delete Member'),
                                 value: 'delete',
                               ),
@@ -346,14 +417,53 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                               });
                             },
                             child: IconButton(
-                              icon: Icon(Icons.more_vert),
+                              icon: const Icon(Icons.more_vert),
                               onPressed: () {},
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 16.0),
+
+                      const SizedBox(height: 16.0),
                       // CommentSection(),
+                      const Text(
+                        'Comments:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                      const SizedBox(height: 12.0),
+
+                      FutureBuilder<List<Map<String, dynamic>>>(
+                          future: getComments(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              if (snapshot.hasError) {
+                                return const Center(
+                                  child: Text('Failed to load card list'),
+                                );
+                              } else {
+                                final commentsList = snapshot.data!;
+                                return Column(
+                                  children: [
+                                    for (final commentsData in commentsList)
+                                      _buildCardDetail(
+                                        commentsData["Fullname"],
+                                        commentsData["AvatarUrl"],
+                                        commentsData["Detail"],
+                                        commentsData["CommentID"],
+                                      ),
+                                  ],
+                                );
+                              }
+                            } else {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                          }),
                     ],
                   ),
                 ),
@@ -385,8 +495,14 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                     SizedBox(width: 8.0),
                     IconButton(
                       icon: Icon(Icons.send),
-                      onPressed: () {
-// Add code to submit comment
+                      onPressed: () async {
+                        _addComment();
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => MyCardsScreen(widget.userID),
+                          ),
+                        );
+                        setState(() {});
                       },
                     ),
                   ],
@@ -396,6 +512,84 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildCardDetail(
+    String fullName,
+    String avatarUrl,
+    String commentDetail,
+    int commentID,
+  ) {
+    return Column(
+      // padding: const EdgeInsets.only(bottom: 80.0),
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              backgroundImage: AssetImage(
+                avatarUrl,
+              ),
+            ),
+            const SizedBox(width: 8.0),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.75,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        fullName,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(),
+                        iconSize: 20,
+                        icon: Icon(Icons.delete_outline),
+                        // alignment: Alignment(-1, -2.5),
+                        // alignment: Alignment.topRight,
+                        onPressed: () async {
+                          print("Deleted");
+                          _deleteComment(commentID);
+
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    MyCardsScreen(widget.userID)),
+                          );
+                          setState(() {});
+                        },
+                      ),
+                      // ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.75,
+                  child: TextField(
+                    controller: TextEditingController(text: commentDetail),
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    )),
+                    maxLines: null,
+                    onChanged: (value) {},
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 40.0),
+      ],
     );
   }
 }

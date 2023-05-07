@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application/login/login_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
@@ -8,7 +9,10 @@ import '../my_cards/card_detail_screen.dart';
 
 
 class MyCardsScreen extends StatefulWidget {
-  const MyCardsScreen({super.key});
+  final int userID;
+  const MyCardsScreen(this.userID);
+
+  // const MyCardsScreen({super.key});
 
   @override
   State<MyCardsScreen> createState() => _MyCardsScreenState();
@@ -53,7 +57,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const NavDrawer(),
+      drawer: NavDrawer(widget.userID),
       appBar: AppBar(
         title: const Text('My Cards'),
       ),
@@ -180,7 +184,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CardsDetailScreen(title, cardID), // pass cardID to CardsDetailScreen
+            builder: (context) => CardsDetailScreen(title, cardID, widget.userID), // pass cardID to CardsDetailScreen
           ),
         );
       },

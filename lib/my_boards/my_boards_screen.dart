@@ -9,7 +9,10 @@ import 'create_screen.dart';
 import 'list_screen.dart';
 
 class MyBoardsScreen extends StatefulWidget {
-  const MyBoardsScreen({super.key});
+  final int userID;
+  const MyBoardsScreen(this.userID);
+
+  // const MyBoardsScreen({super.key});
   @override
   State<MyBoardsScreen> createState() => _MyBoardsScreenState();
 }
@@ -119,7 +122,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const NavDrawer(),
+      drawer:  NavDrawer(widget.userID),
       appBar: AppBar(
         title: const Text('My Boards'),
         actions:<Widget> [
@@ -130,7 +133,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CreateScreen(),
+                    builder: (context) => CreateScreen(widget.userID),
                   ),
                 );
               },
@@ -184,7 +187,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const ListScreen(
+                              builder: (context) =>  ListScreen( userID: widget.userID,
                                 BoardName: 'Công việc ở công ty',
                               ),
                             ),
@@ -247,7 +250,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                                                   _deleteBoard(mapList[index]['BoardID']); 
                                                   // call _deleteBoard function
                                                   await Navigator.of(context).push(
-                                                    MaterialPageRoute(builder: (context) =>const MyBoardsScreen()),
+                                                    MaterialPageRoute(builder: (context) => MyBoardsScreen(widget.userID)),
                                                   );
                                                   setState(() {});
                                                   

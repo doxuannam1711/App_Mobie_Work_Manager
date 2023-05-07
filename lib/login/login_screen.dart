@@ -1,10 +1,19 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application/account/account_screen.dart';
 import 'package:flutter_application/login/sing_up_screen.dart';
+import 'package:flutter_application/my_boards/create_screen.dart';
+import 'package:flutter_application/my_cards/card_detail_screen.dart';
+import 'package:flutter_application/my_cards/my_cards_screen.dart';
+import 'package:flutter_application/notifications/notification_screen.dart';
+import 'package:flutter_application/profile_and_display/profile_and_display_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
+import '../model/user.dart';
 import '../my_boards/my_boards_screen.dart';
+import '../nav_drawer.dart';
+import '../profile_and_display/user_preferences.dart';
 import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,6 +24,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // late User userModal = User(userID: userID);
+  int userID = 0;
   final passwordFocusNode = FocusNode();
   Map<String, dynamic> userList = {};
   TextEditingController emailController = TextEditingController();
@@ -31,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<Map<String, dynamic>> getUserList() async {
     // Change this line
     final response =
-        await http.get(Uri.parse('http://192.168.1.4/api/getAccount'));
+        await http.get(Uri.parse('http://192.168.1.4/api/getAccountLogin'));
     if (response.statusCode == 200) {
       setState(() {
         userList = jsonDecode(response.body);
@@ -50,6 +61,47 @@ class _LoginScreenState extends State<LoginScreen> {
 
     for (var user in users) {
       if (email == user['Username'] && password == user['Password']) {
+        userID = user['UserID'];
+        // userModal = userModal.copy(userID: userID);
+        // var data = User(userID: userID);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AccountScreen(userID),
+          ),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NavDrawer(userID),
+          ),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MyBoardsScreen(userID),
+          ),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CreateScreen(userID),
+          ),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MyCardsScreen(userID),
+          ),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NotificationScreen(userID),
+          ),
+        );
+        // print(userModal.userID);
+
         return true;
       }
     }
@@ -63,10 +115,11 @@ class _LoginScreenState extends State<LoginScreen> {
     if (email.isNotEmpty &&
         password.isNotEmpty &&
         validateUser(email, password)) {
+      // UserPreferences.setUser(userModal);
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const MyBoardsScreen(),
+          builder: (context) =>  MyBoardsScreen(userID),
         ),
       );
     } else {
@@ -75,7 +128,8 @@ class _LoginScreenState extends State<LoginScreen> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Invalid Credentials'),
-          content: const Text('The username or password you entered is incorrect.'),
+          content:
+              const Text('The username or password you entered is incorrect.'),
           actions: [
             TextButton(
               onPressed: () {
@@ -108,7 +162,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 150,
               ),
               const SizedBox(height: 50),
-            
               TextFormField(
                 controller: emailController,
                 decoration: const InputDecoration(
@@ -130,7 +183,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       });
                     },
                     child: Icon(
-                      isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                       color: Colors.grey,
                     ),
                   ),
@@ -210,7 +265,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ],
           ),
-
         ),
       ),
     );

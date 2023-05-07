@@ -8,6 +8,10 @@ import 'dart:async';
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationScreen extends StatefulWidget {
+  final int userID;
+  NotificationScreen(this.userID);
+
+
   @override
   State<NotificationScreen> createState() => _NotificationScreenState();
 }
@@ -60,7 +64,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const NavDrawer(),
+      drawer: NavDrawer(widget.userID),
       appBar: AppBar(
         title: const Text('Notifications'),
         actions: [

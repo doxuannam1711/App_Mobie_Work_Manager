@@ -8,7 +8,10 @@ import '../profile_and_display/button_widget.dart';
 import 'background_item.dart';
 
 class CreateScreen extends StatefulWidget {
-  CreateScreen({Key? key}) : super(key: key);
+  final int userID;
+  const CreateScreen(this.userID);
+
+  // CreateScreen({Key? key}) : super(key: key);
 
   @override
   State<CreateScreen> createState() => _CreateScreenState();
@@ -223,7 +226,7 @@ class _CreateScreenState extends State<CreateScreen>
                       addBoard();
                       await Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => const MyBoardsScreen()),
+                          builder: (context) => MyBoardsScreen(widget.userID)),
                       );
                       setState(() {});
                     },    

@@ -11,6 +11,14 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   late File _imageFile;
+  String _addUsername = "";
+  String _addFullname = "";
+  String _addPassword = "";
+  String _confirmPassword = "";
+  String _addEmail = "";
+
+  TextEditingController password = TextEditingController();
+  TextEditingController confirmpassword = TextEditingController();
 
   @override
   void initState() {
@@ -29,6 +37,32 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
+  Future<void> _addUser() async {
+    final url = Uri.parse('http://192.168.1.4/api/addUser');
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'userName': _addUsername,
+        'fullName': _addFullname,
+        'passWord': _addPassword,
+        'email': _addEmail,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User added successfully!')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User added failed!')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +72,7 @@ class _SignupScreenState extends State<SignupScreen> {
       body: Center(
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
-          padding: const EdgeInsets.symmetric(horizontal:10),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -53,10 +87,24 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 20),
               TextFormField(
+
                 decoration: const InputDecoration(
-                  labelText: 'Name',
+                  labelText: 'User Name',
                   border: OutlineInputBorder(),
                 ),
+                onChanged: (value) {
+                  _addUsername = value;
+                },
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Full Name',
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (value) {
+                  _addFullname = value;
+                },
               ),
               const SizedBox(height: 20),
               TextFormField(
@@ -64,13 +112,20 @@ class _SignupScreenState extends State<SignupScreen> {
                   labelText: 'Email',
                   border: OutlineInputBorder(),
                 ),
+                onChanged: (value) {
+                  _addEmail = value;
+                },
               ),
               const SizedBox(height: 20),
               TextFormField(
+                // controller: password,
                 decoration: const InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
                 ),
+                onChanged: (value) {
+                  _addPassword = value;
+                },
                 obscureText: true,
               ),
               const SizedBox(height: 20),
@@ -79,16 +134,27 @@ class _SignupScreenState extends State<SignupScreen> {
                   labelText: 'Confirm Password',
                   border: OutlineInputBorder(),
                 ),
+                onChanged: (value) {
+                  _confirmPassword = value;
+                },
+                
                 obscureText: true,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {},
                 child: const Text('Sign Up'),
+                onPressed: () async {
+                  _addUser();
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) =>  SignupScreen()),
+                  );
+                  
+                },
               ),
+              const SizedBox(height: 20),
             ],
           ),
-
         ),
       ),
     );
