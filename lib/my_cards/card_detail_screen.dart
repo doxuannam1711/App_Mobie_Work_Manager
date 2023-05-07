@@ -18,7 +18,6 @@ class CardsDetailScreen extends StatefulWidget {
 }
 
 class _CardsDetailScreenState extends State<CardsDetailScreen> {
-  int ID_comment=0;
   String _listName = 'In Process'; // List within which the card is contained
   String _description = ''; // Description of the card
   DateTime? _expirationDate; // Expiration date of the card
