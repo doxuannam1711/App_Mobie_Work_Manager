@@ -18,6 +18,7 @@ class CardsDetailScreen extends StatefulWidget {
 }
 
 class _CardsDetailScreenState extends State<CardsDetailScreen> {
+  int ID_comment=0;
   String _listName = 'In Process'; // List within which the card is contained
   String _description = ''; // Description of the card
   DateTime? _expirationDate; // Expiration date of the card
@@ -41,9 +42,76 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   ];
 
   String _comment = "test comment";
+  Future<List<Map<String, dynamic>>> getComments() async {
+    final response = await http
+        .get(Uri.parse('http://192.168.1.4/api/getComments/${widget.cardID}'));
+    if (response.statusCode == 200) {
+      try {
+        final data = jsonDecode(response.body)['Data'];
+        // print(response.body);
+        print(data);
+        final commentsData = jsonDecode(data);
+        List<dynamic> commentsList = [];
+        if (commentsData is List) {
+          commentsList = commentsData;
+        } else if (commentsData is Map) {
+          commentsList = [commentsData];
+        }
+        final resultList = commentsList
+            .map((board) =>
+                Map<String, dynamic>.from(board as Map<String, dynamic>))
+            .toList();
+        return resultList;
+      } catch (e) {
+        throw Exception('Failed to decode user list');
+      }
+    } else {
+      throw Exception('Failed to load user list');
+    }
+  }
+
+  Future<void> _addComment() async {
+    final url = Uri.parse('http://192.168.1.4/api/addComment');
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'userID': widget.userID,
+        'cardID': widget.cardID,
+        'detail': _comment,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Comment added successfully!')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Comment added failed!')),
+      );
+    }
+  }
+
+  Future<void> _deleteComment(int commentID) async {
+    final url = Uri.parse('http://192.168.1.4/api/deleteComment/$commentID');
+    final response = await http.delete(url);
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Comment deleted successfully!')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to delete comment!')),
+      );
+      print('Failed to delete board. Error: ${response.reasonPhrase}');
+    }
+  }
 
   Future<void> _updateCard(int cardID) async {
-    final url = Uri.parse('http://192.168.1.7/api/updateCard/$cardID');
+    final url = Uri.parse('http://192.168.1.4/api/updateCard/$cardID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -157,7 +225,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => ChecklistScreenShow(
-                                          cardID: widget.cardID,userID: widget.userID),
+                                          cardID: widget.cardID,
+                                          userID: widget.userID),
                                     ),
                                     (route) => false,
                                   );
@@ -367,191 +436,35 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                       ),
                       const SizedBox(height: 12.0),
 
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: AssetImage(
-                              'assets/images/batman_robot_suit.jpg',
-                            ),
-                          ),
-                          const SizedBox(width: 8.0),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.75,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                      FutureBuilder<List<Map<String, dynamic>>>(
+                          future: getComments(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              if (snapshot.hasError) {
+                                return const Center(
+                                  child: Text('Failed to load card list'),
+                                );
+                              } else {
+                                final commentsList = snapshot.data!;
+                                return Column(
                                   children: [
-                                    Text(
-                                      'Đỗ Xuân Nam',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15),
-                                    ),
-                                    
-                                    IconButton(
-                                      padding: EdgeInsets.zero,
-                                      constraints: BoxConstraints(),
-                                      iconSize: 20,
-                                      icon: Icon(Icons.delete_outline),
-                                      // alignment: Alignment(-1, -2.5),
-                                      // alignment: Alignment.topRight,
-                                      onPressed: () {
-                                        print("Deleted");
-                                      },
-                                    ),
-                                    // ),
+                                    for (final commentsData in commentsList)
+                                      _buildCardDetail(
+                                        commentsData["Fullname"],
+                                        commentsData["AvatarUrl"],
+                                        commentsData["Detail"],
+                                        commentsData["CommentID"],
+                                      ),
                                   ],
-                                ),
-                              ),
-
-                              const SizedBox(height: 8),
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.75,
-                                child: TextField(
-                                  controller: TextEditingController(
-                                      text:
-                                          "Cơ sở thực tập , nhóm thực hiện. Mục tiêu của đề tài làm rõ mục đích của đề tài, chức năng chính là gì, xây dựng app chọn luôn là nền tảng android. Đổi Phương pháp nghiên cứu thành nhu cầu của người dùng đối vs app. Khảo sát các app khác, phạm vi, Ý nghĩa của đề tài thêm mong muốn học thêm về các kiến thức: lập trình android, phân tích thiết kế, học tích lũy kỹ năng"),
-                                  decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  )),
-                                  maxLines: null,
-                                  onChanged: (value) {},
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 40.0),
-
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: AssetImage(
-                              'assets/images/batman_robot_suit.jpg',
-                            ),
-                          ),
-                          const SizedBox(width: 8.0),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.75,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Đỗ Xuân Nam',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15),
-                                    ),
-
-                                    IconButton(
-                                      padding: EdgeInsets.zero,
-                                      constraints: BoxConstraints(),
-                                      iconSize: 20,
-                                      icon: Icon(Icons.delete_outline),
-                                      // alignment: Alignment(-1, -2.5),
-                                      // alignment: Alignment.topRight,
-                                      onPressed: () {
-                                        print("Deleted");
-                                      },
-                                    ),
-                                    // ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.75,
-                                child: TextField(
-                                  controller: TextEditingController(
-                                      text:
-                                          "Khảo sát các app khác, phạm vi, Ý nghĩa của đề tài thêm mong muốn học thêm về các kiến thức: lập trình android, phân tích thiết kế, học tích lũy kỹ năng"),
-                                  decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  )),
-                                  maxLines: null,
-                                  onChanged: (value) {},
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 40.0),
-
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: AssetImage(
-                              'assets/images/batman_robot_suit.jpg',
-                            ),
-                          ),
-                          const SizedBox(width: 8.0),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.75,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Đỗ Xuân Nam',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15),
-                                    ),
-
-                                    IconButton(
-                                      padding: EdgeInsets.zero,
-                                      constraints: BoxConstraints(),
-                                      iconSize: 20,
-                                      icon: Icon(Icons.delete_outline),
-                                      // alignment: Alignment(-1, -2.5),
-                                      // alignment: Alignment.topRight,
-                                      onPressed: () {
-                                        print("Deleted");
-                                      },
-                                    ),
-                                    // ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.75,
-                                child: TextField(
-                                  controller: TextEditingController(
-                                      text:
-                                          "Đổi Phương pháp nghiên cứu thành nhu cầu của người dùng đối vs app. Khảo sát các app khác, phạm vi, Ý nghĩa của đề tài thêm mong muốn học thêm về các kiến thức: lập trình android, phân tích thiết kế, học tích lũy kỹ năng"),
-                                  decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  )),
-                                  maxLines: null,
-                                  onChanged: (value) {},
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 40.0),
+                                );
+                              }
+                            } else {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                          }),
                     ],
                   ),
                 ),
@@ -583,8 +496,14 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                     SizedBox(width: 8.0),
                     IconButton(
                       icon: Icon(Icons.send),
-                      onPressed: () {
-// Add code to submit comment
+                      onPressed: () async {
+                        _addComment();
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => MyCardsScreen(widget.userID),
+                          ),
+                        );
+                        setState(() {});
                       },
                     ),
                   ],
@@ -594,6 +513,84 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildCardDetail(
+    String fullName,
+    String avatarUrl,
+    String commentDetail,
+    int commentID,
+  ) {
+    return Column(
+      // padding: const EdgeInsets.only(bottom: 80.0),
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              backgroundImage: AssetImage(
+                avatarUrl,
+              ),
+            ),
+            const SizedBox(width: 8.0),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.75,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        fullName,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(),
+                        iconSize: 20,
+                        icon: Icon(Icons.delete_outline),
+                        // alignment: Alignment(-1, -2.5),
+                        // alignment: Alignment.topRight,
+                        onPressed: () async {
+                          print("Deleted");
+                          _deleteComment(commentID);
+
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    MyCardsScreen(widget.userID)),
+                          );
+                          setState(() {});
+                        },
+                      ),
+                      // ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.75,
+                  child: TextField(
+                    controller: TextEditingController(text: commentDetail),
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    )),
+                    maxLines: null,
+                    onChanged: (value) {},
+                  ),
+                )
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 40.0),
+      ],
     );
   }
 }

@@ -23,7 +23,6 @@ class ProfileAndDisplayScreen extends StatefulWidget {
 }
 
 class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
-  // late User userModal;
   bool _isObscure = true;
   String _updateUsername = "";
   String _updateFullname = "";
@@ -34,7 +33,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   // Future<Map<String, dynamic>> getUserList() async {
   //   final response =
-  //       await http.get(Uri.parse('http://192.168.1.7/api/getAccount'));
+  //       await http.get(Uri.parse('http://192.168.1.4/api/getAccount'));
   //   if (response.statusCode == 200) {
   //     final data = jsonDecode(response.body);
   //     return data;
@@ -45,7 +44,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   // Future<User> _fetchUserList() async {
   //   final response =
-  //       await http.get(Uri.parse('http://192.168.1.7/api/getAccount'));
+  //       await http.get(Uri.parse('http://192.168.1.4/api/getAccount'));
   //   final jsonresponse = json.decode(response.body);
   //   return User.fromJson(jsonresponse);
 
@@ -53,13 +52,12 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   Future<List<Map<String, dynamic>>> getUserList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.7/api/getAccount/${widget.userID}'));
+        .get(Uri.parse('http://192.168.1.4/api/getAccount/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
         // print(response.body);
         print(data);
-        // print(userModal.userID);
 
         final userData = jsonDecode(data);
         List<dynamic> userList = [];
@@ -82,7 +80,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
   }
 
   Future<void> _updateUser(int userID) async {
-    final url = Uri.parse('http://192.168.1.7/api/updateUser/$userID');
+    final url = Uri.parse('http://192.168.1.4/api/updateUser/$userID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -106,7 +104,6 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const userModal = UserPreferences.myUser;
 
     AppBar buildAppBar(BuildContext context) {
       const icon = CupertinoIcons.moon_stars;
@@ -270,24 +267,25 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
                 child: Text('Failed to load card list'),
               );
             } else {
-              print(userModal.userID);
               final userList = snapshot.data!;
               return ListView.builder(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: userList.length,
-                  itemBuilder: (context, index) {
-                    final userData = userList[index];
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                physics: const BouncingScrollPhysics(),
+                itemCount: userList.length,
+                itemBuilder: (context, index) {
+                  final userData = userList[index];
 
-                    return _buildProfile(
-                        userData["UserID"],
-                        userData["AvatarUrl"],
-                        _updateUsername = userData["Username"],
-                        _updateFullname = userData["Fullname"],
-                        _updateEmail = userData["Email"],
-                        _updatePassword = userData["Password"]);
-                  });
+                  return _buildProfile(
+                    userData["UserID"],
+                    userData["AvatarUrl"],
+                    _updateUsername = userData["Username"],
+                    _updateFullname = userData["Fullname"],
+                    _updateEmail = userData["Email"],
+                    _updatePassword = userData["Password"]
+                  );
+                }
+              );
             }
           } else {
             return const Center(
@@ -470,4 +468,8 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
       ],
     );
   }
+
+
+
+
 }

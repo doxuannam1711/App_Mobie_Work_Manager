@@ -1,6 +1,6 @@
-create database app_work_mangement_TEST
+create database app_work_mangement
 go
-use app_work_mangement_TEST
+use app_work_mangement
 go
 
 
@@ -401,3 +401,11 @@ INSERT INTO users (Username, Fullname, Password, Email)
 VALUES ('tt', 'era', 'sdfaaas', 'dfasde')
 
 SELECT * from users where users.UserID = 1
+
+
+select users.AvatarUrl, users.Fullname, comments.Detail from users inner join comments
+on users.UserID = comments.UserID
+where comments.CardID=1
+
+INSERT INTO comments (UserID, CardID, Detail)
+VALUES (2, 2, 'Mong code không lỗi')
