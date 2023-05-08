@@ -188,7 +188,8 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>  ListScreen( userID: widget.userID,
-                                BoardName: 'Công việc ở công ty',
+                                BoardName: mapList[index]['BoardName'],
+                                  boardID: mapList[index]['BoardID']
                               ),
                             ),
                           );

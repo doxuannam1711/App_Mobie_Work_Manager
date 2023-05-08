@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../checklist/checklist_screen_show.dart';
+import '../nav_drawer.dart';
 import 'my_cards_screen.dart';
 
 class CardsDetailScreen extends StatefulWidget {
@@ -41,6 +42,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   ];
 
   String _comment = "test comment";
+  String _editComment = "";
+
   Future<List<Map<String, dynamic>>> getComments() async {
     final response = await http
         .get(Uri.parse('http://192.168.1.4/api/getComments/${widget.cardID}'));
@@ -109,6 +112,28 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
     }
   }
 
+  Future<void> _updateComment(int commentID) async {
+    final url = Uri.parse(
+        'http://192.168.1.4/api/updateComment/${widget.userID}/$commentID');
+    final response = await http.put(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'detail': _editComment,
+        'userID': widget.userID,
+        'commentID': commentID,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      // Handle success
+    } else {
+      // Handle error
+    }
+  }
+
   Future<void> _updateCard(int cardID) async {
     final url = Uri.parse('http://192.168.1.4/api/updateCard/$cardID');
     final response = await http.put(
@@ -155,6 +180,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+        drawer: NavDrawer(widget.userID),
         appBar: AppBar(
           title: Text(widget.cardName),
           actions: [
@@ -450,9 +476,10 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                   children: [
                                     for (final commentsData in commentsList)
                                       _buildCardDetail(
+                                        commentsData["UserID"],
                                         commentsData["Fullname"],
                                         commentsData["AvatarUrl"],
-                                        commentsData["Detail"],
+                                        _editComment = commentsData["Detail"],
                                         commentsData["CommentID"],
                                       ),
                                   ],
@@ -499,7 +526,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                         _addComment();
                         await Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => MyCardsScreen(widget.userID),
+                            builder: (context) => CardsDetailScreen(
+                                widget.cardName, widget.cardID, widget.userID),
                           ),
                         );
                         setState(() {});
@@ -516,6 +544,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Widget _buildCardDetail(
+    int checkUserID,
     String fullName,
     String avatarUrl,
     String commentDetail,
@@ -547,26 +576,50 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15),
                       ),
+                      Row(
+                        children: [
+                          IconButton(
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            icon: const Icon(Icons.check),
+                            iconSize: 20,
+                            onPressed: () async {
+                              _updateComment(commentID);
+                              await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context) => CardsDetailScreen(
+                                        widget.cardName,
+                                        widget.cardID,
+                                        widget.userID)),
+                              );
+                              setState(() {});
+                            },
+                          ),
+                          const SizedBox( width: 15),
+                          IconButton(
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            iconSize: 20,
+                            icon: const Icon(Icons.delete_outline),
+                            // alignment: Alignment(-1, -2.5),
+                            // alignment: Alignment.topRight,
+                            onPressed: () async {
+                              print("Deleted");
+                              _deleteComment(commentID);
 
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(),
-                        iconSize: 20,
-                        icon: Icon(Icons.delete_outline),
-                        // alignment: Alignment(-1, -2.5),
-                        // alignment: Alignment.topRight,
-                        onPressed: () async {
-                          print("Deleted");
-                          _deleteComment(commentID);
-
-                          await Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    MyCardsScreen(widget.userID)),
-                          );
-                          setState(() {});
-                        },
+                              await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context) => CardsDetailScreen(
+                                        widget.cardName,
+                                        widget.cardID,
+                                        widget.userID)),
+                              );
+                              setState(() {});
+                            },
+                          ),
+                        ],
                       ),
+                      
                       // ),
                     ],
                   ),
@@ -575,13 +628,16 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.75,
                   child: TextField(
+                    enabled: checkUserID == widget.userID,
                     controller: TextEditingController(text: commentDetail),
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     )),
                     maxLines: null,
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      _editComment = value;
+                    },
                   ),
                 )
               ],
