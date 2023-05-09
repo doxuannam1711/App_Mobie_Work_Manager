@@ -403,11 +403,17 @@ VALUES ('tt', 'era', 'sdfaaas', 'dfasde')
 SELECT * from users where users.UserID = 1
 
 
-select users.AvatarUrl, users.Fullname, comments.Detail, comments.CommentID from users inner join comments
+select users.UserID, users.AvatarUrl, users.Fullname, comments.Detail, comments.CommentID from users inner join comments
 on users.UserID = comments.UserID
 where comments.CardID=1
+order by comments.CommentID Desc
 
 INSERT INTO comments (UserID, CardID, Detail)
 VALUES (2, 2, 'Mong code không lỗi')
 
 DELETE FROM comments WHERE CommentID = 16
+
+UPDATE comments SET Detail = 'alo test userID = 2' WHERE CommentID = 23 AND UserID= 1
+
+SELECT * from lists inner join cards on cards.ListID = lists.ListID
+where BoardID = 1 

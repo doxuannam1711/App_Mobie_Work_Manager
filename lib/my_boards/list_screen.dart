@@ -6,11 +6,14 @@ import '../my_cards/card_detail_screen.dart';
 class ListScreen extends StatefulWidget {
   final int userID;
   final String BoardName;
+  final int boardID;
+
 
   // ListScreen(required this.userID, required this.BoardName);
 
 
-  const ListScreen({Key? key,required this.userID, required this.BoardName}) : super(key: key);
+  const ListScreen({Key? key,required this.userID, required this.BoardName,
+      required this.boardID}) : super(key: key);
 
   @override
   State<ListScreen> createState() => _ListScreenState();
