@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../attachment/attachment_screen.dart';
 import '../checklist/checklist_screen_show.dart';
 import '../nav_drawer.dart';
 import 'my_cards_screen.dart';
@@ -46,7 +47,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   Future<List<Map<String, dynamic>>> getComments() async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.4/api/getComments/${widget.cardID}'));
+        .get(Uri.parse('http://192.168.1.7/api/getComments/${widget.cardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -73,7 +74,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _addComment() async {
-    final url = Uri.parse('http://192.168.1.4/api/addComment');
+    final url = Uri.parse('http://192.168.1.7/api/addComment');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -98,7 +99,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _deleteComment(int commentID) async {
-    final url = Uri.parse('http://192.168.1.4/api/deleteComment/$commentID');
+    final url = Uri.parse('http://192.168.1.7/api/deleteComment/$commentID');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -114,7 +115,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   Future<void> _updateComment(int commentID) async {
     final url = Uri.parse(
-        'http://192.168.1.4/api/updateComment/${widget.userID}/$commentID');
+        'http://192.168.1.7/api/updateComment/${widget.userID}/$commentID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -135,7 +136,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _updateCard(int cardID) async {
-    final url = Uri.parse('http://192.168.1.4/api/updateCard/$cardID');
+    final url = Uri.parse('http://192.168.1.7/api/updateCard/$cardID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -180,6 +181,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         drawer: NavDrawer(widget.userID),
         appBar: AppBar(
           title: Text(widget.cardName),
@@ -263,7 +265,14 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                           Column(
                             children: [
                               IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AttachmentPage(),
+                                    ),
+                                  );
+                                },
                                 icon: const Icon(Icons.attach_file),
                                 tooltip: 'Add Attachment',
                               ),
@@ -550,102 +559,117 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
     String commentDetail,
     int commentID,
   ) {
-    return Column(
-      // padding: const EdgeInsets.only(bottom: 80.0),
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              backgroundImage: AssetImage(
-                avatarUrl,
-              ),
-            ),
-            const SizedBox(width: 8.0),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.75,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        fullName,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15),
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            icon: const Icon(Icons.check),
-                            iconSize: 20,
-                            onPressed: () async {
-                              _updateComment(commentID);
-                              await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (context) => CardsDetailScreen(
-                                        widget.cardName,
-                                        widget.cardID,
-                                        widget.userID)),
-                              );
-                              setState(() {});
-                            },
-                          ),
-                          const SizedBox( width: 15),
-                          IconButton(
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            iconSize: 20,
-                            icon: const Icon(Icons.delete_outline),
-                            // alignment: Alignment(-1, -2.5),
-                            // alignment: Alignment.topRight,
-                            onPressed: () async {
-                              print("Deleted");
-                              _deleteComment(commentID);
-
-                              await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (context) => CardsDetailScreen(
-                                        widget.cardName,
-                                        widget.cardID,
-                                        widget.userID)),
-                              );
-                              setState(() {});
-                            },
-                          ),
-                        ],
-                      ),
-                      
-                      // ),
-                    ],
-                  ),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                backgroundImage: AssetImage(
+                  avatarUrl,
                 ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.75,
-                  child: TextField(
-                    enabled: checkUserID == widget.userID,
-                    controller: TextEditingController(text: commentDetail),
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    )),
-                    maxLines: null,
-                    onChanged: (value) {
-                      _editComment = value;
-                    },
+              ),
+              const SizedBox(width: 8.0),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.75,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          fullName,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                        Row(
+                          children: [
+                            IconButton(
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              icon: const Icon(Icons.check),
+                              iconSize: 20,
+                              onPressed: () async {
+                                if (checkUserID == widget.userID) {
+                                  _updateComment(commentID);
+                                  await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (context) => CardsDetailScreen(
+                                            widget.cardName,
+                                            widget.cardID,
+                                            widget.userID)),
+                                  );
+                                  setState(() {});
+                                }
+                              },
+                            ),
+                            const SizedBox(width: 15),
+                            IconButton(
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              iconSize: 20,
+                              icon: const Icon(Icons.delete_outline),
+                              // alignment: Alignment(-1, -2.5),
+                              // alignment: Alignment.topRight,
+                              onPressed: () async {
+                                if (checkUserID == widget.userID) {
+                                  print("Deleted");
+                                  _deleteComment(commentID);
+
+                                  await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (context) => CardsDetailScreen(
+                                            widget.cardName,
+                                            widget.cardID,
+                                            widget.userID)),
+                                  );
+                                  setState(() {});
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+
+                        // ),
+                      ],
+                    ),
                   ),
-                )
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(height: 40.0),
-      ],
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.75,
+                    child: TextField(
+                      enabled: checkUserID == widget.userID,
+                      controller: TextEditingController(text: commentDetail),
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      )),
+                      maxLines: null,
+                      onChanged: (value) {
+                        _editComment = value;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 40.0),
+        ],
+      ),
+      // Column(
+      // children: [
+
+      // const SizedBox(height: 40.0),
+      // ],
+      // ),
     );
   }
 }

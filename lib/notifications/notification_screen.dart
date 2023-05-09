@@ -28,7 +28,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Future<void> _fetchBoardList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.4/api/getNotifications'));
+        await http.get(Uri.parse('http://192.168.1.7/api/getNotifications'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
