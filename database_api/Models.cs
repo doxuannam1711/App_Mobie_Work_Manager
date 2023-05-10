@@ -41,6 +41,12 @@ namespace WebApiDemo.Models
 
    }
 
+
+    public class ListModel
+    {
+        public int ListID { get; set; }
+        public string ListName { get; set; }   
+    }
    public class CheckListItemModel
    {
       public int ChecklistitemID { get; set; }

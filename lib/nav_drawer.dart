@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'my_boards/my_boards_screen.dart';
 import 'notifications/notification_screen.dart';
 import 'profile_and_display/profile_and_display_screen.dart';
-
+import 'search/search_screen.dart';
 class NavDrawer extends StatefulWidget {
 
   final int userID;
@@ -24,7 +24,7 @@ class _NavDrawerState extends State<NavDrawer> {
 
   Future<List<Map<String, dynamic>>> getUserList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.7/api/getAccount/${widget.userID}'));
+        await http.get(Uri.parse('http://192.168.53.160/api/getAccount/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -233,6 +233,17 @@ class _NavDrawerState extends State<NavDrawer> {
               },
             ),
             
+            ListTile(
+              leading: const Icon(Icons.search),
+              title: const Text('Search'),
+              onTap: () => {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const SearchScreen()),
+                )
+              },
+            ),
+
             const Divider(
               thickness: 2,
             ),
