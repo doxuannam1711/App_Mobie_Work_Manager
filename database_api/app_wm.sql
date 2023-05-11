@@ -417,3 +417,5 @@ UPDATE comments SET Detail = 'alo test userID = 2' WHERE CommentID = 23 AND User
 
 SELECT * from lists inner join cards on cards.ListID = lists.ListID
 where BoardID = 1 
+
+select * from boards where UserID = 1

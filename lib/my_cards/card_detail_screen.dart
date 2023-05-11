@@ -47,7 +47,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   Future<List<Map<String, dynamic>>> getComments() async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/getComments/${widget.cardID}'));
+        .get(Uri.parse('http://192.168.1.2/api/getComments/${widget.cardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -74,7 +74,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _addComment() async {
-    final url = Uri.parse('http://192.168.53.160/api/addComment');
+    final url = Uri.parse('http://192.168.1.2/api/addComment');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -99,7 +99,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _deleteComment(int commentID) async {
-    final url = Uri.parse('http://192.168.53.160/api/deleteComment/$commentID');
+    final url = Uri.parse('http://192.168.1.2/api/deleteComment/$commentID');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -115,7 +115,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   Future<void> _updateComment(int commentID) async {
     final url = Uri.parse(
-        'http://192.168.53.160/api/updateComment/${widget.userID}/$commentID');
+        'http://192.168.1.2/api/updateComment/${widget.userID}/$commentID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -136,7 +136,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _updateCard(int cardID) async {
-    final url = Uri.parse('http://192.168.53.160/api/updateCard/$cardID');
+    final url = Uri.parse('http://192.168.1.2/api/updateCard/$cardID');
     final response = await http.put(
       url,
       headers: <String, String>{
