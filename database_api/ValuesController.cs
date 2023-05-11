@@ -398,6 +398,7 @@ public class ValuesController : ApiControllerBase
         }
 
     }
+    
     [HttpPost]
     [Route("api/addComment")]
     public IHttpActionResult AddComment([FromBody] CommentModel comment)
@@ -462,6 +463,82 @@ public class ValuesController : ApiControllerBase
         }
     }
 
+    [HttpGet]
+    [Route("api/getCards/{listID}")]
+    public IHttpActionResult GetChecklists(int listID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+                                FROM cards
+                                LEFT JOIN checklists ON cards.cardID = checklists.cardID
+                                LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+                                WHERE cards.ListID = @listID
+                                GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist,
+                                cards.Label, cards.Comment, cards.CardName, cards.StatusView,
+                                cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+                                cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor";
+            Command.Parameters.AddWithValue("@listID", listID);
+            DataTable tableChecklists = Command.GetDataTable();
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableChecklists)
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+
+    
+    [HttpPost]
+    [Route("api/addList")]
+    public IHttpActionResult AddList([FromBody] ListModel list)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"INSERT INTO lists (ListID, ListName)
+                                 VALUES (@ListID, @ListName)";
+            Command.Parameters.AddWithValue("@ListID", list.ListID);
+            Command.Parameters.AddWithValue("@ListName", list.ListName);   
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+     [HttpGet]
+    [Route("api/getLists/{boardID}")]
+    public IHttpActionResult GetLists(int boardID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT lists.ListID, lists.ListName, cards.CardName FROM lists
+                                 INNER JOIN cards ON lists.ListID = cards.ListID
+                                 WHERE lists.BoardID = @boardID";
+            Command.Parameters.AddWithValue("@boardID", boardID);
+            DataTable tableChecklists = Command.GetDataTable();
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableChecklists)
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
 
     [Route("api/getNotifications")]
     public IHttpActionResult GetNotifications()
@@ -493,7 +570,8 @@ public class ValuesController : ApiControllerBase
 
     }
 
-        [HttpGet]
+
+    [HttpGet]
     [Route("api/downloadfile")]
     public IHttpActionResult DownloadFile()
     {
