@@ -180,6 +180,29 @@ public class ValuesController : ApiControllerBase
         }
     }
 
+    [Route("api/searchCards/{keyword}")]
+    public IHttpActionResult SearchCards(string keyword)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT * FROM cards WHERE CardName LIKE '%' + @Keyword + '%'";
+            Command.Parameters.AddWithValue("@Keyword", keyword);
+            DataTable tableBoards = Command.GetDataTable();
+
+            var response = new ResultModel
+            {
+                Data = tableBoards
+            };
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
 
     [HttpPut]
     [Route("api/updateCard/{cardID}")]
@@ -388,7 +411,7 @@ public class ValuesController : ApiControllerBase
             Command.Parameters.AddWithValue("@UserID", comment.UserID);
             Command.Parameters.AddWithValue("@CardID", comment.CardID);
             Command.Parameters.AddWithValue("@Detail", comment.Detail);
-            
+
             Command.ExecuteNonQuery();
             var response = new ResultModel { };
             return Ok(response);
@@ -548,8 +571,81 @@ public class ValuesController : ApiControllerBase
     }
 
 
+    [HttpGet]
+    [Route("api/downloadfile")]
+    public IHttpActionResult DownloadFile()
+    {
+        try
+        {
+            var fileName = "test.csv";
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
 
+            if (!File.Exists(filePath))
+            {
+                return NotFound();
+            }
 
+            var fileContent = File.ReadAllBytes(filePath);
 
+            var contentDisposition = new System.Net.Mime.ContentDisposition
+            {
+                FileName = fileName,
+                Inline = false
+            };
+            HttpContext.Current.Response.Headers.Add("Content-Disposition", contentDisposition.ToString());
 
+            var result = new HttpResponseMessage(HttpStatusCode.OK);
+            result.Content = new ByteArrayContent(fileContent);
+            result.Content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
+            return ResponseMessage(result);
+        }
+        catch (Exception ex)
+        {
+            return InternalServerError(ex);
+        }
+    }
+
+        [Route("api/getboards/csv")]
+    public IHttpActionResult GetFileCSV()
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"select * from boards";
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            // Configure the CSV writer
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                Encoding = Encoding.UTF8,
+                Delimiter = ","
+            };
+
+            // Write the data to a stream
+            using (var memoryStream = new MemoryStream())
+            using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))
+            using (var csvWriter = new CsvWriter(streamWriter, config))
+            {
+                csvWriter.WriteRecords(tableNhanVien.CreateDataReader());
+                streamWriter.Flush();
+
+                // Save the stream to a file
+                var fileName = "test.csv";
+                var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    memoryStream.CopyTo(fileStream);
+                }
+
+                // Return the file content to the client
+                var csvContent = File.ReadAllText(filePath);
+                return Ok(csvContent);
+            }
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
 }
