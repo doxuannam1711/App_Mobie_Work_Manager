@@ -8,9 +8,9 @@ import 'package:http/http.dart' as http;
 import 'my_boards/my_boards_screen.dart';
 import 'notifications/notification_screen.dart';
 import 'profile_and_display/profile_and_display_screen.dart';
+import 'dart:io';
 
 class NavDrawer extends StatefulWidget {
-
   final int userID;
   const NavDrawer(this.userID);
 
@@ -22,9 +22,33 @@ class NavDrawer extends StatefulWidget {
 class _NavDrawerState extends State<NavDrawer> {
   // static const user = UserPreferences.myUser;
 
+  Future<void> _downloadFile() async {
+    // final directory = await getApplicationDocumentsDirectory();
+    // final file = File('${directory.path}/test.csv');
+
+    // try {
+    //   final response = await http.get(_url);
+
+    //   if (response.statusCode == 200) {
+    //     await file.writeAsBytes(response.bodyBytes);
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('File downloaded successfully')),
+    //     );
+    //   } else {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('Failed to download file')),
+    //     );
+    //   }
+    // } catch (e) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Failed to download file: $e')),
+    //   );
+    // }
+  }
+
   Future<List<Map<String, dynamic>>> getUserList() async {
-    final response =
-        await http.get(Uri.parse('http://192.168.1.7/api/getAccount/${widget.userID}'));
+    final response = await http
+        .get(Uri.parse('http://192.168.1.7/api/getAccount/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -122,18 +146,16 @@ class _NavDrawerState extends State<NavDrawer> {
             } else {
               final userList = snapshot.data!;
               return ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                itemCount: userList.length,
-                
-                itemBuilder: (context, index) {
-                  final userData = userList[index];
-                  return _buildUserAccountsDrawerHeader(
-                    userData["Fullname"],
-                    userData["Email"],
-                    userData["AvatarUrl"],
-                  );
-                }
-              );
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: userList.length,
+                  itemBuilder: (context, index) {
+                    final userData = userList[index];
+                    return _buildUserAccountsDrawerHeader(
+                      userData["Fullname"],
+                      userData["Email"],
+                      userData["AvatarUrl"],
+                    );
+                  });
             }
           } else {
             return const Center(
@@ -181,12 +203,13 @@ class _NavDrawerState extends State<NavDrawer> {
     String imagePath,
   ) {
     return Column(
-      children: [    
+      children: [
         UserAccountsDrawerHeader(
           onDetailsPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => MyBoardsScreen(widget.userID)),
+              MaterialPageRoute(
+                  builder: (context) => MyBoardsScreen(widget.userID)),
             );
           },
           accountName: Text(fullName),
@@ -207,8 +230,7 @@ class _NavDrawerState extends State<NavDrawer> {
             fit: BoxFit.cover,
           )),
         ),
-        
-        
+
         // createListView,
         Column(
           children: [
@@ -232,7 +254,6 @@ class _NavDrawerState extends State<NavDrawer> {
                 )
               },
             ),
-            
             const Divider(
               thickness: 2,
             ),
@@ -241,7 +262,8 @@ class _NavDrawerState extends State<NavDrawer> {
               title: const Text('Notification'),
               onTap: () => {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => NotificationScreen(widget.userID)),
+                  MaterialPageRoute(
+                      builder: (context) => NotificationScreen(widget.userID)),
                 )
               },
             ),
@@ -257,6 +279,13 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
             const Divider(
               thickness: 2,
+            ),
+            ListTile(
+              leading: const Icon(Icons.file_download),
+              title: const Text('Export Data'),
+              onTap: () {
+                _downloadFile();
+              },
             ),
             ListTile(
               leading: const Icon(Icons.settings),
