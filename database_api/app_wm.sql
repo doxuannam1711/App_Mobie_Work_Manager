@@ -29,11 +29,9 @@ Fullname  nvarchar(255) NOT NULL,
 Password  varchar(100) NOT NULL,
 Email  varchar(255) NOT NULL,
 AvatarUrl  varchar(255),
-RoleID  int,
 CreatedDate  datetime ,
 LastLoginTime  datetime ,
 CONSTRAINT PK_users PRIMARY KEY(UserID),
-CONSTRAINT FK_users_roles FOREIGN KEY(RoleID) REFERENCES roles(RoleID)
 )
 
 --
@@ -44,10 +42,12 @@ BoardID int IDENTITY(1,1) NOT NULL,
 BoardName nvarchar(50) NOT NULL,
 CreatedDate datetime NOT NULL,
 UserID int NOT NULL,
+RoleID int,
 Labels  nvarchar(250)  ,
 LabelsColor nvarchar(250)  ,
 CONSTRAINT PK_boards PRIMARY KEY(BoardID),
-CONSTRAINT PK_boards_users FOREIGN KEY(UserID) REFERENCES users(UserID) ,
+CONSTRAINT FK_boards_users FOREIGN KEY(UserID) REFERENCES users(UserID) ,
+CONSTRAINT FK_boards_roles FOREIGN KEY(RoleID) REFERENCES roles(RoleID),
 )
 
 --
@@ -120,6 +120,21 @@ CONSTRAINT PK_cards PRIMARY KEY(CardID),
 CONSTRAINT FK_cards_lists FOREIGN KEY(ListID) REFERENCES lists(ListID),
 CONSTRAINT FK_cards_creators FOREIGN KEY(CreatorID) REFERENCES creators(CreatorID),
 CONSTRAINT FK_cards_assignedTo FOREIGN KEY(AssignedToID) REFERENCES assignedTo(AssignedToID),
+
+)
+
+
+--
+-- Cấu trúc bảng cho bảng  attachments
+--
+CREATE TABLE  attachments(
+AttachmentID int IDENTITY(1,1) NOT NULL,
+CardID int NOT NULL,
+AttachmentPath nvarchar(max),
+AttachmentName nvarchar(max),
+CONSTRAINT PK_attachments PRIMARY KEY(AttachmentID),
+CONSTRAINT FK_attachments_cards FOREIGN KEY(CardID) REFERENCES cards(CardID),
+
 )
 
 --
@@ -187,6 +202,9 @@ CONSTRAINT FK_notifications_users FOREIGN KEY(UserID) REFERENCES users(UserID),
 CONSTRAINT FK_notifications_cards FOREIGN KEY(CardID) REFERENCES cards(CardID),
 CONSTRAINT FK_notifications_boards FOREIGN KEY(BoardID) REFERENCES boards(BoardID),
 )
+
+
+
 ------<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>--------------
 
 
@@ -202,24 +220,24 @@ insert into roles VALUES('edit','','','')
 insert into roles VALUES('view','','','')
 
 ------------------------------ Insert into table Users --------------------------------------
-insert into users VALUES('doxuannam',N'đỗ xuân nam','123456','doxuannam@gmail.com','assets/images/batman_robot_suit.jpg',1,'2022-01-14 21:56:19 PM','')
-insert into users VALUES('phamphuquang',N'phạm phú quang','123123123','phamphuquang@gmail.com','assets/images/avatar_user1.jpg',2,'2022-2-2 14:48:25 PM','')
-insert into users VALUES('buiduccuong',N'bùi đức cường','456456456','buiduccuong@gmail.com','assets/images/avatar_user2.jpg',2,'2022-3-8 08:45:09 AM','')
-insert into users VALUES('hoangthigam',N'hoàng thị gấm','123456123456','doxuannam@gmail.com','assets/images/avatar_user3.jpg',2,'2022-3-9 21:56:19 PM','')
+insert into users VALUES('doxuannam',N'đỗ xuân nam','123456','doxuannam@gmail.com','assets/images/batman_robot_suit.jpg','2022-01-14 21:56:19 PM','')
+insert into users VALUES('phamphuquang',N'phạm phú quang','123123123','phamphuquang@gmail.com','assets/images/avatar_user1.jpg','2022-2-2 14:48:25 PM','')
+insert into users VALUES('buiduccuong',N'bùi đức cường','456456456','buiduccuong@gmail.com','assets/images/avatar_user2.jpg','2022-3-8 08:45:09 AM','')
+insert into users VALUES('hoangthigam',N'hoàng thị gấm','123456123456','doxuannam@gmail.com','assets/images/avatar_user3.jpg','2022-3-9 21:56:19 PM','')
 
 
 --------------------------------------- Insert into table Boards ---------------------------------
-insert into boards VALUES(N'Công việc ở công ty','2023-2-20 10:25:48 AM',1,'0',N'green')
-insert into boards VALUES(N'Công việc ở công ty ABC','2023-3-2',3,'1',N'red')
-insert into boards VALUES(N'Công việc làm web freelancer','2023-3-2',3,'3','blue')
-insert into boards VALUES(N'Phân tích nghiệp vụ','2022-1-2',2,'5','yellow')
-insert into boards VALUES(N'Dự án phong thuỷ thổ địa','2023-3-2',1,'9','red')
-insert into boards VALUES(N'Sơ đồ chi tiết','2023-4-3',2,'2','blue')
-insert into boards VALUES(N'Code dự án phát triển','2023-11-2',3,'1','green')
-insert into boards VALUES(N'Công việc làm web freelancer','2023-9-25',1,'3','yellow')
-insert into boards VALUES(N'Database hoàn chỉnh','2023-5-20',2,'0','red')
-insert into boards VALUES(N'Dự án công trình dưỡng lão','2023-7-11',1,'3','green')
-insert into boards VALUES(N'Phân tích quá trình giảm đau','2023-8-3',2,'0','blue')
+insert into boards VALUES(N'Công việc ở công ty','2023-2-20 10:25:48 AM',1,'0',N'green',1)
+insert into boards VALUES(N'Công việc ở công ty ABC','2023-3-2',3,'1',N'red',1)
+insert into boards VALUES(N'Công việc làm web freelancer','2023-3-2',3,'3','blue',1)
+insert into boards VALUES(N'Phân tích nghiệp vụ','2022-1-2',2,'5','yellow',1)
+insert into boards VALUES(N'Dự án phong thuỷ thổ địa','2023-3-2',1,'9','red',1)
+insert into boards VALUES(N'Sơ đồ chi tiết','2023-4-3',2,'2','blue',1)
+insert into boards VALUES(N'Code dự án phát triển','2023-11-2',3,'1','green',1)
+insert into boards VALUES(N'Công việc làm web freelancer','2023-9-25',1,'3','yellow',1)
+insert into boards VALUES(N'Database hoàn chỉnh','2023-5-20',2,'0','red',1)
+insert into boards VALUES(N'Dự án công trình dưỡng lão','2023-7-11',1,'3','green',1)
+insert into boards VALUES(N'Phân tích quá trình giảm đau','2023-8-3',2,'0','blue',1)
 
 ------------------------------ Insert into table Lists --------------------------------------
 insert into lists VALUES(1,N'Website bán hàng',1,'false','2023-2-20','2023-3-1','','true')
@@ -419,3 +437,16 @@ SELECT * from lists inner join cards on cards.ListID = lists.ListID
 where BoardID = 1 
 
 select * from boards where UserID = 1
+
+
+------<><><><><><><><><><><><><><><><><><><><><><>Chỉnh sửa cấu trúc database<><><><><><><><><><><><><><><><><><><><><><>--------------
+alter table users drop constraint FK_users_roles
+ALTER TABLE users
+DROP COLUMN RoleID;
+
+ALTER TABLE boards
+ADD RoleID int
+
+ALTER TABLE boards
+ADD CONSTRAINT FK_boards_roles FOREIGN KEY (RoleID) REFERENCES roles(RoleID);
+
