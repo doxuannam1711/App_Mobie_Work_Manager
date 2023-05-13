@@ -12,8 +12,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'search/search_screen.dart';
 import 'dart:io';
 
-final Uri _url = Uri.parse('http://192.168.53.160/api/downloadfile');
-
+// final Uri _url = Uri.parse('http://192.168.53.160/api/downloadfile');
+final Uri _url = Uri.parse('https://flutter.dev');
 class NavDrawer extends StatefulWidget {
   final int userID;
   const NavDrawer(this.userID);
