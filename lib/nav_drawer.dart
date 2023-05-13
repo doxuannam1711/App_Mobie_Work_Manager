@@ -56,7 +56,6 @@ class _NavDrawerState extends State<NavDrawer> {
   Future<List<Map<String, dynamic>>> getUserList() async {
     final response = await http
         .get(Uri.parse('http://192.168.1.2/api/getAccount/${widget.userID}'));
-
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];

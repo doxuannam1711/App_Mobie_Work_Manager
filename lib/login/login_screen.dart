@@ -9,7 +9,6 @@ import 'package:flutter_application/notifications/notification_screen.dart';
 import 'package:flutter_application/profile_and_display/profile_and_display_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-
 import '../model/user.dart';
 import '../my_boards/my_boards_screen.dart';
 import '../nav_drawer.dart';
@@ -42,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<Map<String, dynamic>> getUserList() async {
     // Change this line
     final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/getAccountLogin'));
+        await http.get(Uri.parse('http://192.168.1.2/api/getAccountLogin'));
     if (response.statusCode == 200) {
       setState(() {
         userList = jsonDecode(response.body);

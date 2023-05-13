@@ -58,7 +58,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _searchBoards(String keyword) async {
-    final url = Uri.parse('http://192.168.1.4/api/searchBoards/$keyword');
+    final url = Uri.parse('http://192.168.1.2/api/searchBoards/$keyword');
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -71,7 +71,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
   }
 
   Future<void> _deleteBoard(int boardId) async {
-    final url = Uri.parse('http://192.168.53.160/api/deleteBoard/$boardId');
+    final url = Uri.parse('http://192.168.1.2/api/deleteBoard/$boardId');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
