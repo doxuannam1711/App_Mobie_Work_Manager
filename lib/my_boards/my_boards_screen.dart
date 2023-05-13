@@ -33,7 +33,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchBoardList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/getboards'));
+        await http.get(Uri.parse('http://192.168.53.160/api/getboards/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -393,7 +393,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ListScreen(boardName,boardID,widget.userID,),                            
+              builder: (context) => ListScreen(boardName, boardID, labels,widget.userID,),                            
             ),
           );
         },

@@ -5,6 +5,16 @@ using Newtonsoft.Json;
 using System.Security.Claims;
 using System.Data.SqlClient;
 using WebApiDemo.Models;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
+using System.Net;
+using System.Web;
+using CsvHelper.Configuration;
+using System.Globalization;
+using System.Text;
+using CsvHelper;
+using System.Web.Razor.Tokenizer.Symbols;
 
 public class ValuesController : ApiControllerBase
 {
@@ -31,56 +41,7 @@ public class ValuesController : ApiControllerBase
 
     }
 
-
-    [Route("api/getAccount/{userID}")]
-    public IHttpActionResult GetAccount(int userID)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"SELECT * from users where users.UserID = @userID";
-
-            Command.Parameters.AddWithValue("@userID", userID);
-            DataTable tableNhanVien = Command.GetDataTable();
-
-            var respone = new ResultModel
-            {
-                Data = JsonConvert.SerializeObject(tableNhanVien)
-
-            };
-            return Ok(respone);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-
-    }
-
-    [HttpPut]
-    [Route("api/updateUser/{userID}")]
-    public IHttpActionResult UpdateUserWithUserID(int userID, [FromBody] UserModel user)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"UPDATE users SET Username = @Username, Fullname=@Fullname, Password=@Password, Email=@Email WHERE UserID = @UserID";
-            Command.Parameters.AddWithValue("@Username", user.Username);
-            Command.Parameters.AddWithValue("@Fullname", user.Fullname);
-            Command.Parameters.AddWithValue("@Password", user.Password);
-            Command.Parameters.AddWithValue("@Email", user.Email);
-
-            Command.Parameters.AddWithValue("@UserID", user.UserID);
-
-            Command.ExecuteNonQuery();
-            var response = new ResultModel { };
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-    }
+    
 
     [HttpPost]
     [Route("api/addUser")]
@@ -107,6 +68,80 @@ public class ValuesController : ApiControllerBase
     }
 
 
+    [HttpPut]
+    [Route("api/updateUser/{userID}")]
+    public IHttpActionResult UpdateCard(int userID, [FromBody] UserModel user)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"UPDATE users SET Username = @Username, Fullname=@Fullname, Password=@Password, Email=@Email WHERE UserID = @UserID";
+            Command.Parameters.AddWithValue("@Username", user.Username);
+            Command.Parameters.AddWithValue("@Fullname", user.Fullname);
+            Command.Parameters.AddWithValue("@Password", user.Password);
+            Command.Parameters.AddWithValue("@Email", user.Email);
+
+            Command.Parameters.AddWithValue("@UserID", user.UserID);
+
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+    [Route("api/getAccount/{userID}")]
+    public IHttpActionResult GetAccount(int userID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT * from users where users.UserID = @userID";
+
+            Command.Parameters.AddWithValue("@userID", userID);
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
+
+    [Route("api/getAccount")]
+    public IHttpActionResult GetKien()
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT * from users";
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
+
+    
 
     [HttpPost]
     [Route("api/addBoard")]
@@ -132,6 +167,25 @@ public class ValuesController : ApiControllerBase
         }
     }
 
+    [HttpDelete]
+    [Route("api/deleteBoard/{boardId}")]
+    public IHttpActionResult DeleteBoard(int boardId)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"DELETE FROM boards WHERE BoardID = @BoardID";
+            Command.Parameters.AddWithValue("@BoardID", boardId);
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
     [HttpPost]
     [Route("api/addChecklistitem")]
     public IHttpActionResult AddChecklistItem([FromBody] CheckListItemModel checklistitems)
@@ -146,6 +200,159 @@ public class ValuesController : ApiControllerBase
             Command.ExecuteNonQuery();
             var response = new ResultModel { };
             return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+
+    [HttpDelete]
+    [Route("api/deleteChecklistitem/{Title}")]
+    public IHttpActionResult DeleteChecklistitem(string Title)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"DELETE FROM checklistitems WHERE Title = @Title";
+            Command.Parameters.AddWithValue("@Title", Title);
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+
+
+
+
+    [HttpPost]
+    [Route("api/addList")]
+    public IHttpActionResult AddList([FromBody] ListModel list)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"INSERT INTO lists (ListID, ListName)
+                                 VALUES (@ListID, @ListName)";
+            Command.Parameters.AddWithValue("@ListID", list.ListID);
+            Command.Parameters.AddWithValue("@ListName", list.ListName);   
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+    [HttpPut]
+    [Route("api/updateCard/{cardID}")]
+    public IHttpActionResult UpdateCard(int cardID, [FromBody] CardModel card)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"UPDATE cards SET DueDate = @DueDate WHERE CardID = @CardID";
+            Command.Parameters.AddWithValue("@DueDate", card.DueDate);
+            Command.Parameters.AddWithValue("@CardID", card.CardID);
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+
+    [Route("api/searchCards/{keyword}")]
+    public IHttpActionResult SearchCards(string keyword)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT * FROM cards WHERE CardName LIKE '%' + @Keyword + '%'";
+            Command.Parameters.AddWithValue("@Keyword", keyword);
+            DataTable tableBoards = Command.GetDataTable();
+
+            var response = new ResultModel
+            {
+                Data = tableBoards
+            };
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+
+
+
+    // GET api/values
+    //[Authorize]
+    [Route("api/getboards/{userID}")]
+    public IHttpActionResult GetBoards(int userID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"select * from boards WHERE boards.userID = @userID";
+            Command.Parameters.AddWithValue("@userID", userID);
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
+
+    // GET api/values
+    //[Authorize]
+    
+
+    // GET api/values
+    //[Authorize]
+    [HttpGet]
+    [Route("api/getCards/{listID}")]
+    public IHttpActionResult GetChecklists(int listID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+FROM cards
+LEFT JOIN checklists ON cards.cardID = checklists.cardID
+LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+WHERE cards.ListID = @listID
+GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist,
+cards.Label, cards.Comment, cards.CardName, cards.StatusView,
+cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor";
+            Command.Parameters.AddWithValue("@listID", listID);
+            DataTable tableChecklists = Command.GetDataTable();
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableChecklists)
+            };
+            return Ok(respone);
         }
         catch (Exception ex)
         {
@@ -180,152 +387,10 @@ public class ValuesController : ApiControllerBase
         }
     }
 
-    [Route("api/searchCards/{keyword}")]
-    public IHttpActionResult SearchCards(string keyword)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"SELECT * FROM cards WHERE CardName LIKE '%' + @Keyword + '%'";
-            Command.Parameters.AddWithValue("@Keyword", keyword);
-            DataTable tableBoards = Command.GetDataTable();
 
-            var response = new ResultModel
-            {
-                Data = tableBoards
-            };
-
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-    }
-
-
-    [HttpPut]
-    [Route("api/updateCard/{cardID}")]
-    public IHttpActionResult UpdateCard(int cardID, [FromBody] CardModel card)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"UPDATE cards SET DueDate = @DueDate WHERE CardID = @CardID";
-            Command.Parameters.AddWithValue("@DueDate", card.DueDate);
-            Command.Parameters.AddWithValue("@CardID", card.CardID);
-            Command.ExecuteNonQuery();
-            var response = new ResultModel { };
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-    }
-
-
-
-    [HttpDelete]
-    [Route("api/deleteBoard/{boardId}")]
-    public IHttpActionResult DeleteBoard(int boardId)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"DELETE FROM boards WHERE BoardID = @BoardID";
-            Command.Parameters.AddWithValue("@BoardID", boardId);
-            Command.ExecuteNonQuery();
-            var response = new ResultModel { };
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-    }
-
-    [HttpDelete]
-    [Route("api/deleteChecklistitem/{Title}")]
-    public IHttpActionResult DeleteChecklistitem(string Title)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"DELETE FROM checklistitems WHERE Title = @Title";
-            Command.Parameters.AddWithValue("@Title", Title);
-            Command.ExecuteNonQuery();
-            var response = new ResultModel { };
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-    }
-
-
-    // GET api/values
-    //[Authorize]
-    [Route("api/getboards")]
-    public IHttpActionResult GetBoards()
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"select * from boards";
-            DataTable tableNhanVien = Command.GetDataTable();
-
-            var respone = new ResultModel
-            {
-                Data = JsonConvert.SerializeObject(tableNhanVien)
-
-            };
-            return Ok(respone);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-
-    }
-    // GET api/values
-    //[Authorize]
-    [Route("api/getcards")]
-    public IHttpActionResult GetCards()
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
-                                    FROM cards
-                                    LEFT JOIN checklists ON cards.cardID = checklists.cardID
-                                    LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
-                                    GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
-                                    cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
-                                    cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
-                                    cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor;";
-            DataTable tableNhanVien = Command.GetDataTable();
-
-            var respone = new ResultModel
-            {
-                Data = JsonConvert.SerializeObject(tableNhanVien)
-
-            };
-            return Ok(respone);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-
-    }
-
-    // GET api/values
-    //[Authorize]
     [HttpGet]
     [Route("api/getChecklists/{cardID}")]
-    public IHttpActionResult GetChecklists(int cardID)
+    public IHttpActionResult GetCardsList(int cardID)
     {
         try
         {
@@ -347,7 +412,60 @@ public class ValuesController : ApiControllerBase
         }
     }
 
+    [Route("api/getcards")]
+    public IHttpActionResult GetCards()
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+FROM cards
+LEFT JOIN checklists ON cards.cardID = checklists.cardID
+LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
+cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
+cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor;";
+            DataTable tableNhanVien = Command.GetDataTable();
 
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
+
+
+    [HttpGet]
+    [Route("api/getLists/{boardID}")]
+    public IHttpActionResult GetLists(int boardID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT * FROM lists
+                                 INNER JOIN cards ON lists.ListID = cards.ListID
+                                 WHERE lists.BoardID = @boardID";
+            Command.Parameters.AddWithValue("@boardID", boardID);
+            DataTable tableChecklists = Command.GetDataTable();
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableChecklists)
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
 
     [Route("api/searchBoards/{keyword}")]
     public IHttpActionResult SearchBoards(string keyword)
@@ -398,7 +516,7 @@ public class ValuesController : ApiControllerBase
         }
 
     }
-    
+
     [HttpPost]
     [Route("api/addComment")]
     public IHttpActionResult AddComment([FromBody] CommentModel comment)
@@ -463,82 +581,6 @@ public class ValuesController : ApiControllerBase
         }
     }
 
-    [HttpGet]
-    [Route("api/getCards/{listID}")]
-    public IHttpActionResult GetChecklists(int listID)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
-                                FROM cards
-                                LEFT JOIN checklists ON cards.cardID = checklists.cardID
-                                LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
-                                WHERE cards.ListID = @listID
-                                GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist,
-                                cards.Label, cards.Comment, cards.CardName, cards.StatusView,
-                                cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
-                                cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor";
-            Command.Parameters.AddWithValue("@listID", listID);
-            DataTable tableChecklists = Command.GetDataTable();
-            var respone = new ResultModel
-            {
-                Data = JsonConvert.SerializeObject(tableChecklists)
-            };
-            return Ok(respone);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-    }
-
-
-    
-    [HttpPost]
-    [Route("api/addList")]
-    public IHttpActionResult AddList([FromBody] ListModel list)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"INSERT INTO lists (ListID, ListName)
-                                 VALUES (@ListID, @ListName)";
-            Command.Parameters.AddWithValue("@ListID", list.ListID);
-            Command.Parameters.AddWithValue("@ListName", list.ListName);   
-            Command.ExecuteNonQuery();
-            var response = new ResultModel { };
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-    }
-
-     [HttpGet]
-    [Route("api/getLists/{boardID}")]
-    public IHttpActionResult GetLists(int boardID)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"SELECT lists.ListID, lists.ListName, cards.CardName FROM lists
-                                 INNER JOIN cards ON lists.ListID = cards.ListID
-                                 WHERE lists.BoardID = @boardID";
-            Command.Parameters.AddWithValue("@boardID", boardID);
-            DataTable tableChecklists = Command.GetDataTable();
-            var respone = new ResultModel
-            {
-                Data = JsonConvert.SerializeObject(tableChecklists)
-            };
-            return Ok(respone);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-    }
 
     [Route("api/getNotifications")]
     public IHttpActionResult GetNotifications()
@@ -547,13 +589,13 @@ public class ValuesController : ApiControllerBase
         {
             Command.ResetAndOpen(CommandType.Text);
             Command.CommandText = @"select notifications.NotificationID,notifications.NotificationType,Content,notifications.CreatedDate,users.Username,boards.BoardName,cards.CardName from notifications inner join users
-                                    on notifications.UserID = users.UserID
-                                    inner join cards
-                                    on notifications.CardID=cards.CardID
-                                    inner join boards
-                                    on notifications.BoardID=boards.BoardID
-                                    inner join lists
-                                    on notifications.BoardID=lists.BoardID";
+on notifications.UserID = users.UserID
+inner join cards
+on notifications.CardID=cards.CardID
+inner join boards
+on notifications.BoardID=boards.BoardID
+inner join lists
+on notifications.BoardID=lists.BoardID";
             DataTable tableNhanVien = Command.GetDataTable();
 
             var respone = new ResultModel
@@ -569,7 +611,6 @@ public class ValuesController : ApiControllerBase
         }
 
     }
-
 
     [HttpGet]
     [Route("api/downloadfile")]
@@ -605,15 +646,11 @@ public class ValuesController : ApiControllerBase
         }
     }
 
-        [Route("api/getboards/csv")]
-    public IHttpActionResult GetFileCSV()
+    [Route("api/writecsv/{userId}")]
+    public IHttpActionResult GetFileCSV(int userId)
     {
         try
         {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"select * from boards";
-            DataTable tableNhanVien = Command.GetDataTable();
-
             // Configure the CSV writer
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
@@ -626,7 +663,7 @@ public class ValuesController : ApiControllerBase
             using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))
             using (var csvWriter = new CsvWriter(streamWriter, config))
             {
-                csvWriter.WriteRecords(tableNhanVien.CreateDataReader());
+                csvWriter.WriteField("userid " + userId.ToString());
                 streamWriter.Flush();
 
                 // Save the stream to a file
@@ -648,4 +685,6 @@ public class ValuesController : ApiControllerBase
             return Ok(ex.Message);
         }
     }
+
 }
+

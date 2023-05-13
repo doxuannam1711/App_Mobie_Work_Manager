@@ -100,10 +100,10 @@ with TickerProviderStateMixin{
                     child: const Text('Add'),
                     onPressed: () async{
                     addList();
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) =>  ListScreen(widget.boardName, widget.boardID, widget.userID)),
-                    );
+                    // await Navigator.of(context).push(
+                    //   MaterialPageRoute(
+                    //     builder: (context) =>  ListScreen(widget.boardName, widget.boardID, widget.userID)),
+                    // );
                     setState(() {});
                   }, 
                 )

@@ -19,6 +19,7 @@ class MyCardsScreen extends StatefulWidget {
 }
 
 class _MyCardsScreenState extends State<MyCardsScreen> {
+  String _searchKeyword = "";
   bool _filterByDate = true;
   final int _cardID = 1;
   DateFormat dateFormat = DateFormat('MMMM dd');
@@ -27,7 +28,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
     'https://dogily.vn/wp-content/uploads/2022/12/Anh-avatar-cho-Shiba-4.jpg',
     'https://top10camau.vn/wp-content/uploads/2022/10/avatar-meo-cute-5.jpg',
   ];
-
+  List<Map<String, dynamic>> _searchResult = [];
   Future<List<Map<String, dynamic>>> _fetchCardList() async {
     final response =
         await http.get(Uri.parse('http://192.168.53.160/api/getcards'));
@@ -54,6 +55,33 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
     }
   }
 
+  Future<List<Map<String, dynamic>>> _searchCards(String keyword) async {
+    final url = Uri.parse('http://192.168.53.160/api/searchCards/$keyword');
+    final response = await http.post(url);
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      final List<Map<String, dynamic>> cardList =
+          (jsonData['Data'] as List).cast<Map<String, dynamic>>();
+      return cardList;
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
+
+  void _onSearch(String keyword) async {
+    if (keyword.isNotEmpty) {
+      final result = await _searchCards(keyword);
+      setState(() {
+        _searchKeyword = keyword;
+        _searchResult = result;
+      });
+    } else {
+      setState(() {
+        _searchKeyword = '';
+        _searchResult = [];
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,7 +122,8 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: TextField(
-              decoration: InputDecoration(
+              onChanged: (value) => _onSearch(value),
+              decoration: InputDecoration( 
                 hintText: 'Enter card name',
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -112,7 +141,9 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
           ),
           Expanded(
             child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: _fetchCardList(),
+              future: _searchResult == null || _searchResult.isEmpty
+                  ? _fetchCardList()
+                  : Future<List<Map<String, dynamic>>>.value(_searchResult),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasError) {
@@ -132,9 +163,9 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                           card['DueDate'] != null
                               ? DateTime.parse(card['DueDate'])
                               : null,
-                          card['Comment'],
-                          card['index_checked'],
-                          card['SUM'],
+                          card['Comment'] ,
+                          card['index_checked'] ,
+                          card['SUM'] ,
                           _listAvatar,
                           card['CardID'], // pass cardID to _buildCard
                         );

@@ -1,0 +1,307 @@
+ // Future<List<Map<String, dynamic>>> _fetchCardList() async {
+  //   final response =
+  //       await http.get(Uri.parse('http://192.168.53.160/api/getcards/'));
+  //   if (response.statusCode == 200) {
+  //     try {
+  //       final data = jsonDecode(response.body)['Data'];
+  //       final cardData = jsonDecode(data);
+  //       List<dynamic> cardList = [];
+  //       if (cardData is List) {
+  //         cardList = cardData;
+  //       } else if (cardData is Map) {
+  //         cardList = [cardData];
+  //       }
+  //       final resultList = cardList
+  //           .map((board) =>
+  //               Map<String, dynamic>.from(board as Map<String, dynamic>))
+  //           .toList();
+  //       return resultList;
+  //     } catch (e) {
+  //       throw Exception('Failed to decode board list');
+  //     }
+  //   } else {
+  //     throw Exception('Failed to load  list');
+  //   }
+  // }
+
+  // Future<void> _addList() async {
+  //   final url = Uri.parse('http://192.168.53.160/api/addList');
+  //   final response = await http.post(
+  //     url,
+  //     headers: <String, String>{
+  //       'Content-Type': 'application/json; charset=UTF-8',
+  //     },
+  //     body: jsonEncode(<String, dynamic>{
+  //       'userID': widget.userID,
+  //       'boardID': widget.boardID,
+  //     }),
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Comment added successfully!')),
+  //     );
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Comment added failed!')),
+  //     );
+  //   }
+  // }
+
+//   final Map<String, List<Map<String, dynamic>>> _cardLists = {
+//     'Website bán hàng': [
+//       {
+//         'CardName': 'FrontEnd',
+//         'Label': 'Medium',
+//         'ExpirationDate': '2023-12-31',
+//         'Comments': 4,
+//         'CheckedItems': 3,
+//         'TotalItems': 5,
+//       },
+//       {
+//         'CardName': 'Create Database',
+//         'Label': 'Low',
+//         'ExpirationDate': '2024-06-30',
+//         'Comments': 3,
+//         'CheckedItems': 2,
+//         'TotalItems': 5,
+//       },
+//       {
+//         'CardName': 'Create WebAPI',
+//         'Label': 'High',
+//         'ExpirationDate': '2024-06-30',
+//         'Comments': 5,
+//         'CheckedItems': 2,
+//         'TotalItems': 4,
+//       },
+//       {
+//         'CardName': 'BackEnd',
+//         'Label': 'High',
+//         'ExpirationDate': '2024-06-30',
+//         'Comments': 11,
+//         'CheckedItems': 3,
+//         'TotalItems': 4,
+//       },
+// // ... more cards
+//     ],
+//     'Phần mềm quản lý công nhân': [
+//       {
+//         'CardName': 'FrontEnd',
+//         'Label': 'Medium',
+//         'ExpirationDate': '2023-12-31',
+//         'Comments': 4,
+//         'CheckedItems': 3,
+//         'TotalItems': 5,
+//       },
+//       {
+//         'CardName': 'Create Database',
+//         'Label': 'Low',
+//         'ExpirationDate': '2024-06-30',
+//         'Comments': 3,
+//         'CheckedItems': 2,
+//         'TotalItems': 5,
+//       },
+//       {
+//         'CardName': 'Create WebAPI',
+//         'Label': 'High',
+//         'ExpirationDate': '2024-06-30',
+//         'Comments': 5,
+//         'CheckedItems': 2,
+//         'TotalItems': 4,
+//       },
+// // ... more cards
+//     ],
+//     'App mobile quản lý công việc cá nhân': [
+//       {
+//         'CardName': 'FrontEnd',
+//         'Label': 'Medium',
+//         'ExpirationDate': '2023-12-31',
+//         'Comments': 4,
+//         'CheckedItems': 3,
+//         'TotalItems': 5,
+//       },
+//       {
+//         'CardName': 'Create Database',
+//         'Label': 'Low',
+//         'ExpirationDate': '2024-06-30',
+//         'Comments': 3,
+//         'CheckedItems': 2,
+//         'TotalItems': 5,
+//       },
+//       {
+//         'CardName': 'Create WebAPI',
+//         'Label': 'High',
+//         'ExpirationDate': '2024-06-30',
+//         'Comments': 5,
+//         'CheckedItems': 2,
+//         'TotalItems': 4,
+//       },
+//       {
+//         'CardName': 'BackEnd',
+//         'Label': 'High',
+//         'ExpirationDate': '2024-06-30',
+//         'Comments': 11,
+//         'CheckedItems': 3,
+//         'TotalItems': 4,
+//       },
+//       {
+//         'CardName': 'BackEnd2',
+//         'Label': 'High',
+//         'ExpirationDate': '2024-06-30',
+//         'Comments': 11,
+//         'CheckedItems': 3,
+//         'TotalItems': 4,
+//       },
+// // ... more cards
+//     ],
+//     '': [], // empty list to add new list
+//   };
+
+
+// void _addNewList(String listName) async{
+  //   if(listName.isNotEmpty){
+
+  //     await addList
+  //   }
+  // }
+  // Widget build(BuildContext context) {
+  //   List<String> listNames = _cardLists.keys.toList();
+  //   bool sortByIncreasing =
+  //       true; // Default option is to sort by increasing expiration date
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       title: Text(widget.boardName),
+  //       actions: <Widget>[
+  //         PopupMenuButton(
+  //           itemBuilder: (BuildContext context) {
+  //             return [
+  //               const PopupMenuItem(
+  //                 value: true,
+  //                 child: Text("Sort by increasing expiration date"),
+  //               ),
+  //               const PopupMenuItem(
+  //                 value: false,
+  //                 child: Text("Sort by decreasing expiration date"),
+  //               ),
+  //             ];
+  //           },
+  //           onSelected: (value) {
+  //             setState(() {
+  //               sortByIncreasing = value;
+  //             });
+  //           },
+  //           icon: const Icon(Icons.filter_list),
+  //         ),
+  //         Padding(
+  //           padding: const EdgeInsets.only(right: 20.0),
+  //           child: GestureDetector(
+  //             onTap: () {
+  //               Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(
+  //                   builder: (context) => ListsAdd(
+  //                       widget.boardName, widget.boardID, widget.userID),
+  //                 ),
+  //               );
+  //             },
+  //             child: const Icon(Icons.add),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //     body: Container(
+  //       decoration: BoxDecoration(
+  //         image: DecorationImage(
+  //           image: AssetImage(
+  //               'assets/images/background/background_${widget.labels}.jpg'),
+  //           fit: BoxFit.cover,
+  //         ),
+  //       ),
+  //       child: Column(
+  //         children: [
+  //           Expanded(
+  //             child: FutureBuilder<List<Map<String, dynamic>>>(
+  //               future: _fetchList(),
+  //               builder: (context, snapshot) {
+  //                 if (snapshot.connectionState == ConnectionState.done) {
+  //                   if (snapshot.hasError) {
+  //                     return const Center(
+  //                       child: Text('Failed to load list'),
+  //                     );
+  //                   } else {
+  //                     final cardList = snapshot.data!;
+  //                     return PageView.builder(
+  //                       itemCount: cardList.length,
+  //                       itemBuilder: (context, index) {
+  //                         final list = cardList[index];
+  //                         return _buildList(
+  //                           list['ListName'],
+  //                           list['ListID'],
+  //                         );
+  //                       },
+  //                       onPageChanged: (index) {
+  //                         setState(() {
+  //                           _currentPage = index;
+  //                         });
+  //                       },
+  //                       controller: PageController(initialPage: _currentPage),
+  //                     );
+  //                   }
+  //                 } else {
+  //                   return const Center(
+  //                     child: CircularProgressIndicator(),
+  //                   );
+  //                 }
+  //               },
+  //             ),
+  //           ),
+  //           Expanded(
+  //             child: FutureBuilder<List<Map<String, dynamic>>>(
+  //               future: _fetchCardList(),
+  //               builder: (context, snapshot) {
+  //                 if (snapshot.connectionState == ConnectionState.done) {
+  //                   if (snapshot.hasError) {
+  //                     return const Center(
+  //                       child: Text('Failed to load card list'),
+  //                     );
+  //                   } else {
+  //                     final cardList = snapshot.data!;
+  //                     return ListView.builder(
+  //                       physics: const BouncingScrollPhysics(),
+  //                       itemCount: cardList.length,
+  //                       itemBuilder: (context, index) {
+  //                         final card = cardList[index];
+  //                         return _buildCard(
+  //                           card['CardName'],
+  //                           card['LabelColor'],
+  //                           card['DueDate'] != null
+  //                               ? DateTime.parse(card['DueDate'])
+  //                               : null,
+  //                           card['Comment'],
+  //                           card['index_checked'],
+  //                           card['SUM'],
+  //                           _listAvatar,
+  //                           card['CardID'], // pass cardID to _buildCard
+  //                         );
+  //                       },
+  //                     );
+  //                   }
+  //                 } else {
+  //                   return const Center(
+  //                     child: CircularProgressIndicator(),
+  //                   );
+  //                 }
+  //               },
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
+
+    // const ListScreen({Key? key,required this.userID, required this.BoardName,
+  //     required this.boardID}) : super(key: key);
+
+    // ListScreen(required this.userID, required this.BoardName);
