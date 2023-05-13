@@ -13,7 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 
 final Uri _url = Uri.parse('https://flutter.dev');
-
+// final Uri _url = Uri.parse('http://192.168.53.160/api/downloadfile');
 class NavDrawer extends StatefulWidget {
   final int userID;
   const NavDrawer(this.userID);
@@ -261,19 +261,15 @@ class _NavDrawerState extends State<NavDrawer> {
                 )
               },
             ),
-
-            
             ListTile(
               leading: const Icon(Icons.search),
               title: const Text('Search'),
               onTap: () => {
                 Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => const SearchScreen()),
+                  MaterialPageRoute(builder: (context) => const SearchScreen()),
                 )
               },
             ),
-
             const Divider(
               thickness: 2,
             ),

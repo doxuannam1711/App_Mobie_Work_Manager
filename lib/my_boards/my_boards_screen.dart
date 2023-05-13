@@ -393,7 +393,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ListScreen(boardName,boardID,widget.userID,),                            
+              builder: (context) => ListScreen(boardName, boardID, labels,widget.userID,),                            
             ),
           );
         },
