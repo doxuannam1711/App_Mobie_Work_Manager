@@ -3,16 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/account/account_screen.dart';
 import 'package:flutter_application/login/sing_up_screen.dart';
 import 'package:flutter_application/my_boards/create_screen.dart';
-import 'package:flutter_application/my_cards/card_detail_screen.dart';
 import 'package:flutter_application/my_cards/my_cards_screen.dart';
 import 'package:flutter_application/notifications/notification_screen.dart';
-import 'package:flutter_application/profile_and_display/profile_and_display_screen.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
-import '../model/user.dart';
 import '../my_boards/my_boards_screen.dart';
 import '../nav_drawer.dart';
-import '../profile_and_display/user_preferences.dart';
 import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -41,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<Map<String, dynamic>> getUserList() async {
     // Change this line
     final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/getAccountLogin'));
+        await http.get(Uri.parse('http://192.168.1.2/api/getAccountLogin'));
     if (response.statusCode == 200) {
       setState(() {
         userList = jsonDecode(response.body);
@@ -196,16 +191,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: handleLogin,
-                  child: const Text('Log In'),
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.resolveWith<Color>(
                       (Set<MaterialState> states) {
-                        if (states.contains(MaterialState.hovered))
+                        if (states.contains(MaterialState.hovered)) {
                           return Colors.black;
+                        }
                         return Colors.blue;
                       },
                     ),
                   ),
+                  child: const Text('Log In'),
                 ),
               ),
               const SizedBox(height: 20),
@@ -221,19 +217,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       );
                     },
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.hovered)) {
+                            return Colors.black.withOpacity(0.04);
+                          }
+                          return Colors.redAccent; // default value
+                        },
+                      ),
+                    ),
                     child: const Text(
                       'Forgot Password?',
                       style: TextStyle(
                         color: Colors.black,
-                      ),
-                    ),
-                    style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.hovered))
-                            return Colors.black.withOpacity(0.04);
-                          return Colors.redAccent; // default value
-                        },
                       ),
                     ),
                   ),
@@ -241,22 +238,23 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => SignupScreen()),
+                        MaterialPageRoute(builder: (context) => const SignupScreen()),
                       );
                     },
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.hovered)) {
+                            return Colors.black.withOpacity(0.04);
+                          }
+                          return Colors.redAccent; // default value
+                        },
+                      ),
+                    ),
                     child: const Text(
                       'Sign Up',
                       style: TextStyle(
                         color: Colors.black,
-                      ),
-                    ),
-                    style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.hovered))
-                            return Colors.black.withOpacity(0.04);
-                          return Colors.redAccent; // default value
-                        },
                       ),
                     ),
                   ),

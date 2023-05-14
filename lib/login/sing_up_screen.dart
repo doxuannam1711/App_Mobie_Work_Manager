@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
+
   @override
   State<SignupScreen> createState() => _SignupScreenState();
 }
@@ -24,7 +26,7 @@ class _SignupScreenState extends State<SignupScreen> {
   void initState() {
     super.initState();
     _imageFile = File(
-        '/data/user/0/com.example.demo/cache/a18fddf6-d830-4edc-9fc9-8010c84e9130/images.jpeg');
+        '/data/user/0/com.example.flutter_application/cache/32bf3f59-834b-4ea8-b7dd-627dbcad9f4e/download.jpg');
   }
 
   Future<void> _pickImage() async {
@@ -33,12 +35,14 @@ class _SignupScreenState extends State<SignupScreen> {
     if (pickedFile != null) {
       setState(() {
         _imageFile = File(pickedFile.path);
+        print('Image path:');
+        debugPrint(_imageFile.toString());
       });
     }
   }
 
   Future<void> _addUser() async {
-    final url = Uri.parse('http://192.168.53.160/api/addUser');
+    final url = Uri.parse('http://192.168.1.2/api/addUser');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -87,7 +91,6 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-
                 decoration: const InputDecoration(
                   labelText: 'User Name',
                   border: OutlineInputBorder(),
@@ -137,7 +140,6 @@ class _SignupScreenState extends State<SignupScreen> {
                 onChanged: (value) {
                   _confirmPassword = value;
                 },
-                
                 obscureText: true,
               ),
               const SizedBox(height: 20),
@@ -146,10 +148,8 @@ class _SignupScreenState extends State<SignupScreen> {
                 onPressed: () async {
                   _addUser();
                   await Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) =>  SignupScreen()),
+                    MaterialPageRoute(builder: (context) => const SignupScreen()),
                   );
-                  
                 },
               ),
               const SizedBox(height: 20),

@@ -1,7 +1,5 @@
 import 'package:flutter_application/model/user.dart';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserPreferences {

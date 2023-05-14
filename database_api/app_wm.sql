@@ -321,6 +321,12 @@ insert into notifications VALUES(4,0,N'Default',1,1,N'đã thêm thành viên v�
 insert into notifications VALUES(4,0,N'Default',1,1,N'đã loại thành viên ở thẻ','2023-3-6 11:57:10 AM','false')
 insert into notifications VALUES(4,0,N'Default',1,1,N'đã mời thêm thành viên ở bảng','2023-3-6 11:57:10 AM','false')
 insert into notifications VALUES(4,0,N'Default',1,1,N'đã mời thêm thành viên ở thẻ','2023-3-6 11:57:10 AM','false')
+
+--------------------------------------- Insert into table attachments -----------------------------------------------
+insert into attachments VALUES(1,N'https://drive.google.com/uc?id=1IFsLihg2jGUF9vmjk5ox2G25atpNYqlQ&export=download','sample-docx-file-for-testing')
+
+
+
 ------<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>--------------
 
 
@@ -438,6 +444,8 @@ where BoardID = 1
 
 select * from boards where UserID = 1
 
+select * from attachments
+where attachments.CardID= 1 order by attachments.AttachmentID DESC
 
 ------<><><><><><><><><><><><><><><><><><><><><><>Chỉnh sửa cấu trúc database<><><><><><><><><><><><><><><><><><><><><><>--------------
 alter table users drop constraint FK_users_roles
@@ -449,22 +457,5 @@ ADD RoleID int
 
 ALTER TABLE boards
 ADD CONSTRAINT FK_boards_roles FOREIGN KEY (RoleID) REFERENCES roles(RoleID);
-
-----------------------------------------------14-05------------------------------
-
-ALTER TABLE lists ALTER COLUMN Position INT NULL;
-ALTER TABLE lists ALTER COLUMN Closed bit NULL;
-ALTER TABLE lists ALTER COLUMN DateCreated datetime NULL;
-ALTER TABLE lists ALTER COLUMN DateLastActivity datetime NULL;
-ALTER TABLE lists ALTER COLUMN DateArchived datetime NULL;
-ALTER TABLE lists ALTER COLUMN Subscribed bit NULL;
-
---------------------------------------TEST-------------------------------------------------------
-INSERT INTO cards(ListID, CreatorID, CardName, Label, Comment, CreatedDate, DueDate, LabelColor)
-   VALUES (5, 1, 'testcardq1', 'high', 3, '5-5-2022', '6-6-2022', 'green')
-
-Select * from lists where BoardID=2
-
-Select lists.ListName from lists where BoardID= 1
 
 

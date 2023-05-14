@@ -1,13 +1,14 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 
 class ProfileWidget extends StatelessWidget {
   final String imagePath;
   final VoidCallback onClicked;
+  final bool isEdit;
 
   const ProfileWidget({
     Key? key,
     required this.imagePath,
+    this.isEdit=false,
     required this.onClicked,
   }) : super(key: key);
 
@@ -37,6 +38,7 @@ class ProfileWidget extends StatelessWidget {
           fit: BoxFit.cover,
           width: 120,
           height: 120,
+          child: InkWell(onTap: onClicked),
         ),
       ),
     );

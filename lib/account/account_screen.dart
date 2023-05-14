@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import '../login/login_screen.dart';
-import '../model/user.dart';
 import '../nav_drawer.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../profile_and_display/profile_and_display_screen.dart';
-import '../profile_and_display/profile_widget.dart';
-import '../profile_and_display/user_preferences.dart';
 
 class AccountScreen extends StatefulWidget {
   final int userID;
   // const AccountScreen({super.key});
-  const AccountScreen(this.userID);
+  const AccountScreen(this.userID, {super.key});
 
   @override
   State<AccountScreen> createState() => _AccountScreenState();
@@ -21,7 +18,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Future<List<Map<String, dynamic>>> getUserList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/getAccount/${widget.userID}'));
+        await http.get(Uri.parse('http://192.168.1.2/api/getAccount/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -152,10 +149,10 @@ class _AccountScreenState extends State<AccountScreen> {
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.transparent,
+                  backgroundColor: Colors.transparent,
                   elevation: 0,
                 ),
-                child: Text(
+                child: const Text(
                   'Board 1',
                   style: TextStyle(
                     color: Colors.black,
@@ -175,10 +172,10 @@ class _AccountScreenState extends State<AccountScreen> {
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.transparent,
+                  backgroundColor: Colors.transparent,
                   elevation: 0,
                 ),
-                child: Text(
+                child: const Text(
                   'Board 2',
                   style: TextStyle(
                     color: Colors.black,
@@ -198,10 +195,10 @@ class _AccountScreenState extends State<AccountScreen> {
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.transparent,
+                  backgroundColor: Colors.transparent,
                   elevation: 0,
                 ),
-                child: Text(
+                child: const Text(
                   'Board 3',
                   style: TextStyle(
                     color: Colors.black,
@@ -232,7 +229,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.transparent,
+                  backgroundColor: Colors.transparent,
                   elevation: 0,
                 ),
                 child: const Text(
@@ -285,10 +282,10 @@ class _AccountScreenState extends State<AccountScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.transparent,
+                  backgroundColor: Colors.transparent,
                   elevation: 0,
                 ),
-                child: Text(
+                child: const Text(
                   'log out',
                   style: TextStyle(
                     color: Colors.black,

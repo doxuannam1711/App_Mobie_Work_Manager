@@ -17,7 +17,7 @@ class ListScreen extends StatefulWidget {
     this.boardName,
     this.boardID,
     this.labels,
-    this.userID,
+    this.userID, 
   );
 
   @override
@@ -36,11 +36,11 @@ class _ListScreenState extends State<ListScreen> {
   final _items = <Map<String, dynamic>>[];
   final _itemNameController = TextEditingController();
   final _itemNameFocusNode = FocusNode();
-  bool _isAddingNewList = false;
-  String _ListName = '';
+  final bool _isAddingNewList = false;
+  final String _ListName = '';
   // int _BoardID = 0;
-  int _ListID = 0;
-  bool _isEditingName = false;
+  final int _ListID = 0;
+  final bool _isEditingName = false;
 
   Map<String, List<Map<String, dynamic>>> _cardLists = {};
 
@@ -52,7 +52,7 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchcardList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/getLists/${widget.boardID}'));
+        .get(Uri.parse('http://192.168.1.2/api/getLists/${widget.boardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -78,7 +78,7 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchCard(int listID) async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/getCards/${listID}'));
+        .get(Uri.parse('http://192.168.1.2/api/getCards/$listID'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -119,6 +119,7 @@ class _ListScreenState extends State<ListScreen> {
 
   int _currentPage = 2;
 
+  @override
   Widget build(BuildContext context) {
     List<String> listNames = _cardLists.keys.toList();
     bool sortByIncreasing =
@@ -198,7 +199,7 @@ class _ListScreenState extends State<ListScreen> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Card(
-                          color: Theme.of(context).accentColor,
+                          color: Theme.of(context).colorScheme.secondary,
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
@@ -259,7 +260,7 @@ class _ListScreenState extends State<ListScreen> {
                             Icon(
                               Icons.circle,
                               color: _currentPage == index
-                                  ? Theme.of(context).accentColor
+                                  ? Theme.of(context).colorScheme.secondary
                                   : Colors.grey,
                               size: 12,
                             ),
@@ -284,7 +285,7 @@ class _ListScreenState extends State<ListScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Expanded(
           child: ListView.separated(
             itemBuilder: (BuildContext context, int index) {
@@ -371,7 +372,7 @@ class _ListScreenState extends State<ListScreen> {
             BoxShadow(
               color: Colors.grey.withOpacity(0.3),
               blurRadius: 4,
-              offset: Offset(0, 2),
+              offset: const Offset(0, 2),
             ),
           ],
         ),

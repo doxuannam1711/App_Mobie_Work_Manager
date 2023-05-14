@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ChecklistScreen extends StatefulWidget {
+  const ChecklistScreen({super.key});
+
   @override
   _ChecklistScreenState createState() => _ChecklistScreenState();
 }
@@ -29,42 +31,42 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Checklist Screen'),
+        title: const Text('Checklist Screen'),
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
+              const Text(
                 'Checklist Name:',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18.0,
                 ),
               ),
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               TextField(
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                 ),
                 controller: TextEditingController(text: _checklistName),
                 onChanged: (value) {
                   _checklistName = value;
                 },
               ),
-              SizedBox(height: 16.0),
-              Text(
+              const SizedBox(height: 16.0),
+              const Text(
                 'Checklist Items:',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18.0,
                 ),
               ),
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               for (final item in _items)
                 _buildChecklistItem(_items.indexOf(item), item),
               _isAddingNewItem ? _buildNewItemRow() : _buildAddNewItemRow(),
@@ -78,7 +80,7 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
   Widget _buildChecklistItem(int index, Map<String, dynamic> item) {
     bool isChecked = item['isChecked'] ?? false;
     return Padding(
-      padding: EdgeInsets.only(bottom: 8.0),
+      padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
         children: [
           Checkbox(
@@ -103,7 +105,7 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
         });
       },
       child: Row(
-        children: [
+        children: const [
           Icon(Icons.add),
           SizedBox(width: 8.0),
           Text('Add an item'),
@@ -120,7 +122,7 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
             decoration: InputDecoration(
               filled: true,
               fillColor: Colors.grey[200],
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
               hintText: 'Enter item name',
             ),
             controller: _itemNameController,
@@ -132,7 +134,7 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
           ),
         ),
         IconButton(
-          icon: Icon(Icons.save),
+          icon: const Icon(Icons.save),
           onPressed: () {
             _addItem(_itemNameController.text);
           },
