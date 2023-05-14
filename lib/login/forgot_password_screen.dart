@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 class ForgotPasswordScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
 
+  ForgotPasswordScreen({super.key});
+
   void onPressedNext(BuildContext context) {
     // Add your logic to handle the next button click
   }
@@ -11,7 +13,7 @@ class ForgotPasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Forgot Password'),
+        title: const Text('Forgot Password'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -20,20 +22,20 @@ class ForgotPasswordScreen extends StatelessWidget {
           children: [
             Text(
               'Enter your email address to reset your password.',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             TextFormField(
               controller: emailController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Email',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () => onPressedNext(context),
-              child: Text('Next'),
+              child: const Text('Next'),
             ),
           ],
         ),

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_application/login/login_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
@@ -30,7 +29,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
   List<Map<String, dynamic>> _searchResult = [];
   Future<List<Map<String, dynamic>>> _fetchCardList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/getcards'));
+        await http.get(Uri.parse('http://192.168.1.2/api/getcards'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -55,7 +54,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _searchCards(String keyword) async {
-    final url = Uri.parse('http://192.168.53.160/api/searchCards/$keyword');
+    final url = Uri.parse('http://192.168.1.2/api/searchCards/$keyword');
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -141,7 +140,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
           ),
           Expanded(
             child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: _searchResult == null || _searchResult.isEmpty
+              future: _searchResult.isEmpty
                   ? _fetchCardList()
                   : Future<List<Map<String, dynamic>>>.value(_searchResult),
               builder: (context, snapshot) {

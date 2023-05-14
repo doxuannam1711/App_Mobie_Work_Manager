@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_application/model/board.dart';
 
-import '../profile_and_display/button_widget.dart';
 import 'background_item.dart';
 
 class CreateScreen extends StatefulWidget {
@@ -48,7 +47,7 @@ class _CreateScreenState extends State<CreateScreen>
 
     // call the API to add the new board
     final response = await http.post(
-      Uri.parse('http://192.168.53.160/api/addBoard'),
+      Uri.parse('http://192.168.1.2/api/addBoard'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newBoard.toJson()),
     );

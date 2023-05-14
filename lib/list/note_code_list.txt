@@ -1,6 +1,6 @@
  // Future<List<Map<String, dynamic>>> _fetchCardList() async {
   //   final response =
-  //       await http.get(Uri.parse('http://192.168.53.160/api/getcards/'));
+  //       await http.get(Uri.parse('http://192.168.1.2/api/getcards/'));
   //   if (response.statusCode == 200) {
   //     try {
   //       final data = jsonDecode(response.body)['Data'];
@@ -25,7 +25,7 @@
   // }
 
   // Future<void> _addList() async {
-  //   final url = Uri.parse('http://192.168.53.160/api/addList');
+  //   final url = Uri.parse('http://192.168.1.2/api/addList');
   //   final response = await http.post(
   //     url,
   //     headers: <String, String>{

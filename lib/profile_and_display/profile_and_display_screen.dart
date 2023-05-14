@@ -1,21 +1,25 @@
+// import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_application/account/account_screen.dart';
-import 'package:flutter_application/profile_and_display/user_preferences.dart';
+// import 'package:flutter_application/profile_and_display/user_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 // import 'package:flutter_application/profile_and_display/user_preferences.dart';
 import 'package:flutter_application/profile_and_display/profile_widget.dart';
-import 'package:flutter_application/profile_and_display/text_field_widget.dart';
+// import 'package:flutter_application/profile_and_display/text_field_widget.dart';
 import 'package:flutter_application/profile_and_display/button_widget.dart';
 
-import '../model/user.dart';
+import 'package:image_picker/image_picker.dart';
+
+// import '../model/user.dart';
 
 class ProfileAndDisplayScreen extends StatefulWidget {
   final int userID;
   // const ProfileAndDisplayScreen({super.key});
-  ProfileAndDisplayScreen(this.userID);
+  const ProfileAndDisplayScreen(this.userID);
 
   @override
   State<ProfileAndDisplayScreen> createState() =>
@@ -33,7 +37,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   // Future<Map<String, dynamic>> getUserList() async {
   //   final response =
-  //       await http.get(Uri.parse('http://192.168.53.160/api/getAccount'));
+  //       await http.get(Uri.parse('http://192.168.1.2/api/getAccount'));
   //   if (response.statusCode == 200) {
   //     final data = jsonDecode(response.body);
   //     return data;
@@ -44,7 +48,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   // Future<User> _fetchUserList() async {
   //   final response =
-  //       await http.get(Uri.parse('http://192.168.53.160/api/getAccount'));
+  //       await http.get(Uri.parse('http://192.168.1.2/api/getAccount'));
   //   final jsonresponse = json.decode(response.body);
   //   return User.fromJson(jsonresponse);
 
@@ -52,7 +56,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   Future<List<Map<String, dynamic>>> getUserList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/getAccount/${widget.userID}'));
+        .get(Uri.parse('http://192.168.1.2/api/getAccount/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -80,7 +84,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
   }
 
   Future<void> _updateUser(int userID) async {
-    final url = Uri.parse('http://192.168.53.160/api/updateUser/$userID');
+    final url = Uri.parse('http://192.168.1.2/api/updateUser/$userID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -104,7 +108,6 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     AppBar buildAppBar(BuildContext context) {
       const icon = CupertinoIcons.moon_stars;
 
@@ -269,23 +272,21 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
             } else {
               final userList = snapshot.data!;
               return ListView.builder(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                physics: const BouncingScrollPhysics(),
-                itemCount: userList.length,
-                itemBuilder: (context, index) {
-                  final userData = userList[index];
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: userList.length,
+                  itemBuilder: (context, index) {
+                    final userData = userList[index];
 
-                  return _buildProfile(
-                    userData["UserID"],
-                    userData["AvatarUrl"],
-                    _updateUsername = userData["Username"],
-                    _updateFullname = userData["Fullname"],
-                    _updateEmail = userData["Email"],
-                    _updatePassword = userData["Password"]
-                  );
-                }
-              );
+                    return _buildProfile(
+                        userData["UserID"],
+                        userData["AvatarUrl"],
+                        _updateUsername = userData["Username"],
+                        _updateFullname = userData["Fullname"],
+                        _updateEmail = userData["Email"],
+                        _updatePassword = userData["Password"]);
+                  });
             }
           } else {
             return const Center(
@@ -295,6 +296,10 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
         },
       ),
     );
+  }
+
+  Future<void> _pickImage() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
   }
 
   Widget _buildProfile(
@@ -309,8 +314,49 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
       children: [
         ProfileWidget(
           imagePath: imagePath,
-          onClicked: () async {},
+          isEdit: true,
+          onClicked: () async{
+            final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+            // if (image == null) return;
+
+            // final directory = await getApplicationDocumentsDirectory();
+            // final name = p.basename(image.path);
+            // final imageFile = File('${directory.path}/$name');
+            
+          },
         ),
+        // Center(
+        //   child: Stack(
+        //     children: [
+        //       ClipOval(
+        //         child: Material(
+        //           color: Colors.transparent,
+        //           child: Ink.image(
+        //             image: AssetImage(imagePath),
+        //             fit: BoxFit.cover,
+        //             width: 120,
+        //             height: 120,
+        //           ),
+        //         ),
+        //       ),
+        //       Positioned(
+        //         bottom: 0,
+        //         right: 4,
+        //         child: ClipOval(
+                  
+        //           child: Container(
+        //             color: Theme.of(context).colorScheme.primary,
+        //             padding: EdgeInsets.all(8),
+        //             child: const Icon(
+        //               Icons.add_a_photo,
+        //               color: Colors.white,
+        //               size: 20,
+        //             ),
+        //           )),
+        //       ),
+        //     ]
+        //   ),
+        // ),
         const SizedBox(height: 24),
 
         Column(
@@ -468,8 +514,4 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
       ],
     );
   }
-
-
-
-
 }

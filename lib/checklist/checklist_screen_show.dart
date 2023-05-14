@@ -7,7 +7,7 @@ class ChecklistScreenShow extends StatefulWidget {
   final int userID;
   final int cardID;
 
-  const ChecklistScreenShow({
+  const ChecklistScreenShow({super.key, 
     required this.cardID,required this.userID
   });
 
@@ -23,7 +23,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
   String _checklistName = '';
   int _checklistID = 0;
   bool _isEditingName = false;
-  bool? _isCheckedFilter = null;
+  bool? _isCheckedFilter;
 
   @override
   void initState() {
@@ -34,7 +34,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
 
   Future<void> _fetchChecklistItems() async {
     final response = await http.get(
-        Uri.parse('http://192.168.53.160/api/getChecklists/${widget.cardID}'));
+        Uri.parse('http://192.168.1.2/api/getChecklists/${widget.cardID}'));
     final String jsonData = json.decode(response.body)['Data'];
     final List<dynamic> data = json.decode(jsonData);
 
@@ -60,7 +60,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
 
   Future<void> _deleteChecklistitem(String itemName) async {
     final url =
-        Uri.parse('http://192.168.53.160/api/deleteChecklistitem/$itemName');
+        Uri.parse('http://192.168.1.2/api/deleteChecklistitem/$itemName');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       // Success
@@ -80,7 +80,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
 
     // call the API to add the new checklist item
     final response = await http.post(
-      Uri.parse('http://192.168.53.160/api/addChecklistitem'),
+      Uri.parse('http://192.168.1.2/api/addChecklistitem'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newItem.toJson()),
     );
@@ -168,28 +168,28 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
 // Display the checklist name as text
             if (!_isEditingName)
               Text(
                 _checklistName,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16.0,
                 ),
               ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
 // Display the items based on the selected filter option
             for (final item in filteredItems)
               _buildChecklistItem(_items.indexOf(item), item),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             _buildAddNewItemRow(),
             if (_isAddingNewItem) _buildNewItemRow(),
-            SizedBox(height: 64.0),
+            const SizedBox(height: 64.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -215,10 +215,10 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
                           false, // Xoá tất cả các screen còn lại trên stack
                     );
                   },
-                  child: Text('Save'),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.grey[400],
+                    backgroundColor: Colors.grey[400],
                   ),
+                  child: const Text('Save'),
                 ),
               ],
             ),
@@ -231,7 +231,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
   Widget _buildChecklistItem(int index, Map<String, dynamic> item) {
     bool isChecked = item['isChecked'] ?? false;
     return Padding(
-      padding: EdgeInsets.only(bottom: 8.0),
+      padding: const EdgeInsets.only(bottom: 8.0),
       child: GestureDetector(
         onTap: () {
           setState(() {
@@ -264,7 +264,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.done),
+                          icon: const Icon(Icons.done),
                           onPressed: () {
                             setState(() {
                               item['isEditable'] = false;
@@ -272,7 +272,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
                           },
                         ),
                         IconButton(
-                          icon: Icon(Icons.delete),
+                          icon: const Icon(Icons.delete),
                           onPressed: () async {
                             setState(() {
                               _items.removeAt(index);
@@ -285,10 +285,10 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
                   : Text(
                       '${item['title']}',
                       style: isChecked
-                          ? TextStyle(
+                          ? const TextStyle(
                               decoration: TextDecoration.lineThrough,
                             )
-                          : TextStyle(),
+                          : const TextStyle(),
                     ),
             ),
           ],
@@ -306,7 +306,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
         });
       },
       child: Row(
-        children: [
+        children: const [
           Icon(Icons.add),
           SizedBox(width: 8.0),
           Text('Add an item'),
@@ -318,7 +318,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
   Widget _buildNewItemRow() {
     return Column(
       children: [
-        SizedBox(height: 16.0),
+        const SizedBox(height: 16.0),
         Row(
           children: [
             Expanded(
@@ -326,7 +326,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   hintText: 'Enter item name',
                 ),
                 controller: _itemNameController,
@@ -338,13 +338,13 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.done),
+              icon: const Icon(Icons.done),
               onPressed: () {
                 _addItem(_itemNameController.text);
               },
             ),
             IconButton(
-              icon: Icon(Icons.close),
+              icon: const Icon(Icons.close),
               onPressed: () {
                 setState(() {
                   _isAddingNewItem = false;
@@ -355,7 +355,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
             ),
           ],
         ),
-        SizedBox(height: 16.0),
+        const SizedBox(height: 16.0),
       ],
     );
   }
@@ -377,13 +377,13 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
       });
 
       // Scroll to the added item
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         final RenderBox box = context.findRenderObject() as RenderBox;
         final double distance =
             box.size.height - box.localToGlobal(Offset.zero).dy;
         if (distance > 0) {
           Scrollable.ensureVisible(context,
-              duration: Duration(milliseconds: 500), curve: Curves.easeIn);
+              duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
         }
       });
     }

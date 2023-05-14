@@ -33,11 +33,13 @@ class _ListsAdd extends State<ListsAdd> with TickerProviderStateMixin {
       boardID: widget.boardID,
     );
 
+
     final response = await http.post(
-      Uri.parse('http://192.168.53.160/api/addList'),
+      Uri.parse('http://192.168.1.2/api/addList/'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newList.toJson()),
     );
+
 
     if (response.statusCode == 200) {
       // show success message to the user

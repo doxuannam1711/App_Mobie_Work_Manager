@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 
 import 'package:flutter_application/nav_drawer.dart';
 
-
 class SearchScreen extends StatefulWidget {
   final int userID;
   const SearchScreen(this.userID);
@@ -21,7 +20,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       drawer: NavDrawer(widget.userID),
       appBar: AppBar(
-        title:const Text('Search'),
+        title: const Text('Search'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -54,15 +53,13 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                   ],
                 ),
-            ],
-           ),
+              ],
+            ),
           ),
-
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: TextField(
-              
-              decoration: InputDecoration( 
+              decoration: InputDecoration(
                 hintText: 'Enter name',
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -80,8 +77,6 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ],
       ),
-      
     );
   }
-
 }

@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -13,19 +12,19 @@ class CardsDetailScreen extends StatefulWidget {
   final String cardName;
   final int cardID;
 
-  CardsDetailScreen(this.cardName, this.cardID, this.userID);
+  const CardsDetailScreen(this.cardName, this.cardID, this.userID);
 
   @override
   State<CardsDetailScreen> createState() => _CardsDetailScreenState();
 }
 
 class _CardsDetailScreenState extends State<CardsDetailScreen> {
-  String _listName = 'In Process'; // List within which the card is contained
+  final String _listName = 'In Process'; // List within which the card is contained
   String _description = ''; // Description of the card
   DateTime? _expirationDate; // Expiration date of the card
-  String _label = 'Label Name'; // Label for the card
+  final String _label = 'Label Name'; // Label for the card
   String _member = 'John Doe'; // Member assigned to the card
-  String _checklistName = 'test1';
+  final String _checklistName = 'test1';
   final List<Map<String, dynamic>> _items = [
     {"muc 1": "te"},
     {"muc 1": "te"},
@@ -47,7 +46,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   Future<List<Map<String, dynamic>>> getComments() async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/getComments/${widget.cardID}'));
+        .get(Uri.parse('http://192.168.1.2/api/getComments/${widget.cardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -74,7 +73,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _addComment() async {
-    final url = Uri.parse('http://192.168.53.160/api/addComment');
+    final url = Uri.parse('http://192.168.1.2/api/addComment');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -99,7 +98,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _deleteComment(int commentID) async {
-    final url = Uri.parse('http://192.168.53.160/api/deleteComment/$commentID');
+    final url = Uri.parse('http://192.168.1.2/api/deleteComment/$commentID');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -115,7 +114,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   Future<void> _updateComment(int commentID) async {
     final url = Uri.parse(
-        'http://192.168.53.160/api/updateComment/${widget.userID}/$commentID');
+        'http://192.168.1.2/api/updateComment/${widget.userID}/$commentID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -136,7 +135,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _updateCard(int cardID) async {
-    final url = Uri.parse('http://192.168.53.160/api/updateCard/$cardID');
+    final url = Uri.parse('http://192.168.1.2/api/updateCard/$cardID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -174,7 +173,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Color? _label = _labelColors[0];
+    Color? label = _labelColors[0];
     return GestureDetector(
       // add this widget to detect taps outside TextField
       onTap: () {
@@ -205,7 +204,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
               padding: const EdgeInsets.only(bottom: 80.0),
               children: [
                 Container(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -269,7 +268,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => AttachmentPage(),
+                                      builder: (context) => AttachmentPage(widget.cardID),
                                     ),
                                   );
                                 },
@@ -337,7 +336,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                 initialDate: _expirationDate ?? DateTime.now(),
                                 firstDate: DateTime.now(),
                                 lastDate:
-                                    DateTime.now().add(Duration(days: 365)),
+                                    DateTime.now().add(const Duration(days: 365)),
                               );
                               if (picked != null) {
                                 setState(() {
@@ -375,7 +374,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                           fillColor: Colors.grey[200],
                           border: const OutlineInputBorder(),
                         ),
-                        value: _label,
+                        value: label,
                         items: _labelColors.map((color) {
                           return DropdownMenuItem<Color>(
                             value: color,
@@ -404,7 +403,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                         }).toList(),
                         onChanged: (Color? value) {
                           setState(() {
-                            _label = value;
+                            label = value;
                           });
                         },
                       ),
@@ -442,8 +441,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                           PopupMenuButton(
                             itemBuilder: (BuildContext context) => [
                               const PopupMenuItem(
-                                child: Text('Delete Member'),
                                 value: 'delete',
+                                child: Text('Delete Member'),
                               ),
                             ],
                             onSelected: (String value) {
@@ -511,13 +510,13 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
               right: 0.0,
               child: Container(
                 color: Colors.white,
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
                     Expanded(
                       child: TextField(
                         maxLines: null,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           hintText: 'Leave a comment...',
                         ),
@@ -528,9 +527,9 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                         },
                       ),
                     ),
-                    SizedBox(width: 8.0),
+                    const SizedBox(width: 8.0),
                     IconButton(
-                      icon: Icon(Icons.send),
+                      icon: const Icon(Icons.send),
                       onPressed: () async {
                         _addComment();
                         await Navigator.of(context).push(
@@ -586,7 +585,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                       children: [
                         Text(
                           fullName,
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 15),
                         ),
                         Row(

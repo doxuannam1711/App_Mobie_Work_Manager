@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import '../list/list_screen.dart';
 import '../nav_drawer.dart';
 import 'create_screen.dart';
@@ -33,7 +31,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchBoardList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/getboards/${widget.userID}'));
+        await http.get(Uri.parse('http://192.168.1.2/api/getboards/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -58,7 +56,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _searchBoards(String keyword) async {
-    final url = Uri.parse('http://192.168.53.160/api/searchBoards/$keyword');
+    final url = Uri.parse('http://192.168.1.2/api/searchBoards/$keyword');
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -71,7 +69,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
   }
 
   Future<void> _deleteBoard(int boardId) async {
-    final url = Uri.parse('http://192.168.53.160/api/deleteBoard/$boardId');
+    final url = Uri.parse('http://192.168.1.2/api/deleteBoard/$boardId');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -419,7 +417,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: _getImageLabel(
-                      'assets/images/background/background_${labels}.jpg',
+                      'assets/images/background/background_$labels.jpg',
                     ),
                     fit: BoxFit.cover,
                   ),
@@ -483,7 +481,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                         Container(
                           width: 20,
                           height: 20,
-                          margin: EdgeInsets.only(right: 8),
+                          margin: const EdgeInsets.only(right: 8),
                           decoration: BoxDecoration(
                             color: _getLabelColor(
                               label,
@@ -494,14 +492,14 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                         ),
                         Text(
                           boardName,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Text(
                       CreatedDate.toString(),
                       style:
@@ -513,7 +511,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
               Container(
                 height: 8,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(8),
                     bottomRight: Radius.circular(8),
                   ),
