@@ -38,7 +38,7 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Future<void> _addUser() async {
-    final url = Uri.parse('http://192.168.1.2/api/addUser');
+    final url = Uri.parse('http://192.168.53.160/api/addUser');
     final response = await http.post(
       url,
       headers: <String, String>{

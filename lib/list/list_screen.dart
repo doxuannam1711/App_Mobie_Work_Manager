@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import '../my_cards/card_detail_screen.dart';
 import 'package:flutter_application/my_boards/my_boards_screen.dart';
+import 'package:flutter_application/my_boards/create_card_screen.dart';
 import 'package:flutter_application/list/list_add.dart';
 
 class ListScreen extends StatefulWidget {
@@ -148,9 +149,19 @@ class _ListScreenState extends State<ListScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () {
-// Navigate to the form to add a new list.
-            },
+            onPressed: () async {
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ListsAdd(
+                    userID: widget.userID,
+                    boardID: widget.boardID,
+                    labels: widget.labels,
+                    boardName: widget.boardName,
+                  ),
+                ),
+              );
+              setState(() {});
+            }, // Navigate to the form to add a new list.
           ),
         ],
       ),
@@ -213,9 +224,19 @@ class _ListScreenState extends State<ListScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-// Navigate to the form to add a new list.
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddCardScreen(
+                      creatorID: widget.userID,
+                      boardID: widget.boardID,
+                      labels: widget.labels,
+                      boardName: widget.boardName,
+                    ),
+                  ),
+                );
               },
-              child: const Text('Add New List'),
+              child: const Text('Thêm thẻ mới'),
             ),
             SizedBox(
               height: 48,
@@ -275,8 +296,9 @@ class _ListScreenState extends State<ListScreen> {
               DateTime? expirationDate =
                   DateTime.tryParse(cardList[index]['DueDate'] ?? '');
               int comments = cardList[index]['Comment'];
-              int checkedItems = cardList[index]['IntCheckList'];
-              int totalItems = cardList[index]['Checklist'];
+              int checkedItems = cardList[index]['IntCheckList'] ?? 2;
+              ;
+              int totalItems = cardList[index]['Checklist'] ?? 2;
               List<String> avatars = List.castFrom<dynamic, String>(
                   cardList[index]['Avatars'] ?? []);
               return _buildCard(

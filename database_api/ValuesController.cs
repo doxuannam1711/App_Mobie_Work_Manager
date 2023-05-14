@@ -238,10 +238,9 @@ public class ValuesController : ApiControllerBase
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"INSERT INTO lists (ListID, ListName)
-                                 VALUES (@ListID, @ListName)";
-            Command.Parameters.AddWithValue("@ListID", list.ListID);
-            Command.Parameters.AddWithValue("@ListName", list.ListName);   
+            Command.CommandText = @"INSERT INTO lists (ListName, BoardID) VALUES (@ListName, @BoardID)";
+            Command.Parameters.AddWithValue("@ListName", list.ListName);
+            Command.Parameters.AddWithValue("@BoardID", list.BoardID);
             Command.ExecuteNonQuery();
             var response = new ResultModel { };
             return Ok(response);
@@ -251,6 +250,8 @@ public class ValuesController : ApiControllerBase
             return Ok(ex.Message);
         }
     }
+
+
     [HttpPut]
     [Route("api/updateCard/{cardID}")]
     public IHttpActionResult UpdateCard(int cardID, [FromBody] CardModel card)
@@ -360,6 +361,8 @@ cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor";
         }
     }
 
+
+
     [HttpPost]
     [Route("api/addCard")]
     public IHttpActionResult AddCard([FromBody] CardModel card)
@@ -367,7 +370,7 @@ cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor";
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"INSERT INTO boards (ListID, CreatorID, CardName, Label, Comment, CreatedDate, DueDate, LabelColor)
+            Command.CommandText = @"INSERT INTO cards (ListID, CreatorID, CardName, Label, Comment, CreatedDate, DueDate, LabelColor)
                                  VALUES (@ListID, @CreatorID, @CardName, @Label, @Comment, @CreatedDate, @DueDate, @LabelColor)";
             Command.Parameters.AddWithValue("@ListID", card.ListID);
             Command.Parameters.AddWithValue("@CreatorID", card.CreatorID);
@@ -453,6 +456,28 @@ cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor;";
             Command.CommandText = @"SELECT * FROM lists
                                  INNER JOIN cards ON lists.ListID = cards.ListID
                                  WHERE lists.BoardID = @boardID";
+            Command.Parameters.AddWithValue("@boardID", boardID);
+            DataTable tableChecklists = Command.GetDataTable();
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableChecklists)
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("api/getListOption/{boardID}")]
+    public IHttpActionResult GetListOption(int boardID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"Select * from lists where BoardID= @boardID";
             Command.Parameters.AddWithValue("@boardID", boardID);
             DataTable tableChecklists = Command.GetDataTable();
             var respone = new ResultModel

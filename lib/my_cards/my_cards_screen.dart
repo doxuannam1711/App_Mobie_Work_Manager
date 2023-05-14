@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import '../nav_drawer.dart';
 import '../my_cards/card_detail_screen.dart';
 
-
 class MyCardsScreen extends StatefulWidget {
   final int userID;
   const MyCardsScreen(this.userID);
@@ -31,7 +30,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
   List<Map<String, dynamic>> _searchResult = [];
   Future<List<Map<String, dynamic>>> _fetchCardList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.2/api/getcards'));
+        await http.get(Uri.parse('http://192.168.53.160/api/getcards'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -82,6 +81,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,7 +89,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
       appBar: AppBar(
         title: const Text('My Cards'),
       ),
-      body:Column(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Padding(
@@ -123,7 +123,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: TextField(
               onChanged: (value) => _onSearch(value),
-              decoration: InputDecoration( 
+              decoration: InputDecoration(
                 hintText: 'Enter card name',
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -163,9 +163,9 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                           card['DueDate'] != null
                               ? DateTime.parse(card['DueDate'])
                               : null,
-                          card['Comment'] ,
-                          card['index_checked'] ,
-                          card['SUM'] ,
+                          card['Comment'],
+                          card['index_checked'] = card['index_checked'] ?? 2,
+                          card['SUM'] = card['SUM'] ?? 2,
                           _listAvatar,
                           card['CardID'], // pass cardID to _buildCard
                         );
@@ -215,7 +215,8 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CardsDetailScreen(title, cardID, widget.userID), // pass cardID to CardsDetailScreen
+            builder: (context) => CardsDetailScreen(title, cardID,
+                widget.userID), // pass cardID to CardsDetailScreen
           ),
         );
       },
@@ -234,57 +235,50 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
             ),
             alignment: Alignment.center,
           ),
-          
           title: Padding(
             padding: const EdgeInsets.only(bottom: 5),
             child: Text(
               title,
             ),
           ),
-        
           subtitle: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              
-              children: [         
+              children: [
                 const Icon(Icons.calendar_today_outlined, size: 16),
                 const SizedBox(width: 4),
                 Text(
-                expirationDate != null
-                    ? DateFormat('MMM d').format(expirationDate)
-                    : 'No expiration',
+                  expirationDate != null
+                      ? DateFormat('MMM d').format(expirationDate)
+                      : 'No expiration',
                 ),
-          
                 const SizedBox(width: 8),
-
-                const Icon(Icons.comment_outlined, size: 16), 
+                const Icon(Icons.comment_outlined, size: 16),
                 const SizedBox(width: 4),
                 Text('$comments'),
-
                 const SizedBox(width: 8),
-
                 const Icon(Icons.check_box_outlined, size: 16),
                 const SizedBox(width: 4),
                 Text('$checkedItems/$totalItems'),
               ],
             ),
           ),
-          
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircleAvatar(radius: 14,backgroundImage: NetworkImage(avatars[0])),
+              CircleAvatar(
+                  radius: 14, backgroundImage: NetworkImage(avatars[0])),
               const SizedBox(width: 2),
-              CircleAvatar(radius: 14,backgroundImage: NetworkImage(avatars[1])),
+              CircleAvatar(
+                  radius: 14, backgroundImage: NetworkImage(avatars[1])),
               const SizedBox(width: 2),
-              CircleAvatar(radius: 14,backgroundImage: NetworkImage(avatars[2])),
+              CircleAvatar(
+                  radius: 14, backgroundImage: NetworkImage(avatars[2])),
             ],
           ),
         ),
       ),
-      
     );
   }
 }
