@@ -447,6 +447,7 @@ select * from boards where UserID = 1
 select * from attachments
 where attachments.CardID= 1 order by attachments.AttachmentID DESC
 
+DELETE FROM attachments WHERE AttachmentID = 2
 ------<><><><><><><><><><><><><><><><><><><><><><>Chỉnh sửa cấu trúc database<><><><><><><><><><><><><><><><><><><><><><>--------------
 alter table users drop constraint FK_users_roles
 ALTER TABLE users
