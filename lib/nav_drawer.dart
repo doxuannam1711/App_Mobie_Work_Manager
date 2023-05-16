@@ -150,7 +150,7 @@ class _NavDrawerState extends State<NavDrawer> {
             } else {
               final userList = snapshot.data!;
               return ListView.builder(
-                  physics: const BouncingScrollPhysics(),
+                  // physics: const BouncingScrollPhysics(),
                   itemCount: userList.length,
                   itemBuilder: (context, index) {
                     final userData = userList[index];
@@ -216,11 +216,11 @@ class _NavDrawerState extends State<NavDrawer> {
                   builder: (context) => MyBoardsScreen(widget.userID)),
             );
           },
-          accountName: Text(fullName),
+          accountName: Text(fullName, style: const TextStyle(fontWeight: FontWeight.bold)),
           accountEmail: Text(email),
           currentAccountPicture: CircleAvatar(
             child: ClipOval(
-              child: Image.asset(
+              child: Image.network(
                 imagePath,
                 width: 90,
                 height: 90,
@@ -229,10 +229,13 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
           ),
           decoration: BoxDecoration(
-              image: DecorationImage(
-            image: AssetImage(imagePath),
-            fit: BoxFit.cover,
-          )),
+            color: Theme.of(context).colorScheme.primary,
+            // image: DecorationImage(
+            //   image: NetworkImage(imagePath),
+            //   // AssetImage(imagePath),
+            //   fit: BoxFit.cover,
+            // )
+          ),
         ),
 
         // createListView,

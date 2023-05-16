@@ -20,7 +20,7 @@ class CreateScreen extends StatefulWidget {
 class _CreateScreenState extends State<CreateScreen>
     with TickerProviderStateMixin {
   late String _boardName = "test";
-  late int userID = 1;
+  // late int userID = 1;
   late String _boardColor;
   late String _cardName;
   late String _cardDescription;
@@ -40,7 +40,7 @@ class _CreateScreenState extends State<CreateScreen>
     BoardModel newBoard = BoardModel(
       boardName: _boardName,
       createdDate: DateTime.now(),
-      UserID: 1,
+      UserID: widget.userID,
       labels: _backgroundImage,
       labelsColor: _boardColor,
     );
