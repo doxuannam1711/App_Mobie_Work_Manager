@@ -108,7 +108,7 @@ class _AttachmentPageState extends State<AttachmentPage> {
   }
 
   Future<void> _addAttachment() async {
-    final url = Uri.parse('http://192.168.53.160/api/addAttachment');
+    final url = Uri.parse('http://192.168.1.2/api/addAttachment');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -134,7 +134,7 @@ class _AttachmentPageState extends State<AttachmentPage> {
 
   Future<List<Map<String, dynamic>>> getAttachments() async {
     final response = await http.get(
-        Uri.parse('http://192.168.53.160/api/getAttachments/${widget.cardID}'));
+        Uri.parse('http://192.168.1.2/api/getAttachments/${widget.cardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -162,7 +162,7 @@ class _AttachmentPageState extends State<AttachmentPage> {
 
   Future<void> _deleteAttachment(int attachmentID) async {
     final url =
-        Uri.parse('http://192.168.53.160/api/deleteAttachment/$attachmentID');
+        Uri.parse('http://192.168.1.2/api/deleteAttachment/$attachmentID');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       // ScaffoldMessenger.of(context).showSnackBar(
@@ -264,8 +264,8 @@ class _AttachmentPageState extends State<AttachmentPage> {
 
     if (fileResource != null) {
       _addAttachmentPath =
-          'https://drive.google.com/viewerng/viewer?embedded=true&url=https://drive.google.com/uc?id=${fileResource.id}&export=download';
-      // 'https://drive.google.com/uc?id=${fileResource.id}&export=download';
+          // 'https://drive.google.com/viewerng/viewer?embedded=true&url=https://drive.google.com/uc?id=${fileResource.id}&export=download';
+      'https://drive.google.com/uc?id=${fileResource.id}&export=download';
       final link =
           'https://drive.google.com/uc?id=${fileResource.id}&export=download';
       print(link);
@@ -360,7 +360,10 @@ class _AttachmentPageState extends State<AttachmentPage> {
           title: GestureDetector(
             child: Text(attachmentName),
             onTap: () async {
-              final url = Uri.parse(attachmentPath);
+              final url =
+              //  Uri.parse(
+                  // "https://drive.google.com/uc?id=1kFGCC0oSxUYd8u8O1sM_OlCnyNR-Rmfj&export=download");
+              Uri.parse(attachmentPath);
 
               // if (await canLaunchUrl(url)) {
               //   await launchUrl(url);
@@ -372,7 +375,7 @@ class _AttachmentPageState extends State<AttachmentPage> {
 
               try {
                 if (await canLaunchUrl(url)) {
-                  await launchUrl(url);
+                  await launchUrl(url,mode: LaunchMode.externalApplication);
                 } else {
                   throw 'Could not launch $url';
                 }
@@ -559,4 +562,17 @@ class _AttachmentPageState extends State<AttachmentPage> {
 //       await _uploadFile(filePath);
 //     }
 //   }
+// }
+
+
+
+// final url = Uri.parse("https://drive.google.com/uc?id=1kFGCC0oSxUYd8u8O1sM_OlCnyNR-Rmfj&export=download");
+// try {
+//   if (await canLaunchUrl(url)) {
+//     await launchUrl(url);
+//   } else {
+//     throw 'Could not launch $url';
+//   }
+// } catch (e) {
+//   print("Error launching URL: $e");
 // }
