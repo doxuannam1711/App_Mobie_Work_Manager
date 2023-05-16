@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/my_cards/my_cards_screen.dart';
-import 'package:path_provider/path_provider.dart';
 import 'account/account_screen.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -8,7 +7,6 @@ import 'my_boards/my_boards_screen.dart';
 import 'notifications/notification_screen.dart';
 import 'search/search_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:open_file/open_file.dart';
 
 final Uri _url = Uri.parse('https://flutter.dev');
 

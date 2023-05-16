@@ -38,24 +38,22 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
     final String jsonData = json.decode(response.body)['Data'];
     final List<dynamic> data = json.decode(jsonData);
 
-    if (data is List) {
-      final List<Map<String, dynamic>> items =
-          List<Map<String, dynamic>>.from(data);
+    final List<Map<String, dynamic>> items =
+        List<Map<String, dynamic>>.from(data);
 
-      setState(() {
-        _checklistID = items[0]['ChecklistID'];
-        _checklistName = items[0]['ChecklistTitle'];
+    setState(() {
+      _checklistID = items[0]['ChecklistID'];
+      _checklistName = items[0]['ChecklistTitle'];
 
-        if (_items.isNotEmpty) {
-          _items.clear();
-        }
+      if (_items.isNotEmpty) {
+        _items.clear();
+      }
 
-        _items.addAll(items.map((item) => {
-              'title': item['Title'],
-              'isChecked': item['IsChecked'] ?? false,
-            }));
-      });
-    }
+      _items.addAll(items.map((item) => {
+            'title': item['Title'],
+            'isChecked': item['IsChecked'] ?? false,
+          }));
+    });
   }
 
   Future<void> _deleteChecklistitem(String itemName) async {
@@ -305,8 +303,8 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
           _itemNameFocusNode.requestFocus();
         });
       },
-      child: Row(
-        children: const [
+      child: const Row(
+        children: [
           Icon(Icons.add),
           SizedBox(width: 8.0),
           Text('Add an item'),

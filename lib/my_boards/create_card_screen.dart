@@ -30,8 +30,8 @@ class _AddCardScreenState extends State<AddCardScreen> {
   late String _selectedLabelOption = 'Low';
   late String _selectedColorOption = 'default';
   DateTime? _dueDate;
-  List<String> _labelOptions = ['High', 'Medium', 'Low'];
-  List<String> _colorOptions = ['red', 'blue', 'green', 'yellow', 'default'];
+  final List<String> _labelOptions = ['High', 'Medium', 'Low'];
+  final List<String> _colorOptions = ['red', 'blue', 'green', 'yellow', 'default'];
   List<String> listNames = [];
   late String selectedListID = '';
   late List<dynamic> list;
@@ -186,7 +186,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                       context: context,
                       initialDate: _dueDate ?? DateTime.now(),
                       firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(Duration(days: 365)),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
                     );
                     if (picked != null) {
                       setState(() {

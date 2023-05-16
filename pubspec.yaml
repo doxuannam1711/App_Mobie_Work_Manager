@@ -50,7 +50,6 @@ dependencies:
   googleapis: ^5.0.0
   googleapis_auth: ^1.4.0
   flutter_web_auth: any
-  flutter_secure_storage: ^3.2.1+1
 
 dev_dependencies:
   flutter_test:

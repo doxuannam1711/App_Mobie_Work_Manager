@@ -122,13 +122,13 @@ class _AttachmentPageState extends State<AttachmentPage> {
     );
 
     if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Attachment added successfully!')),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text('Attachment added successfully!')),
+      // );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Attachment added failed!')),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text('Attachment added failed!')),
+      // );
     }
   }
 
@@ -165,14 +165,14 @@ class _AttachmentPageState extends State<AttachmentPage> {
         Uri.parse('http://192.168.1.2/api/deleteAttachment/$attachmentID');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Attachment deleted successfully!')),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text('Attachment deleted successfully!')),
+      // );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to delete Attachment!')),
-      );
-      print('Failed to delete board. Error: ${response.reasonPhrase}');
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text('Failed to delete Attachment!')),
+      // );
+      // print('Failed to delete board. Error: ${response.reasonPhrase}');
     }
   }
 
@@ -264,7 +264,8 @@ class _AttachmentPageState extends State<AttachmentPage> {
 
     if (fileResource != null) {
       _addAttachmentPath =
-          'https://drive.google.com/uc?id=${fileResource.id}&export=download';
+          'https://drive.google.com/viewerng/viewer?embedded=true&url=https://drive.google.com/uc?id=${fileResource.id}&export=download';
+      // 'https://drive.google.com/uc?id=${fileResource.id}&export=download';
       final link =
           'https://drive.google.com/uc?id=${fileResource.id}&export=download';
       print(link);
@@ -352,29 +353,49 @@ class _AttachmentPageState extends State<AttachmentPage> {
     String attachmentPath,
     String attachmentName,
   ) {
-    return ListTile(
-      leading: const Icon(Icons.attachment),
-      title: GestureDetector(
-        child: Text(attachmentPath),
-        onTap: () async {
-          final url = Uri.parse(attachmentPath);
-          if (await canLaunchUrl(url)) {
-            await launchUrl(url);
-          } else {
-            throw 'Could not launch $url';
-          }
-        },
-      ),
-      trailing: IconButton(
-        icon: const Icon(Icons.delete),
-        onPressed: () {
-          _deleteAttachment(attachmentID);
-          setState(() {});
-          // setState(() {
-          //   _attachments.removeAt(index);
-          // });
-        },
-      ),
+    return Column(
+      children: [
+        ListTile(
+          leading: const Icon(Icons.attachment),
+          title: GestureDetector(
+            child: Text(attachmentName),
+            onTap: () async {
+              final url = Uri.parse(attachmentPath);
+
+              // if (await canLaunchUrl(url)) {
+              //   await launchUrl(url);
+              // }
+              // final url =
+              //     "https://drive.google.com/uc?id=1rG5p-eJ4LOeeE_IeflkQ_4oJF_T94CBi&export=download";
+              // final url = Uri.parse(
+              //     'https://drive.google.com/viewerng/viewer?embedded=true&url=https://drive.google.com/uc?id=1oKxzb-yicVb57AEPkxtc7d8bR8PAGlgm&export=download');
+
+              try {
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
+                } else {
+                  throw 'Could not launch $url';
+                }
+              } catch (e) {
+                print("Error launching URL: $e");
+              }
+            },
+          ),
+          trailing: IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () {
+              _deleteAttachment(attachmentID);
+              setState(() {});
+              // setState(() {
+              //   _attachments.removeAt(index);
+              // });
+            },
+          ),
+        ),
+        const Divider(
+          thickness: 2,
+        ),
+      ],
     );
   }
 
