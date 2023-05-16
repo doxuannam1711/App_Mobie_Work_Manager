@@ -37,7 +37,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   // Future<Map<String, dynamic>> getUserList() async {
   //   final response =
-  //       await http.get(Uri.parse('http://192.168.1.2/api/getAccount'));
+  //       await http.get(Uri.parse('http://192.168.53.160/api/getAccount'));
   //   if (response.statusCode == 200) {
   //     final data = jsonDecode(response.body);
   //     return data;
@@ -48,7 +48,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   // Future<User> _fetchUserList() async {
   //   final response =
-  //       await http.get(Uri.parse('http://192.168.1.2/api/getAccount'));
+  //       await http.get(Uri.parse('http://192.168.53.160/api/getAccount'));
   //   final jsonresponse = json.decode(response.body);
   //   return User.fromJson(jsonresponse);
 
@@ -56,7 +56,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   Future<List<Map<String, dynamic>>> getUserList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.2/api/getAccount/${widget.userID}'));
+        .get(Uri.parse('http://192.168.53.160/api/getAccount/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -84,7 +84,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
   }
 
   Future<void> _updateUser(int userID) async {
-    final url = Uri.parse('http://192.168.1.2/api/updateUser/$userID');
+    final url = Uri.parse('http://192.168.53.160/api/updateUser/$userID');
     final response = await http.put(
       url,
       headers: <String, String>{
