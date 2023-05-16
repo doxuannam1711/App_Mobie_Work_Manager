@@ -108,7 +108,7 @@ class _AttachmentPageState extends State<AttachmentPage> {
   }
 
   Future<void> _addAttachment() async {
-    final url = Uri.parse('http://192.168.1.2/api/addAttachment');
+    final url = Uri.parse('http://192.168.53.160/api/addAttachment');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -134,7 +134,7 @@ class _AttachmentPageState extends State<AttachmentPage> {
 
   Future<List<Map<String, dynamic>>> getAttachments() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.2/api/getAttachments/${widget.cardID}'));
+        Uri.parse('http://192.168.53.160/api/getAttachments/${widget.cardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -162,7 +162,7 @@ class _AttachmentPageState extends State<AttachmentPage> {
 
   Future<void> _deleteAttachment(int attachmentID) async {
     final url =
-        Uri.parse('http://192.168.1.2/api/deleteAttachment/$attachmentID');
+        Uri.parse('http://192.168.53.160/api/deleteAttachment/$attachmentID');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       // ScaffoldMessenger.of(context).showSnackBar(

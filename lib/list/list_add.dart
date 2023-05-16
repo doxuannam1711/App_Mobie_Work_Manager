@@ -33,7 +33,7 @@ class _ListsAdd extends State<ListsAdd> with TickerProviderStateMixin {
 
 
     final response = await http.post(
-      Uri.parse('http://192.168.1.2/api/addList/'),
+      Uri.parse('http://192.168.53.160/api/addList/'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newList.toJson()),
     );
