@@ -569,7 +569,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CircleAvatar(
-                backgroundImage: AssetImage(
+                backgroundImage: NetworkImage(
                   avatarUrl,
                 ),
               ),
