@@ -29,7 +29,7 @@ class ProfileWidget extends StatelessWidget {
   }
 
   Widget buildImage() {
-    final image = AssetImage(imagePath);
+    final image = NetworkImage(imagePath);
     return ClipOval(
       child: Material(
         color: Colors.transparent,

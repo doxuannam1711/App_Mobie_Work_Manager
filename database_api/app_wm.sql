@@ -220,10 +220,10 @@ insert into roles VALUES('edit','','','')
 insert into roles VALUES('view','','','')
 
 ------------------------------ Insert into table Users --------------------------------------
-insert into users VALUES('doxuannam',N'đỗ xuân nam','123456','doxuannam@gmail.com','assets/images/batman_robot_suit.jpg','2022-01-14 21:56:19 PM','')
-insert into users VALUES('phamphuquang',N'phạm phú quang','123123123','phamphuquang@gmail.com','assets/images/avatar_user1.jpg','2022-2-2 14:48:25 PM','')
-insert into users VALUES('buiduccuong',N'bùi đức cường','456456456','buiduccuong@gmail.com','assets/images/avatar_user2.jpg','2022-3-8 08:45:09 AM','')
-insert into users VALUES('hoangthigam',N'hoàng thị gấm','123456123456','doxuannam@gmail.com','assets/images/avatar_user3.jpg','2022-3-9 21:56:19 PM','')
+insert into users VALUES('doxuannam',N'đỗ xuân nam','123456','doxuannam@gmail.com','https://drive.google.com/uc?export=view&id=1kFGCC0oSxUYd8u8O1sM_OlCnyNR-Rmfj','2022-01-14 21:56:19 PM','')
+insert into users VALUES('phamphuquang',N'phạm phú quang','123123123','phamphuquang@gmail.com','https://drive.google.com/uc?export=view&id=11Ik67f0n7DwVCGyLai2l6ozc-sksvKxO','2022-2-2 14:48:25 PM','')
+insert into users VALUES('buiduccuong',N'bùi đức cường','456456456','buiduccuong@gmail.com','https://drive.google.com/uc?export=view&id=1O7TGLfxEUIVi1Vz_Ih7qsL4eJJ6l20Ke','2022-3-8 08:45:09 AM','')
+insert into users VALUES('hoangthigam',N'hoàng thị gấm','123456123456','doxuannam@gmail.com','https://drive.google.com/uc?export=view&id=17dUud_419-ksLeFF0dl3G5rclXNob5kN','2022-3-9 21:56:19 PM','')
 
 
 --------------------------------------- Insert into table Boards ---------------------------------
@@ -449,8 +449,10 @@ where attachments.CardID= 1 order by attachments.AttachmentID DESC
 
 DELETE FROM attachments WHERE AttachmentID = 2
 
+
 Delete from lists where ListID IN (39);
 Delete from cards where CardID IN (33);
+
 
 
 ------<><><><><><><><><><><><><><><><><><><><><><>Chỉnh sửa cấu trúc database<><><><><><><><><><><><><><><><><><><><><><>--------------
@@ -464,6 +466,8 @@ ADD RoleID int
 ALTER TABLE boards
 ADD CONSTRAINT FK_boards_roles FOREIGN KEY (RoleID) REFERENCES roles(RoleID);
 ------<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><>--------------
+
+
 
 
 
