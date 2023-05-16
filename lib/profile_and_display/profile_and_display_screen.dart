@@ -19,7 +19,7 @@ import 'package:image_picker/image_picker.dart';
 class ProfileAndDisplayScreen extends StatefulWidget {
   final int userID;
   // const ProfileAndDisplayScreen({super.key});
-  const ProfileAndDisplayScreen(this.userID);
+  const ProfileAndDisplayScreen(this.userID, {super.key});
 
   @override
   State<ProfileAndDisplayScreen> createState() =>
