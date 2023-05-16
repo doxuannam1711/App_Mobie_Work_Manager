@@ -303,7 +303,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
           _itemNameFocusNode.requestFocus();
         });
       },
-      child: const Row(
+      child: Row(
         children: [
           Icon(Icons.add),
           SizedBox(width: 8.0),

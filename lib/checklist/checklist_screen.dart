@@ -104,7 +104,7 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
           _isAddingNewItem = true;
         });
       },
-      child: const Row(
+      child: Row(
         children: [
           Icon(Icons.add),
           SizedBox(width: 8.0),
