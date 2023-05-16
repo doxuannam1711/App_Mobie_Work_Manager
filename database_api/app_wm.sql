@@ -454,7 +454,6 @@ Delete from lists where ListID IN (39);
 Delete from cards where CardID IN (33);
 
 
-
 ------<><><><><><><><><><><><><><><><><><><><><><>Chỉnh sửa cấu trúc database<><><><><><><><><><><><><><><><><><><><><><>--------------
 alter table users drop constraint FK_users_roles
 ALTER TABLE users
@@ -465,10 +464,7 @@ ADD RoleID int
 
 ALTER TABLE boards
 ADD CONSTRAINT FK_boards_roles FOREIGN KEY (RoleID) REFERENCES roles(RoleID);
+
 ------<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><>--------------
-
-
-
-
 
 

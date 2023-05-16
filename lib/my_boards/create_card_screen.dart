@@ -44,7 +44,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
 
   Future<void> getLists() async {
     final response = await http.get(
-        Uri.parse('http://192.168.53.160/api/getListOption/${widget.boardID}'));
+        Uri.parse('http://192.168.1.2/api/getListOption/${widget.boardID}'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -72,7 +72,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
     );
 
     final response = await http.post(
-      Uri.parse('http://192.168.53.160/api/addCard'),
+      Uri.parse('http://192.168.1.2/api/addCard'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newCard.toJson()),
     );
