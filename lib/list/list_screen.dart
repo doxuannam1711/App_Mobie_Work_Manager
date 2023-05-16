@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import '../my_cards/card_detail_screen.dart';
-import 'package:flutter_application/my_boards/my_boards_screen.dart';
 import 'package:flutter_application/my_boards/create_card_screen.dart';
 import 'package:flutter_application/list/list_add.dart';
 
@@ -298,7 +297,6 @@ class _ListScreenState extends State<ListScreen> {
                   DateTime.tryParse(cardList[index]['DueDate'] ?? '');
               int comments = cardList[index]['Comment'];
               int checkedItems = cardList[index]['IntCheckList'] ?? 2;
-              ;
               int totalItems = cardList[index]['Checklist'] ?? 2;
               List<String> avatars = List.castFrom<dynamic, String>(
                   cardList[index]['Avatars'] ?? []);

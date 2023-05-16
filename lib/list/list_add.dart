@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_application/model/list.dart';
-import 'package:flutter_application/list/list_screen.dart';
 
 import '../my_boards/create_card_screen.dart';
 
