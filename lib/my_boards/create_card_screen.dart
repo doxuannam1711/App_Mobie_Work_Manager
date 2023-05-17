@@ -4,6 +4,7 @@ import 'package:flutter_application/list/list_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import '../model/card.dart';
+import '../my_cards/my_cards_screen.dart';
 
 class AddCardScreen extends StatefulWidget {
   final int creatorID;
@@ -31,7 +32,13 @@ class _AddCardScreenState extends State<AddCardScreen> {
   late String _selectedColorOption = 'default';
   DateTime? _dueDate;
   final List<String> _labelOptions = ['High', 'Medium', 'Low'];
-  final List<String> _colorOptions = ['red', 'blue', 'green', 'yellow', 'default'];
+  final List<String> _colorOptions = [
+    'red',
+    'blue',
+    'green',
+    'yellow',
+    'default'
+  ];
   List<String> listNames = [];
   late String selectedListID = '';
   late List<dynamic> list;
@@ -44,7 +51,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
 
   Future<void> getLists() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.2/api/getListOption/${widget.boardID}'));
+        Uri.parse('http://192.168.53.160/api/getListOption/${widget.boardID}'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -72,19 +79,21 @@ class _AddCardScreenState extends State<AddCardScreen> {
     );
 
     final response = await http.post(
-      Uri.parse('http://192.168.1.2/api/addCard'),
+      Uri.parse('http://192.168.53.160/api/addCard'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newCard.toJson()),
     );
 
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Card added successfully!')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error adding card!')),
-      );
+    if (mounted) {
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Card added successfully!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error adding card!')),
+        );
+      }
     }
   }
 
@@ -238,11 +247,26 @@ class _AddCardScreenState extends State<AddCardScreen> {
               child: const Text('Add'),
               onPressed: () async {
                 addCard();
-                await Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => ListScreen(widget.boardName,
-                          widget.boardID, widget.labels, widget.creatorID)),
-                );
+                if (widget.labels == "mycard") {
+                  await Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => MyCardsScreen(
+                        widget.creatorID,
+                      ),
+                    ),
+                  );
+                } else {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ListScreen(
+                        widget.boardName,
+                        widget.boardID,
+                        widget.labels,
+                        widget.creatorID,
+                      ),
+                    ),
+                  );
+                }
                 setState(() {});
               },
             ),

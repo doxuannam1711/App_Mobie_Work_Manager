@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
+import '../my_boards/create_card_screen.dart';
+import '../my_boards/create_screen.dart';
 import '../nav_drawer.dart';
 import '../my_cards/card_detail_screen.dart';
 
@@ -27,9 +29,36 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
     'https://top10camau.vn/wp-content/uploads/2022/10/avatar-meo-cute-5.jpg',
   ];
   List<Map<String, dynamic>> _searchResult = [];
+  bool _sortByDate = false;
   Future<List<Map<String, dynamic>>> _fetchCardList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.2/api/getcards'));
+        await http.get(Uri.parse('http://192.168.53.160/api/getcards'));
+    if (response.statusCode == 200) {
+      try {
+        final data = jsonDecode(response.body)['Data'];
+        final cardData = jsonDecode(data);
+        List<dynamic> cardList = [];
+        if (cardData is List) {
+          cardList = cardData;
+        } else if (cardData is Map) {
+          cardList = [cardData];
+        }
+        final resultList = cardList
+            .map((board) =>
+                Map<String, dynamic>.from(board as Map<String, dynamic>))
+            .toList();
+        return resultList;
+      } catch (e) {
+        throw Exception('Failed to decode board list');
+      }
+    } else {
+      throw Exception('Failed to load board list');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchSortCardList() async {
+    final response =
+        await http.get(Uri.parse('http://192.168.53.160/api/sortCard'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -54,7 +83,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _searchCards(String keyword) async {
-    final url = Uri.parse('http://192.168.1.2/api/searchCards/$keyword');
+    final url = Uri.parse('http://192.168.53.160/api/searchCards/$keyword');
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -87,6 +116,27 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
       drawer: NavDrawer(widget.userID),
       appBar: AppBar(
         title: const Text('My Cards'),
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddCardScreen(
+                      creatorID: widget.userID,
+                      boardID: 1,
+                      labels: "mycard",
+                      boardName: "Công việc ở công ty",
+                    ),
+                  ),
+                );
+              },
+              child: const Icon(Icons.add),
+            ),
+          ),
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -98,20 +148,20 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                 const Icon(Icons.filter_alt_outlined),
                 const SizedBox(width: 8),
                 DropdownButton<bool>(
-                  value: _filterByDate,
+                  value: _sortByDate,
                   onChanged: (value) {
                     setState(() {
-                      _filterByDate = value!;
+                      _sortByDate = value!;
                     });
                   },
                   items: const [
                     DropdownMenuItem(
-                      value: true,
-                      child: Text('Expiration Date'),
-                    ),
-                    DropdownMenuItem(
                       value: false,
                       child: Text('Board'),
+                    ),
+                    DropdownMenuItem(
+                      value: true,
+                      child: Text('Expiration Date'),
                     ),
                   ],
                 ),
@@ -141,7 +191,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
           Expanded(
             child: FutureBuilder<List<Map<String, dynamic>>>(
               future: _searchResult.isEmpty
-                  ? _fetchCardList()
+                  ? (_sortByDate ? _fetchSortCardList() : _fetchCardList())
                   : Future<List<Map<String, dynamic>>>.value(_searchResult),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {

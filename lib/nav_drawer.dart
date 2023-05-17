@@ -7,10 +7,11 @@ import 'my_boards/my_boards_screen.dart';
 import 'notifications/notification_screen.dart';
 import 'search/search_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:file_picker/file_picker.dart';
 
 final Uri _url = Uri.parse('https://flutter.dev');
 
-// final Uri _url = Uri.parse('http://192.168.1.2/api/downloadfile');
+// final Uri _url = Uri.parse('http://192.168.53.160/api/downloadfile');
 class NavDrawer extends StatefulWidget {
   final int userID;
   const NavDrawer(this.userID);
@@ -23,36 +24,9 @@ class NavDrawer extends StatefulWidget {
 class _NavDrawerState extends State<NavDrawer> {
   // static const user = UserPreferences.myUser;
 
-  Future<void> _downloadFile() async {
-    if (!await launchUrl(_url)) {
-      throw Exception('Could not launch $_url');
-    }
-    // final directory = await getApplicationDocumentsDirectory();
-    // final file = File('${directory.path}/test.csv');
-
-    // try {
-    //   final response = await http.get(_url);
-
-    //   if (response.statusCode == 200) {
-    //     await file.writeAsBytes(response.bodyBytes);
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text('File downloaded successfully')),
-    //     );
-    //   } else {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text('Failed to download file')),
-    //     );
-    //   }
-    // } catch (e) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text('Failed to download file: $e')),
-    //   );
-    // }
-  }
-
   Future<List<Map<String, dynamic>>> getUserList() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.2/api/getAccount/${widget.userID}'));
+        Uri.parse('http://192.168.53.160/api/getAccount/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -76,6 +50,25 @@ class _NavDrawerState extends State<NavDrawer> {
       }
     } else {
       throw Exception('Failed to load user list');
+    }
+  }
+
+  void _importFile() async {
+    try {
+      final FilePickerResult? result = await FilePicker.platform.pickFiles();
+      if (result != null) {
+        final PlatformFile file = result.files.first;
+        final filePath = file.path;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MyBoardsScreen(widget.userID)),
+        );
+      }
+    } catch (e) {
+      // Xử lý lỗi trong quá trình import
+      print('Import error: $e');
     }
   }
 
@@ -216,7 +209,8 @@ class _NavDrawerState extends State<NavDrawer> {
                   builder: (context) => MyBoardsScreen(widget.userID)),
             );
           },
-          accountName: Text(fullName, style: const TextStyle(fontWeight: FontWeight.bold)),
+          accountName: Text(fullName,
+              style: const TextStyle(fontWeight: FontWeight.bold)),
           accountEmail: Text(email),
           currentAccountPicture: CircleAvatar(
             child: ClipOval(
@@ -301,7 +295,7 @@ class _NavDrawerState extends State<NavDrawer> {
               leading: const Icon(Icons.file_open),
               title: const Text('Import Data'),
               onTap: () {
-                _downloadFile();
+                _importFile();
               },
             ),
             ListTile(
@@ -309,9 +303,10 @@ class _NavDrawerState extends State<NavDrawer> {
               title: const Text('Export Data'),
               onTap: () async {
                 final downloadUrl =
-                    // Uri.parse('http://192.168.1.2/api/downloadfile');
-                    Uri.parse('http://192.168.1.2/api/getboards/1');
-                if (!await launchUrl(downloadUrl)) {
+                    // Uri.parse('http://192.168.53.160/api/downloadfile');
+                    Uri.parse('http://192.168.53.160/api/downloadfile');
+                if (!await launchUrl(downloadUrl,
+                    mode: LaunchMode.externalApplication)) {
                   throw Exception('Could not launch $downloadUrl');
                 }
               },
