@@ -73,7 +73,7 @@ public class ValuesController : ApiControllerBase
 
     [HttpPut]
     [Route("api/updateUser/{userID}")]
-    public IHttpActionResult UpdateCard(int userID, [FromBody] UserModel user)
+    public IHttpActionResult UpdateUser(int userID, [FromBody] UserModel user)
     {
         try
         {
@@ -96,6 +96,7 @@ public class ValuesController : ApiControllerBase
             return Ok(ex.Message);
         }
     }
+
     [HttpDelete]
     [Route("api/deleteUser/{userId}")]
     public IHttpActionResult DeleteUser(int userId)
@@ -865,6 +866,22 @@ on notifications.BoardID=lists.BoardID";
             return Ok(ex.Message);
         }
     }
+    [HttpPut]
+    [Route("api/changePassword/{userID}")]
+    public IHttpActionResult UpdatePassword(int userID, [FromBody] UserModel user)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"UPDATE users SET Password=@Password WHERE UserID = @UserID";
+            
+            Command.Parameters.AddWithValue("@Password", user.Password);
+            
+            Command.Parameters.AddWithValue("@UserID", user.UserID);
+
+
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
 
     [HttpGet]
     [Route("api/getcardlist/{userID}")]
@@ -949,6 +966,7 @@ on notifications.BoardID=lists.BoardID";
             {
                 Data = tableBoards
             };
+
 
             return Ok(response);
         }

@@ -26,7 +26,7 @@ import 'package:url_launcher/url_launcher.dart';
 class ProfileAndDisplayScreen extends StatefulWidget {
   final int userID;
   // const ProfileAndDisplayScreen({super.key});
-  const ProfileAndDisplayScreen(this.userID, {super.key});
+  const ProfileAndDisplayScreen(this.userID);
 
   @override
   State<ProfileAndDisplayScreen> createState() =>
