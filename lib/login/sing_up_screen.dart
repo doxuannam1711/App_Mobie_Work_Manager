@@ -21,21 +21,29 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  late File _imageFile;
+  // late File _imageFile;
+
+
   String _addUsername = "";
   String _addFullname = "";
   String _addPassword = "";
   String _addAvatarUrl = "";
-
-  String _defaultAvatar = 'https://drive.google.com/uc?export=view&id=1KRAnJasEh6mSrI_JzKmgitiTJE6W2BQL';
+  String _addEmail = "";
 
   String _confirmPassword = "";
-  String _addEmail = "";
+  final String _defaultAvatar = 'https://drive.google.com/uc?export=view&id=1KRAnJasEh6mSrI_JzKmgitiTJE6W2BQL';
+
 
   late drive.DriveApi _driveApi;
 
-  TextEditingController password = TextEditingController();
-  TextEditingController confirmpassword = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
+  
+  final confirmPasswordFocusNode = FocusNode();
+  final userNameFocusNode = FocusNode();
+  final fullNameFocusNode = FocusNode();
+  final passwordFocusNode = FocusNode();
+  final emailFocusNode = FocusNode();
+
 
   @override
   void initState() {
@@ -200,6 +208,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   labelText: 'User Name',
                   border: OutlineInputBorder(),
                 ),
+                focusNode: userNameFocusNode,
                 onChanged: (value) {
                   _addUsername = value;
                 },
@@ -210,6 +219,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   labelText: 'Full Name',
                   border: OutlineInputBorder(),
                 ),
+                focusNode: fullNameFocusNode,
                 onChanged: (value) {
                   _addFullname = value;
                 },
@@ -220,17 +230,18 @@ class _SignupScreenState extends State<SignupScreen> {
                   labelText: 'Email',
                   border: OutlineInputBorder(),
                 ),
+                focusNode: emailFocusNode,
                 onChanged: (value) {
                   _addEmail = value;
                 },
               ),
               const SizedBox(height: 20),
               TextFormField(
-                // controller: password,
                 decoration: const InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
                 ),
+                focusNode: passwordFocusNode,
                 onChanged: (value) {
                   _addPassword = value;
                 },
@@ -238,10 +249,12 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 20),
               TextFormField(
+                controller: confirmPasswordController,
                 decoration: const InputDecoration(
                   labelText: 'Confirm Password',
                   border: OutlineInputBorder(),
                 ),
+                focusNode: confirmPasswordFocusNode,
                 onChanged: (value) {
                   _confirmPassword = value;
                 },
@@ -251,11 +264,50 @@ class _SignupScreenState extends State<SignupScreen> {
               ElevatedButton(
                 child: const Text('Sign Up'),
                 onPressed: () async {
-                  _addUser();
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) => const LoginScreen()),
-                  );
+                  if(_addUsername.isEmpty){
+                    userNameFocusNode.requestFocus();
+                  }
+                  else if(_addFullname.isEmpty){
+                    fullNameFocusNode.requestFocus();
+                  }
+                  else if (_addEmail.isEmpty) {
+                    emailFocusNode.requestFocus();
+                  }
+                  else if (_addPassword.isEmpty) {
+                    passwordFocusNode.requestFocus();
+                  }
+                  else if (_confirmPassword.isEmpty) {
+                    confirmPasswordFocusNode.requestFocus();
+                  }
+                  else if(_addPassword==_confirmPassword){
+                    _addUser();
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()),
+                    );
+                  } 
+                  else{
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Mật khẩu nhập lại sai'),
+                        content: const Text(
+                            'Mật khẩu nhập lại không trùng khớp.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              confirmPasswordController
+                                  .clear(); // clear password input
+                              confirmPasswordFocusNode
+                                  .requestFocus(); // move focus back to password field
+                            },
+                            child: const Text('Nhập lại'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 },
               ),
               const SizedBox(height: 20),

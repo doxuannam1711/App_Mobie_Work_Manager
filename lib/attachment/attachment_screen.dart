@@ -139,7 +139,7 @@ class _AttachmentPageState extends State<AttachmentPage> {
       try {
         final data = jsonDecode(response.body)['Data'];
         // print(response.body);
-        print(data);
+        // print(data);
         final attachmentData = jsonDecode(data);
         List<dynamic> attachmentList = [];
         if (attachmentData is List) {
@@ -289,6 +289,9 @@ class _AttachmentPageState extends State<AttachmentPage> {
         print('File name: ${file.name}');
         print('File path: $filePath');
         _addAttachmentPath = await _uploadFile(filePath);
+        setState(() {
+          
+        });
         print('File link: $_addAttachmentPath');
         // launchUrl(link as Uri);
       }

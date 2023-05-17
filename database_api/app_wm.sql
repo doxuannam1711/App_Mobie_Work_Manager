@@ -452,6 +452,8 @@ DELETE FROM attachments WHERE AttachmentID = 2
 
 Delete from lists where ListID IN (39);
 Delete from cards where CardID IN (33);
+Delete from users where UserID IN (15,16);
+DBCC CHECKIDENT ('users', RESEED, 14);
 
 
 ------<><><><><><><><><><><><><><><><><><><><><><>Chỉnh sửa cấu trúc database<><><><><><><><><><><><><><><><><><><><><><>--------------
