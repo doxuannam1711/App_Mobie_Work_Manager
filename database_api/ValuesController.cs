@@ -866,91 +866,22 @@ on notifications.BoardID=lists.BoardID";
             return Ok(ex.Message);
         }
     }
-   [HttpPut]
-   [Route("api/changePassword/{userID}")]
-   public IHttpActionResult UpdatePassword(int userID, [FromBody] UserModel user)
-   {
-      try
-      {
-         Command.ResetAndOpen(CommandType.Text);
-         Command.CommandText = @"UPDATE users SET Password=@Password WHERE UserID = @UserID";
-
-         Command.Parameters.AddWithValue("@Password", user.Password);
-
-         Command.Parameters.AddWithValue("@UserID", user.UserID);
-
-         Command.ExecuteNonQuery();
-         var response = new ResultModel { };
-         return Ok(response);
-      }
-      catch (Exception ex)
-      {
-         return Ok(ex.Message);
-      }
-   }
-
-    [HttpGet]
-    [Route("api/getcardlist/{userID}")]
-    public IHttpActionResult Getcardlist(int userID)
+    [HttpPut]
+    [Route("api/changePassword/{userID}")]
+    public IHttpActionResult UpdatePassword(int userID, [FromBody] UserModel user)
     {
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"select * from cards inner join lists on 
-                            lists.ListID = cards.ListID inner join boards on 
-                          boards.BoardID = lists.BoardID where boards.UserID = @userID";
-            Command.Parameters.AddWithValue("@boardID", userID);
-            DataTable tableChecklists = Command.GetDataTable();
-            var respone = new ResultModel
-            {
-                Data = JsonConvert.SerializeObject(tableChecklists)
-            };
-            return Ok(respone);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-    }
+            Command.CommandText = @"UPDATE users SET Password=@Password WHERE UserID = @UserID";
 
-    [HttpGet]
-    [Route("api/getboardist/{userID}")]
-    public IHttpActionResult Getboardlist(int userID)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"select * from boards where boards.UserID = @userID";
-            Command.Parameters.AddWithValue("@boardID", userID);
-            DataTable tableChecklists = Command.GetDataTable();
-            var respone = new ResultModel
-            {
-                Data = JsonConvert.SerializeObject(tableChecklists)
-            };
-            return Ok(respone);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-    }
+            Command.Parameters.AddWithValue("@Password", user.Password);
 
-    [HttpGet]
-    [Route("api/getlistslist/{userID}")]
-    public IHttpActionResult Getlistslist(int userID)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"select * from lists inner join boards on                
-                          boards.BoardID = lists.BoardID where boards.UserID = @userID";
-            Command.Parameters.AddWithValue("@boardID", userID);
-            DataTable tableChecklists = Command.GetDataTable();
-            var respone = new ResultModel
-            {
-                Data = JsonConvert.SerializeObject(tableChecklists)
-            };
-            return Ok(respone);
+            Command.Parameters.AddWithValue("@UserID", user.UserID);
+
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
+            return Ok(response);
         }
         catch (Exception ex)
         {
@@ -980,7 +911,6 @@ on notifications.BoardID=lists.BoardID";
             return Ok(ex.Message);
         }
     }
-
 }
 
 
