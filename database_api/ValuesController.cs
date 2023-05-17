@@ -957,7 +957,6 @@ on notifications.BoardID=lists.BoardID";
             return Ok(ex.Message);
         }
     }
-
     [Route("api/searchLists/{keyword}")]
     public IHttpActionResult SearchLists(string keyword)
     {
@@ -981,26 +980,6 @@ on notifications.BoardID=lists.BoardID";
             return Ok(ex.Message);
         }
     }
-   [Route("api/searchLists/{keyword}")]
-   public IHttpActionResult SearchLists(string keyword)
-   {
-      try
-      {
-         Command.ResetAndOpen(CommandType.Text);
-         Command.CommandText = @"SELECT * FROM lists WHERE ListName LIKE '%' + @Keyword + '%'";
-         Command.Parameters.AddWithValue("@Keyword", keyword);
-         DataTable tableBoards = Command.GetDataTable();
-
-         var response = new ResultModel
-         {
-            Data = tableBoards
-         };
-
-
-         return Ok(response);
-      }
-      
-   }
 
 }
 
