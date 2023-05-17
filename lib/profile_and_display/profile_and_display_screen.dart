@@ -34,12 +34,24 @@ class ProfileAndDisplayScreen extends StatefulWidget {
 }
 
 class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
-  bool _isObscure = true;
+  bool isPasswordVisible = false;
+
   String _updateUsername = "";
   String _updateFullname = "";
   String _updatePassword = "";
   String _updateEmail = "";
   String _updateAvatarUrl = "";
+  String _oldAvatarUrl = "";
+  String _oldPassword = "";
+  String _confirmPassword = "";
+
+  final oldPasswordFocusNode = FocusNode();
+  final updatePasswordFocusNode = FocusNode();
+  final confirmPasswordFocusNode = FocusNode();
+
+  TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController oldPasswordController = TextEditingController();
+  TextEditingController updatePasswordController = TextEditingController();
 
   late drive.DriveApi _driveApi;
 
@@ -111,7 +123,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
         'fullName': _updateFullname,
         'passWord': _updatePassword,
         'email': _updateEmail,
-        'avatarUrl': _updateAvatarUrl,
+        'avatarUrl': _updateAvatarUrl.isEmpty?_oldAvatarUrl: _updateAvatarUrl,
         'userID': userID,
       }),
     );
@@ -298,11 +310,11 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
                     return _buildProfile(
                         userData["UserID"],
-                        userData["AvatarUrl"],
+                        _oldAvatarUrl=userData["AvatarUrl"],
                         _updateUsername = userData["Username"],
                         _updateFullname = userData["Fullname"],
                         _updateEmail = userData["Email"],
-                        _updatePassword = userData["Password"]);
+                        userData["Password"]);
                   });
             }
           } else {
@@ -358,12 +370,10 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
     if (fileResource != null) {
       _updateAvatarUrl =
           'https://drive.google.com/uc?export=view&id=${fileResource.id}';
-        
+
       print('File link: $_updateAvatarUrl');
-      
-      setState(() {
-        
-      });
+
+      setState(() {});
       // setState(() {
       //   // _attachments.add(link);
       //   _addAttachment();
@@ -405,9 +415,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
           isEdit: true,
           onClicked: () {
             _openFilePicker();
-            setState(() {
-              
-            });
+            setState(() {});
           },
         ),
         // Center(
@@ -527,26 +535,70 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Password',
+              'Mật khẩu cũ',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
             TextField(
-              obscureText: _isObscure,
-              controller: TextEditingController(text: password),
+              controller: oldPasswordController,
               decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   // this button is used to toggle the password visibility
-                  suffixIcon: IconButton(
-                      icon: Icon(
-                          _isObscure ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () {
-                        setState(() {
-                          _isObscure = !_isObscure;
-                        });
-                      })),
+                  suffixIcon: InkWell(
+                    onTap: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
+                    child: Icon(
+                      isPasswordVisible
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: Colors.grey,
+                    ),
+                  )),
+              obscureText: !isPasswordVisible,
+              focusNode: oldPasswordFocusNode,
+              onChanged: (value) {
+                _oldPassword = value;
+              },
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 24),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Mật khẩu mới',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: updatePasswordController,
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  // this button is used to toggle the password visibility
+                  suffixIcon: InkWell(
+                    onTap: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
+                    child: Icon(
+                      isPasswordVisible
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: Colors.grey,
+                    ),
+                  )),
+              obscureText: !isPasswordVisible,
+              focusNode: updatePasswordFocusNode,
               onChanged: (value) {
                 _updatePassword = value;
               },
@@ -559,27 +611,35 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Confirm Password',
+              'Nhập lại mật khẩu mới',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
             TextField(
-              obscureText: _isObscure,
-              controller: TextEditingController(text: password),
+              controller: confirmPasswordController,
               decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   // this button is used to toggle the password visibility
-                  suffixIcon: IconButton(
-                      icon: Icon(
-                          _isObscure ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () {
-                        setState(() {
-                          _isObscure = !_isObscure;
-                        });
-                      })),
-              onChanged: (name) {},
+                  suffixIcon: InkWell(
+                    onTap: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
+                    child: Icon(
+                      isPasswordVisible
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: Colors.grey,
+                    ),
+                  )),
+              obscureText: !isPasswordVisible,
+              focusNode: confirmPasswordFocusNode,
+              onChanged: (value) {
+                _confirmPassword = value;
+              },
             ),
           ],
         ),
@@ -587,13 +647,59 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
         ButtonWidget(
           text: 'Save',
           onClicked: () async {
-            _updateUser(userID);
-            getUserList();
-            await Navigator.of(context).push(
-              MaterialPageRoute(
-                  builder: (context) => AccountScreen(widget.userID)),
-            );
-            setState(() {});
+            if (_oldPassword != password) {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Mật khẩu cũ sai'),
+                  content: const Text('Nhập lại mật khẩu cũ.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        oldPasswordController.clear();
+                        oldPasswordFocusNode
+                            .requestFocus(); // move focus back to password field
+                      },
+                      child: const Text('Nhập lại'),
+                    ),
+                  ],
+                ),
+              );
+            } else if (_oldPassword.isEmpty) {
+              oldPasswordFocusNode.requestFocus();
+            } else if (_updatePassword.isEmpty) {
+              updatePasswordFocusNode.requestFocus();
+            } else if (_confirmPassword.isEmpty) {
+              confirmPasswordFocusNode.requestFocus();
+            } else if (_updatePassword == _confirmPassword) {
+              _updateUser(userID);
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (context) => AccountScreen(widget.userID)),
+              );
+              setState(() {});
+            } else {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Mật khẩu nhập lại sai'),
+                  content: const Text('Mật khẩu nhập lại không trùng khớp.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        confirmPasswordController
+                            .clear(); // clear password input
+                        confirmPasswordFocusNode
+                            .requestFocus(); // move focus back to password field
+                      },
+                      child: const Text('Nhập lại'),
+                    ),
+                  ],
+                ),
+              );
+            }
           },
         ),
       ],
