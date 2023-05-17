@@ -889,12 +889,6 @@ on notifications.BoardID=lists.BoardID";
         }
     }
 
-   [Route("api/test/{keyword}")]
-   public IHttpActionResult Test(string keyword)
-   {
-     
-   }
-
     [Route("api/searchLists/{keyword}")]
     public IHttpActionResult SearchLists(string keyword)
     {
