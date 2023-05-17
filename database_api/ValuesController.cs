@@ -300,7 +300,39 @@ public class ValuesController : ApiControllerBase
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"SELECT * FROM cards WHERE CardName LIKE '%' + @Keyword + '%'";
+            Command.CommandText = @"SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+FROM cards
+LEFT JOIN checklists ON cards.cardID = checklists.cardID
+LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+WHERE CardName LIKE '%' + @Keyword + '%'
+GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
+cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
+cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+ORDER BY cards.CardID DESC;";
+            Command.Parameters.AddWithValue("@Keyword", keyword);
+            DataTable tableBoards = Command.GetDataTable();
+
+            var response = new ResultModel
+            {
+                Data = tableBoards
+            };
+
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+    [Route("api/searchCheckList/{keyword}")]
+    public IHttpActionResult SearchCheckList(string keyword)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT * FROM checklistitems WHERE checklistitems.Title LIKE '%' + @Keyword + '%'";
             Command.Parameters.AddWithValue("@Keyword", keyword);
             DataTable tableBoards = Command.GetDataTable();
 
@@ -449,7 +481,8 @@ LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
 GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
 cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
 cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
-cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor;";
+cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+ORDER BY cards.CardID DESC;";
             DataTable tableNhanVien = Command.GetDataTable();
 
             var respone = new ResultModel
@@ -466,6 +499,36 @@ cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor;";
 
     }
 
+    [Route("api/sortCard")]
+    public IHttpActionResult GetSortCard()
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+FROM cards
+LEFT JOIN checklists ON cards.cardID = checklists.cardID
+LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
+cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
+cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+ORDER BY cards.DueDate ASC;";
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
 
     [HttpGet]
     [Route("api/getLists/{boardID}")]
@@ -767,11 +830,11 @@ on notifications.BoardID=lists.BoardID";
             Command.ResetAndOpen(CommandType.Text);
             Command.CommandText = @"INSERT INTO attachments(CardID, AttachmentPath, AttachmentName)
                                     VALUES(@CardID, @AttachmentPath, @AttachmentName)";
-            
+
             Command.Parameters.AddWithValue("@CardID", attachment.CardID);
             Command.Parameters.AddWithValue("@AttachmentPath", attachment.AttachmentPath);
             Command.Parameters.AddWithValue("@AttachmentName", attachment.AttachmentName);
-           
+
 
 
             Command.ExecuteNonQuery();
@@ -795,6 +858,98 @@ on notifications.BoardID=lists.BoardID";
             Command.Parameters.AddWithValue("@AttachmentID", attachmentID);
             Command.ExecuteNonQuery();
             var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("api/getcardlist/{userID}")]
+    public IHttpActionResult Getcardlist(int userID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"select * from cards inner join lists on 
+                            lists.ListID = cards.ListID inner join boards on 
+                          boards.BoardID = lists.BoardID where boards.UserID = @userID";
+            Command.Parameters.AddWithValue("@boardID", userID);
+            DataTable tableChecklists = Command.GetDataTable();
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableChecklists)
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("api/getboardist/{userID}")]
+    public IHttpActionResult Getboardlist(int userID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"select * from boards where boards.UserID = @userID";
+            Command.Parameters.AddWithValue("@boardID", userID);
+            DataTable tableChecklists = Command.GetDataTable();
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableChecklists)
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("api/getlistslist/{userID}")]
+    public IHttpActionResult Getlistslist(int userID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"select * from lists inner join boards on                
+                          boards.BoardID = lists.BoardID where boards.UserID = @userID";
+            Command.Parameters.AddWithValue("@boardID", userID);
+            DataTable tableChecklists = Command.GetDataTable();
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableChecklists)
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+    [Route("api/searchLists/{keyword}")]
+    public IHttpActionResult SearchLists(string keyword)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT * FROM lists WHERE ListName LIKE '%' + @Keyword + '%'";
+            Command.Parameters.AddWithValue("@Keyword", keyword);
+            DataTable tableBoards = Command.GetDataTable();
+
+            var response = new ResultModel
+            {
+                Data = tableBoards
+            };
+
             return Ok(response);
         }
         catch (Exception ex)
