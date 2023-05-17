@@ -866,22 +866,28 @@ on notifications.BoardID=lists.BoardID";
             return Ok(ex.Message);
         }
     }
-    [HttpPut]
-    [Route("api/changePassword/{userID}")]
-    public IHttpActionResult UpdatePassword(int userID, [FromBody] UserModel user)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"UPDATE users SET Password=@Password WHERE UserID = @UserID";
-            
-            Command.Parameters.AddWithValue("@Password", user.Password);
-            
-            Command.Parameters.AddWithValue("@UserID", user.UserID);
+   [HttpPut]
+   [Route("api/changePassword/{userID}")]
+   public IHttpActionResult UpdatePassword(int userID, [FromBody] UserModel user)
+   {
+      try
+      {
+         Command.ResetAndOpen(CommandType.Text);
+         Command.CommandText = @"UPDATE users SET Password=@Password WHERE UserID = @UserID";
 
+         Command.Parameters.AddWithValue("@Password", user.Password);
 
-            Command.ExecuteNonQuery();
-            var response = new ResultModel { };
+         Command.Parameters.AddWithValue("@UserID", user.UserID);
+
+         Command.ExecuteNonQuery();
+         var response = new ResultModel { };
+         return Ok(response);
+      }
+      catch (Exception ex)
+      {
+         return Ok(ex.Message);
+      }
+   }
 
     [HttpGet]
     [Route("api/getcardlist/{userID}")]
@@ -975,6 +981,26 @@ on notifications.BoardID=lists.BoardID";
             return Ok(ex.Message);
         }
     }
+   [Route("api/searchLists/{keyword}")]
+   public IHttpActionResult SearchLists(string keyword)
+   {
+      try
+      {
+         Command.ResetAndOpen(CommandType.Text);
+         Command.CommandText = @"SELECT * FROM lists WHERE ListName LIKE '%' + @Keyword + '%'";
+         Command.Parameters.AddWithValue("@Keyword", keyword);
+         DataTable tableBoards = Command.GetDataTable();
+
+         var response = new ResultModel
+         {
+            Data = tableBoards
+         };
+
+
+         return Ok(response);
+      }
+      
+   }
 
 }
 
