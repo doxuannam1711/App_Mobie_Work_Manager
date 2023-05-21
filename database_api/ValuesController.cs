@@ -115,6 +115,10 @@ public class ValuesController : ApiControllerBase
             return Ok(ex.Message);
         }
     }
+
+
+
+
     [Route("api/getAccount/{userID}")]
     public IHttpActionResult GetAccount(int userID)
     {
@@ -848,6 +852,33 @@ on notifications.BoardID=lists.BoardID";
         }
     }
 
+
+
+    [Route("api/getUser/{email}")]
+    public IHttpActionResult GetUser(string email)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"Select * from users where users.Email = @email";
+
+            Command.Parameters.AddWithValue("@email", email);
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
+
     [HttpDelete]
     [Route("api/deleteAttachment/{attachmentID}")]
     public IHttpActionResult DeleteAttachment(int attachmentID)
@@ -866,6 +897,8 @@ on notifications.BoardID=lists.BoardID";
             return Ok(ex.Message);
         }
     }
+
+
     [HttpPut]
     [Route("api/changePassword/{userID}")]
     public IHttpActionResult UpdatePassword(int userID, [FromBody] UserModel user)
@@ -888,7 +921,6 @@ on notifications.BoardID=lists.BoardID";
             return Ok(ex.Message);
         }
     }
-
     [Route("api/searchLists/{keyword}")]
     public IHttpActionResult SearchLists(string keyword)
     {
@@ -912,6 +944,81 @@ on notifications.BoardID=lists.BoardID";
             return Ok(ex.Message);
         }
     }
+
+
+    [HttpDelete]
+    [Route("api/deleteMember/{memberID}")]
+    public IHttpActionResult DeleteMember(int memberID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"DELETE FROM members WHERE members.id = @memberID";
+            Command.Parameters.AddWithValue("@memberID", memberID);
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+
+    [Route("api/getmembers/{cardID}")]
+    public IHttpActionResult GetMember(int cardID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"Select * from members 
+                Where members.assignedTo = ( select members.assignedTo from cards where CardID = @CardID )";
+
+            Command.Parameters.AddWithValue("@CardID", cardID);
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
+
+    [HttpPost]
+    [Route("api/addMember")]
+    public IHttpActionResult AddMember([FromBody] MemberModel member)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"INSERT INTO members(fullname, Email, AvatarUrl, assignedTo)
+                                    VALUES(@fullname, @Email, @AvatarUrl, @assignedTo)";
+
+            Command.Parameters.AddWithValue("@fullname", member.fullname);
+            Command.Parameters.AddWithValue("@Email", member.Email);
+            Command.Parameters.AddWithValue("@AvatarUrl", member.AvatarUrl);
+            Command.Parameters.AddWithValue("@assignedTo", member.assignedTo);
+
+
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
 }
+
 
 
