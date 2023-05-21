@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../attachment/attachment_screen.dart';
 import '../checklist/checklist_screen_show.dart';
+import '../member/member_screen.dart';
 import '../nav_drawer.dart';
 import 'my_cards_screen.dart';
 
@@ -282,14 +283,17 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                             children: [
                               IconButton(
                                 onPressed: () {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => MemberPage(widget.cardID),
-                                  //   ),
-                                  // );
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MemberScreen(
+                                        widget.userID,
+                                        widget.cardID,
+                                      ),
+                                    ),
+                                  );
                                 },
-                                icon: const Icon(Icons.person_add),
+                                icon: const Icon(Icons.person),
                                 tooltip: 'Add Member',
                               ),
                               const Text('Member'),

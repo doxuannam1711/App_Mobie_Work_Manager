@@ -8,12 +8,12 @@ namespace WebApiDemo.Models
 {
     public class BoardModel
     {
-        public int BoardId { get; set; }
-        public string BoardName { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public int UserID { get; set; }
-        public string Labels { get; set; }
-        public string LabelsColor { get; set; }
+            public int BoardId { get; set; }
+            public string BoardName { get; set; }
+            public DateTime CreatedDate { get; set; }
+            public int UserID { get; set; }
+            public string Labels { get; set; }
+            public string LabelsColor { get; set; }
     }
     public class UserModel
     {
@@ -37,12 +37,12 @@ namespace WebApiDemo.Models
         public DateTime DueDate { get; set; }
         public string LabelColor { get; set; }
         public int IntCheckList { get; set; }
-        public int CreatorID { get; set; }
+        public int CreatorID { get; set; } 
         public int ListID { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } 
     }
     public class CheckListItemModel
-    {
+    {   
         public int ChecklistitemID { get; set; }
         public int ChecklistID { get; set; }
         public string Title { get; set; }
@@ -51,7 +51,7 @@ namespace WebApiDemo.Models
     public class ListModel
     {
         public int ListID { get; set; }
-        public string ListName { get; set; }
+        public string ListName { get; set; }   
         public int BoardID { get; set; }
     }
 
@@ -63,12 +63,23 @@ namespace WebApiDemo.Models
         public string Detail { get; set; }
 
     }
+
+
     public class AttachmentModel
     {
         public int AttachmentID { get; set; }
         public int CardID { get; set; }
-        public string AttachmentPath{ get; set; }
+        public string AttachmentPath { get; set; }
         public string AttachmentName { get; set; }
+
+    }
+
+    public class MemberModel
+    {
+        public string fullname { get; set; }
+        public string Email { get; set; }
+        public string AvatarUrl { get; set; }
+        public int assignedTo { get; set; }
 
     }
 }

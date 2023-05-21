@@ -470,3 +470,134 @@ ADD CONSTRAINT FK_boards_roles FOREIGN KEY (RoleID) REFERENCES roles(RoleID);
 ------<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><<><><><><><><><><><><><><><><><><><><><><><>--------------
 
 
+
+---------------------------ADD 21/05--------------------
+
+CREATE TABLE members (
+  id INT IDENTITY(1,1) PRIMARY KEY,
+  fullname NVARCHAR(255) NOT NULL,
+  Email NVARCHAR(255) NOT NULL UNIQUE, 
+  AvatarUrl varchar(255),
+  assignedTo INT,
+);
+
+INSERT INTO members VALUES (N'Bùi Đức Cường', 'buiduccuong@gmail.com', 'https://drive.google.com/uc?export=view&id=1O7TGLfxEUIVi1Vz_Ih7qsL4eJJ6l20Ke', 3);
+INSERT INTO members VALUES (N'Phạm Phú Quang', 'phamphuquang@gmail.com', 'https://drive.google.com/uc?export=view&id=11Ik67f0n7DwVCGyLai2l6ozc-sksvKxO', 3);
+
+-------------------------------------------TRIGGER-------------------------------------------
+-------------NOTIFICATION-----------
+
+USE [app_work_mangement]
+GO
+/****** Object:  Trigger [dbo].[tr_InsertNotification]    Script Date: 5/21/2023 4:24:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+    ALTER TRIGGER [dbo].[tr_InsertNotification] ON [dbo].[notifications]
+AFTER
+INSERT
+    AS BEGIN DECLARE @title NVARCHAR(MAX),
+    @body NVARCHAR(MAX)
+	DECLARE @http INT
+SELECT
+    @title = Title,
+    @body = N'DoXuanNam' + Content + N' FrontEnd trong danh sách Website bán hàng ở bảng Công việc freelancer'
+FROM
+    inserted DECLARE @json NVARCHAR(MAX)
+SET
+    @json = '{ "to": "/topics/news", "notification": { "title": "' + @title + '", "body": "' + @body + '" } }' DECLARE @url NVARCHAR(MAX)
+SET
+    @url = 'https://fcm.googleapis.com/fcm/send' DECLARE @http_status INT EXEC sp_OACreate 'MSXML2.ServerXMLHTTP',
+    @http OUT EXEC sp_OAMethod @http,
+    'open',
+    NULL,
+    'POST',
+    @url,
+    'false' EXEC sp_OAMethod @http,
+    'setRequestHeader',
+    NULL,
+    'Content-Type',
+    'application/json' EXEC sp_OAMethod @http,
+    'setRequestHeader',
+    NULL,
+    'Authorization',
+    'key=AAAACDPhmRI:APA91bHqrKcJrNKCFvghaDhkl523De27PsqyfC7_cKDWJRO3Edp0B1CLh3YDv_LmcnDH-8-gXZO7iYxHzKITmyMQYPkSsYsYMhrl7Puo0SOIjkje7eljIv_VPyM86CZznFfR9Qz3JVIK' EXEC sp_OAMethod @http,
+    'send',
+    NULL,
+    @json EXEC sp_OAGetProperty @http,
+    'status',
+    @http_status OUT EXEC sp_OADestroy @http PRINT 'Notification sent: ' + @title + ' - ' + @body
+END 
+
+----------------CheckList----------------------------------
+------DELTE CHECKLIST----------
+USE [app_work_mangement]
+GO
+/****** Object:  Trigger [dbo].[trg_checklist_delete]    Script Date: 5/21/2023 4:25:28 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER TRIGGER [dbo].[trg_checklist_delete] ON [dbo].[checklistitems]
+AFTER DELETE
+AS
+BEGIN
+  DECLARE @title nvarchar(255);
+  SELECT @title = N' xoá checklist ' + Title FROM deleted;
+  insert into notifications VALUES(1,1,N'Unread',1,1,@title,'2023-3-8 09:55:21 AM','true')
+END
+-----------INSERT CHECKLIST----------
+USE [app_work_mangement]
+GO
+/****** Object:  Trigger [dbo].[trg_checklist_insert]    Script Date: 5/21/2023 4:25:58 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER TRIGGER [dbo].[trg_checklist_insert] ON [dbo].[checklistitems]
+AFTER INSERT
+AS
+BEGIN
+  DECLARE @title nvarchar(255);
+  SELECT @title = N' thêm checklist ' + Title FROM inserted;
+  insert into notifications VALUES(1,1,N'Unread',1,1,@title,'2023-3-8 09:55:21 AM','true')
+END
+----------------COMMENT------------
+USE [app_work_mangement]
+GO
+/****** Object:  Trigger [dbo].[trg_checklist_insert]    Script Date: 5/21/2023 4:25:58 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_comments_insert] ON [dbo].comments
+AFTER INSERT
+AS
+BEGIN
+  DECLARE @title nvarchar(255);
+  SELECT @title = N'đã bình luận: ' + Detail FROM inserted;
+  insert into notifications VALUES(1,1,N'Comment',1,1,@title,'2023-3-8 09:55:21 AM','true')
+END
+
+----------------TEST-------------
+INSERT INTO comments VALUES (1,1,N'Cẩn thận trượt đồ án');
+---------Attachments----------------
+USE [app_work_mangement]
+GO
+/****** Object:  Trigger [dbo].[trg_checklist_insert]    Script Date: 5/21/2023 4:25:58 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[trg_attachments_insert] ON [dbo].attachments
+AFTER INSERT
+AS
+BEGIN
+  DECLARE @title nvarchar(255);
+  SELECT @title = N'đã đính kèm tệp: ' + AttachmentName FROM inserted;
+  insert into notifications VALUES(1,1,N'Comment',1,1,@title,'2023-3-8 09:55:21 AM','true')
+END
+----------------TEST-------------
+
+
