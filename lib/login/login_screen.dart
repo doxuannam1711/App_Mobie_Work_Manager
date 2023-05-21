@@ -6,6 +6,7 @@ import 'package:flutter_application/my_boards/create_screen.dart';
 import 'package:flutter_application/my_cards/my_cards_screen.dart';
 import 'package:flutter_application/notifications/notification_screen.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../my_boards/my_boards_screen.dart';
 import '../nav_drawer.dart';
 import 'forgot_password_screen.dart';
@@ -22,21 +23,47 @@ class _LoginScreenState extends State<LoginScreen> {
   int userID = 0;
   final passwordFocusNode = FocusNode();
   Map<String, dynamic> userList = {};
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
 
   bool isPasswordVisible = false;
+  bool _rememberMe = false;
 
   @override
   void initState() {
     super.initState();
     getUserList();
+    _loadSavedLoginInfo();
+  }
+
+  void _loadSavedLoginInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _emailController.text = prefs.getString('email') ?? '';
+      _passwordController.text = prefs.getString('password') ?? '';          
+      _rememberMe = prefs.getBool('rememberMe') ?? false;     
+    });
+  }
+
+  void _saveLoginInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if (_rememberMe) {
+      await prefs.setString('email', _emailController.text);
+      await prefs.setString('password', _passwordController.text);
+    } else {
+      await prefs.remove('email');
+      await prefs.remove('password');
+    }
+
+    await prefs.setBool('rememberMe', _rememberMe);
   }
 
   Future<Map<String, dynamic>> getUserList() async {
     // Change this line
     final response =
-        await http.get(Uri.parse('http://192.168.1.2/api/getAccountLogin'));
+        await http.get(Uri.parse('http://192.168.1.7/api/getAccountLogin'));
     if (response.statusCode == 200) {
       setState(() {
         userList = jsonDecode(response.body);
@@ -103,17 +130,24 @@ class _LoginScreenState extends State<LoginScreen> {
     return false;
   }
 
-  void handleLogin() {
-    String email = emailController.text;
-    String password = passwordController.text;
+  void handleLogin() async {
+    String email = _emailController.text;
+    String password = _passwordController.text;
     if (email.isNotEmpty &&
         password.isNotEmpty &&
         validateUser(email, password)) {
-      // UserPreferences.setUser(userModal);
+      _saveLoginInfo();
+      // if(_rememberMe){
+      //   SharedPreferences prefs = await SharedPreferences.getInstance();
+      //   prefs.setString('email', email);
+      //   prefs.setString('password', password);
+      //   prefs.setBool('rememberMe', true);
+
+      // }
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>  MyBoardsScreen(userID),
+          builder: (context) => MyBoardsScreen(userID),
         ),
       );
     } else {
@@ -128,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                passwordController.clear(); // clear password input
+                _passwordController.clear(); // clear password input
                 passwordFocusNode
                     .requestFocus(); // move focus back to password field
               },
@@ -157,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 50),
               TextFormField(
-                controller: emailController,
+                controller: _emailController,
                 decoration: const InputDecoration(
                   labelText: 'Username',
                   border: OutlineInputBorder(),
@@ -165,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                controller: passwordController,
+                controller: _passwordController,
                 focusNode: passwordFocusNode,
                 decoration: InputDecoration(
                   labelText: 'Password',
@@ -186,9 +220,25 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 obscureText: !isPasswordVisible,
               ),
-              const SizedBox(height: 20),
+              // const SizedBox(height: 1.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Checkbox(
+                    value: _rememberMe,
+                    onChanged: (value) {
+                      setState(() {
+                        _rememberMe = value ?? false;
+                      });
+                    },
+                  ),
+                  const Text('Remember me'),
+                ],
+              ),
+              // const SizedBox(height: 20.0),
               SizedBox(
                 width: double.infinity,
+                height: 40,
                 child: ElevatedButton(
                   onPressed: handleLogin,
                   style: ButtonStyle(
@@ -204,6 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: const Text('Log In'),
                 ),
               ),
+
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -238,7 +289,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const SignupScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => const SignupScreen()),
                       );
                     },
                     style: ButtonStyle(
