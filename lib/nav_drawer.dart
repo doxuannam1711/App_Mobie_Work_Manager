@@ -8,6 +8,8 @@ import 'notifications/notification_screen.dart';
 import 'search/search_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:csv/csv.dart';
+import 'dart:io';
 
 final Uri _url = Uri.parse('https://flutter.dev');
 
@@ -53,21 +55,39 @@ class _NavDrawerState extends State<NavDrawer> {
     }
   }
 
+  Future<String> getFileCSV(int userId) async {
+    final response =
+        await http.get(Uri.parse('http://192.168.53.160/api/writecsv/$userId'));
+    return response.body;
+  }
+
   void _importFile() async {
     try {
       final FilePickerResult? result = await FilePicker.platform.pickFiles();
       if (result != null) {
         final PlatformFile file = result.files.first;
-        final filePath = file.path;
+        final filePath = file.path!; // Add the null-aware operator (!) here
+
+        // Read the CSV file
+        final File csvFile = File(filePath);
+        final csvString = await csvFile.readAsString();
+
+        // Parse the CSV data
+        final csvData = CsvToListConverter().convert(csvString);
+
+        // Extract the userID
+        final userID = csvData[0]
+            [0]; // Assuming userID is in the first row and first column
 
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => MyBoardsScreen(widget.userID)),
+            builder: (context) => MyBoardsScreen(userID),
+          ),
         );
       }
     } catch (e) {
-      // Xử lý lỗi trong quá trình import
+      // Handle import errors
       print('Import error: $e');
     }
   }
@@ -302,6 +322,7 @@ class _NavDrawerState extends State<NavDrawer> {
               leading: const Icon(Icons.file_download),
               title: const Text('Export Data'),
               onTap: () async {
+                getFileCSV(widget.userID);
                 final downloadUrl =
                     // Uri.parse('http://192.168.53.160/api/downloadfile');
                     Uri.parse('http://192.168.53.160/api/downloadfile');

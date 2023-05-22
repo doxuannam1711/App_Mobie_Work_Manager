@@ -702,7 +702,7 @@ ORDER BY cards.DueDate ASC;";
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"select notifications.NotificationID,notifications.NotificationType,Content,notifications.CreatedDate,users.Username,boards.BoardName,cards.CardName from notifications inner join users
+            Command.CommandText = @"select notifications.NotificationID,notifications.NotificationType,Content,notifications.CreatedDate,users.Username,boards.BoardName,cards.CardName,cards.CardID,boards.BoardID,boards.Labels from notifications inner join users
 on notifications.UserID = users.UserID
 inner join cards
 on notifications.CardID=cards.CardID
@@ -732,7 +732,7 @@ on notifications.BoardID=lists.BoardID";
     {
         try
         {
-            var fileName = "test.csv";
+            var fileName = "data.csv";
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
 
             if (!File.Exists(filePath))
@@ -777,11 +777,12 @@ on notifications.BoardID=lists.BoardID";
             using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))
             using (var csvWriter = new CsvWriter(streamWriter, config))
             {
-                csvWriter.WriteField("userid " + userId.ToString());
+                csvWriter.WriteField(userId.ToString());
+                csvWriter.NextRecord();
                 streamWriter.Flush();
 
                 // Save the stream to a file
-                var fileName = "test.csv";
+                var fileName = "data.csv";
                 var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
@@ -852,7 +853,50 @@ on notifications.BoardID=lists.BoardID";
         }
     }
 
+    [HttpPost]
+    [Route("api/addMember")]
+    public IHttpActionResult AddMember([FromBody] MemberModel member)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"INSERT INTO members(fullname, Email, AvatarUrl, assignedTo)
+                                    VALUES(@fullname, @Email, @AvatarUrl, @assignedTo)";
 
+            Command.Parameters.AddWithValue("@fullname", member.fullname);
+            Command.Parameters.AddWithValue("@Email", member.Email);
+            Command.Parameters.AddWithValue("@AvatarUrl", member.AvatarUrl);
+            Command.Parameters.AddWithValue("@assignedTo", member.assignedTo);
+
+
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+    [HttpDelete]
+    [Route("api/deleteMember/{memberID}")]
+    public IHttpActionResult DeleteMember(int memberID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"DELETE FROM members WHERE members.id = @memberID";
+            Command.Parameters.AddWithValue("@memberID", memberID);
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
 
     [Route("api/getUser/{email}")]
     public IHttpActionResult GetUser(string email)
@@ -946,26 +990,6 @@ on notifications.BoardID=lists.BoardID";
     }
 
 
-    [HttpDelete]
-    [Route("api/deleteMember/{memberID}")]
-    public IHttpActionResult DeleteMember(int memberID)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"DELETE FROM members WHERE members.id = @memberID";
-            Command.Parameters.AddWithValue("@memberID", memberID);
-            Command.ExecuteNonQuery();
-            var response = new ResultModel { };
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-    }
-
-
     [Route("api/getmembers/{cardID}")]
     public IHttpActionResult GetMember(int cardID)
     {
@@ -973,7 +997,7 @@ on notifications.BoardID=lists.BoardID";
         {
             Command.ResetAndOpen(CommandType.Text);
             Command.CommandText = @"Select * from members 
-                Where members.assignedTo = ( select members.assignedTo from cards where CardID = @CardID )";
+Where members.assignedTo = ( select members.assignedTo from cards where CardID = @CardID )";
 
             Command.Parameters.AddWithValue("@CardID", cardID);
             DataTable tableNhanVien = Command.GetDataTable();
@@ -990,32 +1014,6 @@ on notifications.BoardID=lists.BoardID";
             return Ok(ex.Message);
         }
 
-    }
-
-    [HttpPost]
-    [Route("api/addMember")]
-    public IHttpActionResult AddMember([FromBody] MemberModel member)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"INSERT INTO members(fullname, Email, AvatarUrl, assignedTo)
-                                    VALUES(@fullname, @Email, @AvatarUrl, @assignedTo)";
-
-            Command.Parameters.AddWithValue("@fullname", member.fullname);
-            Command.Parameters.AddWithValue("@Email", member.Email);
-            Command.Parameters.AddWithValue("@AvatarUrl", member.AvatarUrl);
-            Command.Parameters.AddWithValue("@assignedTo", member.assignedTo);
-
-
-            Command.ExecuteNonQuery();
-            var response = new ResultModel { };
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
     }
 
 }
