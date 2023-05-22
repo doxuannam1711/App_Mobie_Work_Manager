@@ -601,3 +601,145 @@ END
 ----------------TEST-------------
 
 
+-------------------------------------------------------------------UPDATE------------------------------------------------------
+---- notification ----
+USE [app_work_mangement]
+GO
+/****** Object:  Trigger [dbo].[tr_InsertNotification]    Script Date: 22-May-23 7:19:37 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+    ALTER TRIGGER [dbo].[tr_InsertNotification] ON [dbo].[notifications]
+AFTER
+INSERT
+    AS BEGIN DECLARE @title NVARCHAR(MAX),
+    @body NVARCHAR(MAX)
+	DECLARE @http INT
+SELECT
+    @title = Title,
+    @body = N'DoXuanNam' + Content + N' FrontEnd trong danh sách Website bán hàng ở bảng Công việc freelancer'
+FROM
+    inserted DECLARE @json NVARCHAR(MAX)
+SET
+    @json = '{ "to": "/topics/doan", "notification": { "title": "' + @title + '", "body": "' + @body + '" } }' DECLARE @url NVARCHAR(MAX)
+SET
+    @url = 'https://fcm.googleapis.com/fcm/send' DECLARE @http_status INT EXEC sp_OACreate 'MSXML2.ServerXMLHTTP',
+    @http OUT EXEC sp_OAMethod @http,
+    'open',
+    NULL,
+    'POST',
+    @url,
+    'false' EXEC sp_OAMethod @http,
+    'setRequestHeader',
+    NULL,
+    'Content-Type',
+    'application/json' EXEC sp_OAMethod @http,
+    'setRequestHeader',
+    NULL,
+    'Authorization',
+    'key=AAAAxSfIJ_w:APA91bEAoU12d3K0wSKatVnHIzSyBTaRVXrBgJIL4eE_aeEdCg0JmVBbu3UwK7LLDGabgDk8JAs_2jWl-Ezf6MgsRdN0BtwAdzfiNaWDodxJmLBKWReRpYHFo9X8-iVxvE6in4ObsOtR' EXEC sp_OAMethod @http,
+    'send',
+    NULL,
+    @json EXEC sp_OAGetProperty @http,
+    'status',
+    @http_status OUT EXEC sp_OADestroy @http PRINT 'Notification sent: ' + @title + ' - ' + @body
+END 
+
+----card---------
+
+USE [app_work_mangement]
+GO
+/****** Object:  Trigger [dbo].[tr_UpdateCardNotification]    Script Date: 22-May-23 7:20:46 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER TRIGGER [dbo].[tr_UpdateCardNotification]
+ON [dbo].[cards]
+AFTER UPDATE
+AS
+BEGIN
+    DECLARE @title NVARCHAR(MAX), @body NVARCHAR(MAX)
+    DECLARE @http INT
+
+    SELECT @title = N'Thông báo nhắc nhở',
+           @body = N'Thẻ ' + inserted.CardName + N' sẽ hết hạn sau ' +
+                   CAST(DATEDIFF(DAY, GETDATE(),
+                                  CASE inserted.Label
+                                      WHEN 'Low' THEN DATEADD(DAY, 0, inserted.DueDate)
+                                      WHEN 'Medium' THEN DATEADD(DAY, 0, inserted.DueDate)
+                                      WHEN 'High' THEN DATEADD(DAY, 0, inserted.DueDate)
+                                      ELSE inserted.DueDate
+                                  END) AS NVARCHAR(10)) + N' ngày nữa'
+    FROM inserted
+    WHERE (inserted.Label = 'Low' AND DATEDIFF(DAY, GETDATE(), inserted.DueDate) < 3)
+          OR (inserted.Label = 'Medium' AND DATEDIFF(DAY, GETDATE(), inserted.DueDate) < 8)
+          OR (inserted.Label = 'High' AND DATEDIFF(DAY, GETDATE(), inserted.DueDate) < 15)
+
+    IF @@ROWCOUNT > 0
+    BEGIN
+        DECLARE @json NVARCHAR(MAX)
+        SET @json = '{ "to": "/topics/doan", "notification": { "title": "' + @title + '", "body": "' + @body + '" } }'
+
+        DECLARE @url NVARCHAR(MAX)
+        SET @url = 'https://fcm.googleapis.com/fcm/send'
+
+        DECLARE @http_status INT
+
+        EXEC sp_OACreate 'MSXML2.ServerXMLHTTP', @http OUT
+        EXEC sp_OAMethod @http, 'open', NULL, 'POST', @url, 'false'
+        EXEC sp_OAMethod @http, 'setRequestHeader', NULL, 'Content-Type', 'application/json'
+        EXEC sp_OAMethod @http, 'setRequestHeader', NULL, 'Authorization', 'key=AAAAxSfIJ_w:APA91bEAoU12d3K0wSKatVnHIzSyBTaRVXrBgJIL4eE_aeEdCg0JmVBbu3UwK7LLDGabgDk8JAs_2jWl-Ezf6MgsRdN0BtwAdzfiNaWDodxJmLBKWReRpYHFo9X8-iVxvE6in4ObsOtR'
+        EXEC sp_OAMethod @http, 'send', NULL, @json
+        EXEC sp_OAGetProperty @http, 'status', @http_status OUT
+        EXEC sp_OADestroy @http
+
+        IF @http_status = 200
+        BEGIN
+            PRINT 'Notification sent: ' + @title + ' - ' + @body
+        END
+        ELSE
+        BEGIN
+            PRINT 'Notification failed to send'
+        END
+    END
+END
+
+--- CHECKLIST ----
+
+
+USE [app_work_mangement]
+GO
+/****** Object:  Trigger [dbo].[trg_checklist_delete]    Script Date: 22-May-23 7:21:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER TRIGGER [dbo].[trg_checklist_delete] ON [dbo].[checklistitems]
+AFTER DELETE
+AS
+BEGIN
+  DECLARE @title nvarchar(255);
+  SELECT @title = N' xoá checklist ' + Title + N' ở thẻ' FROM deleted;
+  insert into notifications VALUES(1,1,N'CheckList',1,1,@title,'2023-3-8 09:55:21 AM','true')
+END
+
+----comment-------------
+
+USE [app_work_mangement]
+GO
+/****** Object:  Trigger [dbo].[trg_comments_insert]    Script Date: 22-May-23 7:22:45 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER TRIGGER [dbo].[trg_comments_insert] ON [dbo].[comments]
+AFTER INSERT
+AS
+BEGIN
+  DECLARE @title nvarchar(255);
+  SELECT @title = N' đã bình luận: ' + Detail + N' ở thẻ' FROM inserted;
+  insert into notifications VALUES(1,1,N'Bình Luận',1,1,@title,'2023-3-8 09:55:21 AM','true')
+END
