@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/list/list_screen.dart';
+import 'package:flutter_application/my_boards/my_boards_screen.dart';
+import 'package:flutter_application/my_cards/card_detail_screen.dart';
 import 'package:flutter_application/nav_drawer.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -10,7 +13,6 @@ import 'dart:async';
 class NotificationScreen extends StatefulWidget {
   final int userID;
   const NotificationScreen(this.userID);
-
 
   @override
   State<NotificationScreen> createState() => _NotificationScreenState();
@@ -28,7 +30,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Future<void> _fetchBoardList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.2/api/getNotifications'));
+        await http.get(Uri.parse('http://192.168.53.160/api/getNotifications'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
@@ -197,7 +199,32 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ),
             trailing: const Text(""),
             onTap: () {
-              //TODO:...
+              if (notification['CardName'] != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CardsDetailScreen(
+                      notification['CardName'],
+                      notification['CardID'],
+                      widget.userID,
+                    ),
+                  ),
+                );
+              } else if (notification['BoardName'] != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ListScreen(
+                      notification['BoardName'],
+                      notification['BoardID'],
+                      notification['labels'],
+                      widget.userID,
+                    ),
+                  ),
+                );
+              } else {
+                // Xử lý cho các trường hợp khác
+              }
             },
           );
         },
