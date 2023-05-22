@@ -15,13 +15,14 @@ void main() async {
   Logger logger = Logger('myLogger');
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
+    name: "Do An",
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-  FirebaseMessaging.instance.subscribeToTopic('news').then((value) {
-    logger.info('Subscribed to topic news');
+  FirebaseMessaging.instance.subscribeToTopic('doan').then((value) {
+    logger.info('Subscribed to topic doan');
   }).catchError((e) {
-    logger.info('Failed to subscribe to topic news: $e');
+    logger.info('Failed to subscribe to topic doan: $e');
   });
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
@@ -61,7 +62,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
-
-
