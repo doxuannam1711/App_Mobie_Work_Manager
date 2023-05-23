@@ -415,7 +415,6 @@ ORDER BY notifications.NotificationID DESC;
 
 DELETE FROM notifications WHERE NotificationID = 29;
 
-
 ALTER TABLE
   users
 ALTER COLUMN RoleID  int;
@@ -774,3 +773,145 @@ cards.Label, cards.Comment, cards.CardName, cards.StatusView,
 cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
 cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
 ORDER BY cards.CardID DESC;
+
+----------------------------------------CUONG UPDATE 23-05-----------------------------------------
+---EDIT notifi table---
+ALTER TABLE notifications
+ALTER COLUMN Content nvarchar(max) NULL;
+-----FIX BUGG API-----------------------
+UPDATE cards SET DueDate = '2023-5-27' Where cards.CardID = 1
+
+SELECT name
+FROM sys.syslogins
+
+GRANT EXECUTE ON sys.sp_OAMethod TO [IIS APPPOOL\DefaultAppPool];
+GRANT EXECUTE ON sys.sp_OAGetProperty TO [IIS APPPOOL\DefaultAppPool];
+GRANT EXECUTE ON sys.sp_OADestroy TO [IIS APPPOOL\DefaultAppPool];
+----- TRIGGER---------------------------
+CREATE TRIGGER [dbo].[tr_UpdateCardNotification]
+ON [dbo].[cards]
+AFTER UPDATE
+AS
+BEGIN
+    DECLARE @title NVARCHAR(MAX), @body NVARCHAR(MAX)
+    DECLARE @http INT
+
+    SELECT @title = N'Thông báo nhắc nhở',
+           @body = N'Thẻ ' + inserted.CardName + N' sẽ hết hạn sau ' +
+                   CAST(DATEDIFF(DAY, GETDATE(),
+                                  CASE inserted.Label
+                                      WHEN 'Low' THEN DATEADD(DAY, 0, inserted.DueDate)
+                                      WHEN 'Medium' THEN DATEADD(DAY, 0, inserted.DueDate)
+                                      WHEN 'High' THEN DATEADD(DAY, 0, inserted.DueDate)
+                                      ELSE inserted.DueDate
+                                  END) AS NVARCHAR(10)) + N' ngày nữa'
+    FROM inserted
+    WHERE (inserted.Label = 'Low' AND DATEDIFF(DAY, GETDATE(), inserted.DueDate) < 3)
+          OR (inserted.Label = 'Medium' AND DATEDIFF(DAY, GETDATE(), inserted.DueDate) < 8)
+          OR (inserted.Label = 'High' AND DATEDIFF(DAY, GETDATE(), inserted.DueDate) < 15)
+
+    IF @@ROWCOUNT > 0
+    BEGIN
+        DECLARE @json NVARCHAR(MAX)
+        SET @json = '{ "to": "/topics/doan", "notification": { "title": "' + @title + '", "body": "' + @body + '" } }'
+
+        DECLARE @url NVARCHAR(MAX)
+        SET @url = 'https://fcm.googleapis.com/fcm/send'
+
+        DECLARE @http_status INT
+
+        EXEC sp_OACreate 'MSXML2.ServerXMLHTTP', @http OUT
+        EXEC sp_OAMethod @http, 'open', NULL, 'POST', @url, 'false'
+        EXEC sp_OAMethod @http, 'setRequestHeader', NULL, 'Content-Type', 'application/json'
+        EXEC sp_OAMethod @http, 'setRequestHeader', NULL, 'Authorization', 'key=AAAAxSfIJ_w:APA91bEAoU12d3K0wSKatVnHIzSyBTaRVXrBgJIL4eE_aeEdCg0JmVBbu3UwK7LLDGabgDk8JAs_2jWl-Ezf6MgsRdN0BtwAdzfiNaWDodxJmLBKWReRpYHFo9X8-iVxvE6in4ObsOtR'
+        EXEC sp_OAMethod @http, 'send', NULL, @json
+        EXEC sp_OAGetProperty @http, 'status', @http_status OUT
+        EXEC sp_OADestroy @http
+
+        IF @http_status = 200
+        BEGIN
+            PRINT 'Notification sent: ' + @title + ' - ' + @body
+        END
+        ELSE
+        BEGIN
+            PRINT 'Notification failed to send'
+        END
+    END
+END
+-------------------------------------
+CREATE TRIGGER [dbo].[tr_InsertNotification] ON [dbo].[notifications]
+AFTER
+INSERT
+    AS BEGIN DECLARE @title NVARCHAR(MAX),
+    @body NVARCHAR(MAX)
+	DECLARE @http INT
+SELECT
+    @title = Title,
+    @body = N'DoXuanNam' + Content + N' FrontEnd trong danh sách Website bán hàng ở bảng Công việc freelancer'
+FROM
+    inserted DECLARE @json NVARCHAR(MAX)
+SET
+    @json = '{ "to": "/topics/doan", "notification": { "title": "' + @title + '", "body": "' + @body + '" } }' DECLARE @url NVARCHAR(MAX)
+SET
+    @url = 'https://fcm.googleapis.com/fcm/send' DECLARE @http_status INT EXEC sp_OACreate 'MSXML2.ServerXMLHTTP',
+    @http OUT EXEC sp_OAMethod @http,
+    'open',
+    NULL,
+    'POST',
+    @url,
+    'false' EXEC sp_OAMethod @http,
+    'setRequestHeader',
+    NULL,
+    'Content-Type',
+    'application/json' EXEC sp_OAMethod @http,
+    'setRequestHeader',
+    NULL,
+    'Authorization',
+    'key=AAAAxSfIJ_w:APA91bEAoU12d3K0wSKatVnHIzSyBTaRVXrBgJIL4eE_aeEdCg0JmVBbu3UwK7LLDGabgDk8JAs_2jWl-Ezf6MgsRdN0BtwAdzfiNaWDodxJmLBKWReRpYHFo9X8-iVxvE6in4ObsOtR' EXEC sp_OAMethod @http,
+    'send',
+    NULL,
+    @json EXEC sp_OAGetProperty @http,
+    'status',
+    @http_status OUT EXEC sp_OADestroy @http PRINT 'Notification sent: ' + @title + ' - ' + @body
+END 
+
+-----------------------------------------------------
+CREATE TRIGGER [dbo].[trg_checklist_delete] ON [dbo].[checklistitems]
+AFTER DELETE
+AS
+BEGIN
+  DECLARE @title nvarchar(255);
+  SELECT @title = N' xoá checklist ' + Title + N' ở thẻ' FROM deleted;
+  insert into notifications VALUES(1,1,N'CheckList',1,1,@title,'2023-3-8 09:55:21 AM','true')
+END
+------------------------------------------------------
+CREATE TRIGGER [dbo].[trg_checklistitem] ON [dbo].[checklistitems]
+AFTER INSERT
+AS
+BEGIN
+  DECLARE @title nvarchar(255);
+  SELECT @title = N' đã thêm checklist: ' + Title + N' ở thẻ' FROM inserted;
+  insert into notifications VALUES(1,1,N'Công việc',1,1,@title,'2023-3-8 09:55:21 AM','true')
+END
+-------------------------------------------------------
+CREATE TRIGGER [dbo].[trg_comments_comment] ON [dbo].[comments]
+AFTER INSERT
+AS
+BEGIN
+  DECLARE @title nvarchar(255);
+  SELECT @title = N' đã bình luận: ' + Detail + N' ở thẻ' FROM inserted;
+  insert into notifications VALUES(1,1,N'Bình Luận',1,1,@title,'2023-3-8 09:55:21 AM','true')
+END
+-------------------------------------------------------
+CREATE TRIGGER [dbo].[trg_attach] ON [dbo].attachments
+AFTER INSERT
+AS
+BEGIN
+  DECLARE @title nvarchar(255);
+  SELECT @title = N' đã đính kèm tệp: ' + AttachmentName + N' ở thẻ' FROM inserted;
+  insert into notifications VALUES(1,1,N'Thêm tệp đính kèm',1,1,@title,'2023-3-8 09:55:21 AM','true')
+END
+----------TEST TRIGGER --------------
+insert into checklistitems VALUES(1,N'Khảo sát, phân tích nghiệp vụ 2','','','false','','2023-2-20 10:51:50 AM','',1)
+insert into comments VALUES(3,12,N'Không hiểu kiểu gì lỗi này ở đâu ra dị')
+insert into attachments VALUES(1,N'https://drive.google.com/uc?id=1IFsLihg2jGUF9vmjk5ox2G25atpNYqlQ&export=download','sample-docx-file-for-testing')

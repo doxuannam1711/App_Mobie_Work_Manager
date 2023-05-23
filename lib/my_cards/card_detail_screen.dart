@@ -1,10 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../attachment/attachment_screen.dart';
 import '../checklist/checklist_screen_show.dart';
 import '../member/member_screen.dart';
+import '../model/card_detail.dart';
 import '../nav_drawer.dart';
 import 'my_cards_screen.dart';
 
@@ -20,19 +20,11 @@ class CardsDetailScreen extends StatefulWidget {
 }
 
 class _CardsDetailScreenState extends State<CardsDetailScreen> {
-  final String _listName = 'In Process'; // List within which the card is contained
+  late CardDetail _cardDetail;
+  String _listName = ''; // List within which the card is contained
   String _description = ''; // Description of the card
   DateTime? _expirationDate; // Expiration date of the card
-  final String _label = 'Label Name'; // Label for the card
-  String _member = 'John Doe'; // Member assigned to the card
-  final String _checklistName = 'test1';
-  final List<Map<String, dynamic>> _items = [
-    {"muc 1": "te"},
-    {"muc 1": "te"},
-    {"muc 1": "te"},
-    {"muc 1": "te"},
-    {"muc 1": "te"},
-  ];
+  String _member = 'Đỗ Xuân Nam'; // Member assigned to the card
 
   final List<Color> _labelColors = [
     Colors.red,
@@ -44,10 +36,35 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   String _comment = "test comment";
   String _editComment = "";
-  
-  Future<List<Map<String, dynamic>>> getComments() async {
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCardDetail(widget.cardID).then((cardDetail) {
+      setState(() {
+        _cardDetail = cardDetail;
+        _listName = cardDetail.listName;
+      });
+    });
+  }
+
+  Future<CardDetail> fetchCardDetail(int cardID) async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.7/api/getComments/${widget.cardID}'));
+        .get(Uri.parse('http://192.168.53.160/api/getcarddetail/$cardID'));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body)['Data'];
+      final cardData = json.decode(data)[0];
+
+      return CardDetail.fromJson(cardData);
+    } else {
+      throw Exception('Failed to load card detail');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getComments() async {
+    final response = await http.get(
+        Uri.parse('http://192.168.53.160/api/getComments/${widget.cardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -129,9 +146,13 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
     );
 
     if (response.statusCode == 200) {
-      // Handle success
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('UPDATE successfully!')),
+      );
     } else {
-      // Handle error
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('UPDATE failure')),
+      );
     }
   }
 
@@ -149,9 +170,13 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
     );
 
     if (response.statusCode == 200) {
-      // Handle success
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('UPDATE successfully!')),
+      );
     } else {
-      // Handle error
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('UPDATE failure')),
+      );
     }
   }
 
@@ -219,13 +244,15 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                         ),
                       ),
                       const SizedBox(width: 8.0),
-                      const Text(
-                        'Website bán hàng',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18.0,
-                        ),
-                      ),
+                      _listName != null
+                          ? Text(
+                              _listName,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18.0,
+                              ),
+                            )
+                          : CircularProgressIndicator(),
                       const Divider(
                         thickness: 1.0,
                         height: 24.0,
@@ -270,7 +297,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => AttachmentPage(widget.cardID),
+                                      builder: (context) =>
+                                          AttachmentPage(widget.cardID),
                                     ),
                                   );
                                 },
@@ -347,8 +375,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                 context: context,
                                 initialDate: _expirationDate ?? DateTime.now(),
                                 firstDate: DateTime.now(),
-                                lastDate:
-                                    DateTime.now().add(const Duration(days: 365)),
+                                lastDate: DateTime.now()
+                                    .add(const Duration(days: 365)),
                               );
                               if (picked != null) {
                                 setState(() {
