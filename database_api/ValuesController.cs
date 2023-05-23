@@ -97,24 +97,24 @@ public class ValuesController : ApiControllerBase
         }
     }
 
-    [HttpDelete]
-    [Route("api/deleteUser/{userId}")]
-    public IHttpActionResult DeleteUser(int userId)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"DELETE FROM users WHERE UserID = @UserID";
-            Command.Parameters.AddWithValue("@UserID", userId);
-            Command.ExecuteNonQuery();
-            var response = new ResultModel { };
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-    }
+    //[HttpDelete]
+    //[Route("api/deleteUser/{userId}")]
+    //public IHttpActionResult DeleteUser(int userId)
+    //{
+    //    try
+    //    {
+    //        Command.ResetAndOpen(CommandType.Text);
+    //        Command.CommandText = @"DELETE FROM users WHERE UserID = @UserID";
+    //        Command.Parameters.AddWithValue("@UserID", userId);
+    //        Command.ExecuteNonQuery();
+    //        var response = new ResultModel { };
+    //        return Ok(response);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return Ok(ex.Message);
+    //    }
+    //}
 
 
 
@@ -702,7 +702,7 @@ ORDER BY cards.DueDate ASC;";
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"select notifications.NotificationID,notifications.NotificationType,Content,notifications.CreatedDate,users.Username,boards.BoardName,cards.CardName,cards.CardID,boards.BoardID,boards.Labels from notifications inner join users
+            Command.CommandText = @"select notifications.NotificationID,notifications.NotificationType,Content,notifications.CreatedDate,users.Username,boards.BoardName,cards.CardName from notifications inner join users
 on notifications.UserID = users.UserID
 inner join cards
 on notifications.CardID=cards.CardID
@@ -732,7 +732,7 @@ on notifications.BoardID=lists.BoardID";
     {
         try
         {
-            var fileName = "data.csv";
+            var fileName = "test.csv";
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
 
             if (!File.Exists(filePath))
@@ -777,12 +777,11 @@ on notifications.BoardID=lists.BoardID";
             using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))
             using (var csvWriter = new CsvWriter(streamWriter, config))
             {
-                csvWriter.WriteField(userId.ToString());
-                csvWriter.NextRecord();
+                csvWriter.WriteField("userid " + userId.ToString());
                 streamWriter.Flush();
 
                 // Save the stream to a file
-                var fileName = "data.csv";
+                var fileName = "test.csv";
                 var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
@@ -946,6 +945,27 @@ on notifications.BoardID=lists.BoardID";
         }
     }
 
+
+    [HttpDelete]
+    [Route("api/deleteMember/{memberID}")]
+    public IHttpActionResult DeleteMember(int memberID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"DELETE FROM members WHERE members.id = @memberID";
+            Command.Parameters.AddWithValue("@memberID", memberID);
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+
     [Route("api/getmembers/{cardID}")]
     public IHttpActionResult GetMember(int cardID)
     {
@@ -999,15 +1019,58 @@ on notifications.BoardID=lists.BoardID";
     }
 
     [HttpDelete]
-    [Route("api/deleteMember/{memberID}")]
-    public IHttpActionResult DeleteMember(int memberID)
+    [Route("api/deleteUser/{userId}")]
+    public IHttpActionResult DeleteUser(int userId)
     {
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"DELETE FROM members WHERE members.id = @memberID";
-            Command.Parameters.AddWithValue("@memberID", memberID);
+
+            // Delete related records from checklistitems
+            Command.CommandText = @"DELETE FROM checklistitems WHERE ChecklistID IN (SELECT ChecklistID FROM checklists WHERE CardID IN (SELECT CardID FROM cards WHERE ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=@ChecklistItemsUserID))))";
+            Command.Parameters.AddWithValue("@ChecklistItemsUserID", userId);
             Command.ExecuteNonQuery();
+
+            // Delete related records from checklists
+            Command.CommandText = @"DELETE FROM checklists WHERE CardID IN (SELECT CardID FROM cards WHERE ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=@ChecklistUserID)))";
+            Command.Parameters.AddWithValue("@ChecklistUserID", userId);
+            Command.ExecuteNonQuery();
+
+            // Delete related records from attachments
+            Command.CommandText = @"DELETE FROM attachments WHERE CardID IN (SELECT CardID FROM cards WHERE ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=@AttachmentUserID)))";
+            Command.Parameters.AddWithValue("@AttachmentUserID", userId);
+            Command.ExecuteNonQuery();
+
+            // Delete related records from comments
+            Command.CommandText = @"DELETE FROM comments WHERE UserID=@CommentUserID";
+            Command.Parameters.AddWithValue("@CommentUserID", userId);
+            Command.ExecuteNonQuery();
+
+            // Delete related records from notifications
+            Command.CommandText = @"DELETE FROM notifications WHERE UserID=@NotificationUserID";
+            Command.Parameters.AddWithValue("@NotificationUserID", userId);
+            Command.ExecuteNonQuery();
+
+            // Delete related records from cards
+            Command.CommandText = @"DELETE FROM cards WHERE ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @CardUserID))";
+            Command.Parameters.AddWithValue("@CardUserID", userId);
+            Command.ExecuteNonQuery();
+
+            // Delete related records from lists
+            Command.CommandText = @"DELETE FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @ListUserID)";
+            Command.Parameters.AddWithValue("@ListUserID", userId);
+            Command.ExecuteNonQuery();
+
+            // Delete related records from boards
+            Command.CommandText = @"DELETE FROM boards WHERE UserID = @BoardUserID";
+            Command.Parameters.AddWithValue("@BoardUserID", userId);
+            Command.ExecuteNonQuery();
+
+            // Finally, delete the user record
+            Command.CommandText = @"DELETE FROM users WHERE UserID = @UserUserID";
+            Command.Parameters.AddWithValue("@UserUserID", userId);
+            Command.ExecuteNonQuery();
+
             var response = new ResultModel { };
             return Ok(response);
         }
@@ -1018,8 +1081,6 @@ on notifications.BoardID=lists.BoardID";
     }
 
 }
-
-
 
 
 

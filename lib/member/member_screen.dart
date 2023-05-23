@@ -22,7 +22,7 @@ class _MemberScreenState extends State<MemberScreen> {
 
   Future<List<Map<String, dynamic>>> _getMembersCard() async {
     final response = await http.get(
-        Uri.parse('http://192.168.53.160/api/getmembers/${widget.cardID}'));
+        Uri.parse('http://192.168.1.7/api/getmembers/${widget.cardID}'));
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
       if (jsonData['Data'] is String) {
@@ -51,7 +51,7 @@ class _MemberScreenState extends State<MemberScreen> {
 
   Future<List<Map<String, dynamic>>> _getAccount() async {
     final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/getAccountLogin'));
+        await http.get(Uri.parse('http://192.168.1.7/api/getAccountLogin'));
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
       if (jsonData['Data'] is String) {
@@ -79,7 +79,7 @@ class _MemberScreenState extends State<MemberScreen> {
   }
 
   Future<void> _deleteMember(int memberID) async {
-    final url = Uri.parse('http://192.168.53.160/api/deleteMember/$memberID');
+    final url = Uri.parse('http://192.168.1.7/api/deleteMember/$memberID');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -95,7 +95,7 @@ class _MemberScreenState extends State<MemberScreen> {
 
   Future<void> addMember(MemberModel newMember) async {
     final response = await http.post(
-      Uri.parse('http://192.168.53.160/api/addMember/'),
+      Uri.parse('http://192.168.1.7/api/addMember/'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newMember.toJson()),
     );
@@ -140,8 +140,8 @@ class _MemberScreenState extends State<MemberScreen> {
                   return AlertDialog(
                     title: const Text('Add member'),
                     content: SizedBox(
-                      height: MediaQuery.of(context).size.height *
-                          0.3, // set chiều cao bằng 50% của chiều cao màn hình
+                      height: MediaQuery.of(context).size.height * 0.4, // set chiều cao bằng 50% của chiều cao màn hình
+                      width: MediaQuery.of(context).size.width * 0.75,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -204,7 +204,7 @@ class _MemberScreenState extends State<MemberScreen> {
                 },
               );
               if (email != null && email.isNotEmpty) {
-// await _addMember(email);
+              // await _addMember(email);
               }
             },
             icon: const Icon(Icons.add),
