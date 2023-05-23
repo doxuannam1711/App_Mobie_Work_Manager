@@ -20,7 +20,7 @@ class _AccountScreenState extends State<AccountScreen> {
   Future<List<Map<String, dynamic>>> getUserList() async {
 
     final response =
-        await http.get(Uri.parse('http://192.168.1.2/api/getAccount/${widget.userID}'));
+        await http.get(Uri.parse('http://192.168.1.7/api/getAccount/${widget.userID}'));
 
     if (response.statusCode == 200) {
       try {
@@ -49,7 +49,7 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Future<void> _deleteUser() async {
-    final url = Uri.parse('http://192.168.1.2/api/deleteUser/${widget.userID}');
+    final url = Uri.parse('http://192.168.1.7/api/deleteUser/${widget.userID}');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -83,7 +83,7 @@ class _AccountScreenState extends State<AccountScreen> {
               final userList = snapshot.data!;
               return ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
-                  physics: const BouncingScrollPhysics(),
+                  // physics: const BouncingScrollPhysics(),
                   itemCount: userList.length,
                   itemBuilder: (context, index) {
                     final userData = userList[index];
@@ -295,11 +295,12 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const LoginScreen(),
                     ),
+                    (route) => false, // Remove all previous routes
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -356,10 +357,11 @@ class _AccountScreenState extends State<AccountScreen> {
                       child: const Text('Delete'),
                       onPressed: () async {
                         _deleteUser();
-                        await Navigator.of(context).push(
+                        await Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
                             builder: (context) =>  const LoginScreen()
                           ),
+                          (route) => false, // Remove all previous routes
                         );
                         setState(() {});
                       },

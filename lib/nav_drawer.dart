@@ -13,7 +13,7 @@ import 'dart:io';
 
 final Uri _url = Uri.parse('https://flutter.dev');
 
-// final Uri _url = Uri.parse('http://192.168.53.160/api/downloadfile');
+// final Uri _url = Uri.parse('http://192.168.1.7/api/downloadfile');
 class NavDrawer extends StatefulWidget {
   final int userID;
   const NavDrawer(this.userID);
@@ -28,7 +28,7 @@ class _NavDrawerState extends State<NavDrawer> {
 
   Future<List<Map<String, dynamic>>> getUserList() async {
     final response = await http.get(
-        Uri.parse('http://192.168.53.160/api/getAccount/${widget.userID}'));
+        Uri.parse('http://192.168.1.7/api/getAccount/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -57,7 +57,7 @@ class _NavDrawerState extends State<NavDrawer> {
 
   Future<String> getFileCSV(int userId) async {
     final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/writecsv/$userId'));
+        await http.get(Uri.parse('http://192.168.1.7/api/writecsv/$userId'));
     return response.body;
   }
 
@@ -223,7 +223,7 @@ class _NavDrawerState extends State<NavDrawer> {
       children: [
         UserAccountsDrawerHeader(
           onDetailsPressed: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                   builder: (context) => MyBoardsScreen(widget.userID)),
@@ -259,7 +259,7 @@ class _NavDrawerState extends State<NavDrawer> {
               leading: const Icon(Icons.space_dashboard_rounded),
               title: const Text('My boards'),
               onTap: () => {
-                Navigator.of(context).push(
+                Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                       builder: (context) => MyBoardsScreen(widget.userID)),
                 )
@@ -269,7 +269,7 @@ class _NavDrawerState extends State<NavDrawer> {
               leading: const Icon(Icons.credit_card),
               title: const Text('My cards'),
               onTap: () => {
-                Navigator.of(context).push(
+                Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                       builder: (context) => MyCardsScreen(widget.userID)),
                 )
@@ -279,7 +279,7 @@ class _NavDrawerState extends State<NavDrawer> {
               leading: const Icon(Icons.search),
               title: const Text('Search'),
               onTap: () => {
-                Navigator.of(context).push(
+                Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                       builder: (context) => SearchScreen(widget.userID)),
                 )
@@ -292,7 +292,7 @@ class _NavDrawerState extends State<NavDrawer> {
               leading: const Icon(Icons.notifications),
               title: const Text('Notification'),
               onTap: () => {
-                Navigator.of(context).push(
+                Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                       builder: (context) => NotificationScreen(widget.userID)),
                 )
@@ -302,7 +302,7 @@ class _NavDrawerState extends State<NavDrawer> {
               leading: const Icon(Icons.account_circle),
               title: const Text('Account'),
               onTap: () => {
-                Navigator.of(context).push(
+                Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                       builder: (context) => AccountScreen(widget.userID)),
                 )
@@ -324,8 +324,8 @@ class _NavDrawerState extends State<NavDrawer> {
               onTap: () async {
                 getFileCSV(widget.userID);
                 final downloadUrl =
-                    // Uri.parse('http://192.168.53.160/api/downloadfile');
-                    Uri.parse('http://192.168.53.160/api/downloadfile');
+                    // Uri.parse('http://192.168.1.7/api/downloadfile');
+                    Uri.parse('http://192.168.1.7/api/downloadfile');
                 if (!await launchUrl(downloadUrl,
                     mode: LaunchMode.externalApplication)) {
                   throw Exception('Could not launch $downloadUrl');

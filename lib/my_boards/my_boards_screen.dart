@@ -31,7 +31,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchBoardList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.2/api/getboards/${widget.userID}'));
+        await http.get(Uri.parse('http://192.168.1.7/api/getboards/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -56,7 +56,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _searchBoards(String keyword) async {
-    final url = Uri.parse('http://192.168.1.2/api/searchBoards/$keyword');
+    final url = Uri.parse('http://192.168.1.7/api/searchBoards/$keyword');
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -69,7 +69,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
   }
 
   Future<void> _deleteBoard(int boardId) async {
-    final url = Uri.parse('http://192.168.1.2/api/deleteBoard/$boardId');
+    final url = Uri.parse('http://192.168.1.7/api/deleteBoard/$boardId');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -452,8 +452,10 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                                   // TODO: delete board
                                   _deleteBoard(boardID); 
                                   // call _deleteBoard function
-                                  await Navigator.of(context).push(
-                                    MaterialPageRoute(builder: (context) => MyBoardsScreen(widget.userID)),
+                                  await Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (context) => MyBoardsScreen(widget.userID)
+                                    ),
                                   );
                                   setState(() {});
                                   

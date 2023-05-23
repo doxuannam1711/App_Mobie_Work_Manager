@@ -70,7 +70,7 @@ class _SignupScreenState extends State<SignupScreen> {
   // }
 
   Future<void> _addUser() async {
-    final url = Uri.parse('http://192.168.1.2/api/addUser');
+    final url = Uri.parse('http://192.168.1.7/api/addUser');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -281,9 +281,11 @@ class _SignupScreenState extends State<SignupScreen> {
                   }
                   else if(_addPassword==_confirmPassword){
                     _addUser();
-                    await Navigator.of(context).push(
+                    await Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
-                          builder: (context) => const LoginScreen()),
+                        builder: (context) => const LoginScreen()
+                      ),
+                      (route) => false, // Remove all previous routes  
                     );
                   } 
                   else{

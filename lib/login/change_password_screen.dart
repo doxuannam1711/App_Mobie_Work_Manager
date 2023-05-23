@@ -32,7 +32,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   Future<void> _changePassword() async {
     final url =
-        Uri.parse('http://192.168.1.2/api/changePassword/${widget.userID}');
+        Uri.parse('http://192.168.1.7/api/changePassword/${widget.userID}');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -112,9 +112,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   }
                   else if (_updatePassword == _confirmPassword) {
                     _changePassword();
-                    await Navigator.of(context).push(
+                    await Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
-                          builder: (context) => const LoginScreen()),
+                        builder: (context) => const LoginScreen()
+                      ),
+                      (route) => false, // Remove all previous routes
                     );
                   }
                   else {
