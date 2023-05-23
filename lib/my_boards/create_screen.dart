@@ -47,7 +47,7 @@ class _CreateScreenState extends State<CreateScreen>
 
     // call the API to add the new board
     final response = await http.post(
-      Uri.parse('http://192.168.1.2/api/addBoard'),
+      Uri.parse('http://192.168.1.7/api/addBoard'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newBoard.toJson()),
     );
@@ -224,7 +224,7 @@ class _CreateScreenState extends State<CreateScreen>
                     child: const Text('Add'),
                     onPressed: () async{
                       addBoard();
-                      await Navigator.of(context).push(
+                      await Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                           builder: (context) => MyBoardsScreen(widget.userID)),
                       );

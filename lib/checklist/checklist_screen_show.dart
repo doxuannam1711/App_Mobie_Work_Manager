@@ -34,7 +34,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
 
   Future<void> _fetchChecklistItems() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.2/api/getChecklists/${widget.cardID}'));
+        Uri.parse('http://192.168.1.7/api/getChecklists/${widget.cardID}'));
     final String jsonData = json.decode(response.body)['Data'];
     final List<dynamic> data = json.decode(jsonData);
 
@@ -58,7 +58,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
 
   Future<void> _deleteChecklistitem(String itemName) async {
     final url =
-        Uri.parse('http://192.168.1.2/api/deleteChecklistitem/$itemName');
+        Uri.parse('http://192.168.1.7/api/deleteChecklistitem/$itemName');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       // Success
@@ -78,7 +78,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
 
     // call the API to add the new checklist item
     final response = await http.post(
-      Uri.parse('http://192.168.1.2/api/addChecklistitem'),
+      Uri.parse('http://192.168.1.7/api/addChecklistitem'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newItem.toJson()),
     );
@@ -114,7 +114,13 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
     }
     return Scaffold(
       appBar: AppBar(
-// Display the checklist name as text or as an editable text field
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        // Display the checklist name as text or as an editable text field
         title: _isEditingName
             ? TextFormField(
                 initialValue: _checklistName,
@@ -127,7 +133,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
               )
             : Text(_checklistName),
         actions: [
-// Toggle between displaying the checklist name as text and as an editable text field
+          // Toggle between displaying the checklist name as text and as an editable text field
           IconButton(
             icon: _isEditingName
                 ? const Icon(Icons.check)
@@ -154,7 +160,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
               });
             },
           ),
-// Toggle between filtering and displaying only checked items, only unchecked items, or all items
+          // Toggle between filtering and displaying only checked items, only unchecked items, or all items
           IconButton(
             icon: const Icon(Icons.list),
             onPressed: () {
@@ -171,7 +177,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8.0),
-// Display the checklist name as text
+            // Display the checklist name as text
             if (!_isEditingName)
               Text(
                 _checklistName,
@@ -181,7 +187,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
                 ),
               ),
             const SizedBox(height: 8.0),
-// Display the items based on the selected filter option
+            // Display the items based on the selected filter option
             for (final item in filteredItems)
               _buildChecklistItem(_items.indexOf(item), item),
             const SizedBox(height: 16.0),

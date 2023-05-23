@@ -144,11 +144,12 @@ class _LoginScreenState extends State<LoginScreen> {
       //   prefs.setBool('rememberMe', true);
 
       // }
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
           builder: (context) => MyBoardsScreen(userID),
         ),
+        (route) => false,
       );
     } else {
       // Show error message

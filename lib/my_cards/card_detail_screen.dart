@@ -44,10 +44,10 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   String _comment = "test comment";
   String _editComment = "";
-
+  
   Future<List<Map<String, dynamic>>> getComments() async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/getComments/${widget.cardID}'));
+        .get(Uri.parse('http://192.168.1.7/api/getComments/${widget.cardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -74,7 +74,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _addComment() async {
-    final url = Uri.parse('http://192.168.53.160/api/addComment');
+    final url = Uri.parse('http://192.168.1.7/api/addComment');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -99,7 +99,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _deleteComment(int commentID) async {
-    final url = Uri.parse('http://192.168.53.160/api/deleteComment/$commentID');
+    final url = Uri.parse('http://192.168.1.7/api/deleteComment/$commentID');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -115,7 +115,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   Future<void> _updateComment(int commentID) async {
     final url = Uri.parse(
-        'http://192.168.53.160/api/updateComment/${widget.userID}/$commentID');
+        'http://192.168.1.7/api/updateComment/${widget.userID}/$commentID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -136,7 +136,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _updateCard(int cardID) async {
-    final url = Uri.parse('http://192.168.53.160/api/updateCard/$cardID');
+    final url = Uri.parse('http://192.168.1.7/api/updateCard/$cardID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -182,7 +182,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        drawer: NavDrawer(widget.userID),
+        // drawer: NavDrawer(widget.userID),
         appBar: AppBar(
           title: Text(widget.cardName),
           actions: [
@@ -190,9 +190,11 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
               icon: const Icon(Icons.check),
               onPressed: () async {
                 _updateCard(widget.cardID);
-                await Navigator.of(context).push(
+                await Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
-                      builder: (context) => MyCardsScreen(widget.userID)),
+                    builder: (context) => MyCardsScreen(widget.userID)
+                  ),
+                  (route) => false, // Remove all previous routes
                 );
                 setState(() {});
               },
@@ -246,16 +248,15 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                 icon: const Icon(
                                     Icons.format_list_numbered_sharp),
                                 onPressed: () {
-                                  _updateCard(widget.cardID);
-                                  Navigator.of(context).pop();
-                                  Navigator.pushAndRemoveUntil(
+                                  // _updateCard(widget.cardID);
+                                  // Navigator.of(context).pop();
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => ChecklistScreenShow(
                                           cardID: widget.cardID,
                                           userID: widget.userID),
                                     ),
-                                    (route) => false,
                                   );
                                 },
                               ),
@@ -662,6 +663,10 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                         borderRadius: BorderRadius.circular(12),
                       )),
                       maxLines: null,
+                      style: TextStyle(
+                        color:
+                            checkUserID == widget.userID ? null : Colors.black,
+                      ),
                       onChanged: (value) {
                         _editComment = value;
                       },
