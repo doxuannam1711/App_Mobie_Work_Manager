@@ -743,3 +743,34 @@ BEGIN
   SELECT @title = N' đã bình luận: ' + Detail + N' ở thẻ' FROM inserted;
   insert into notifications VALUES(1,1,N'Bình Luận',1,1,@title,'2023-3-8 09:55:21 AM','true')
 END
+
+----------------------------------------QUERY DELETE EVERYTHING ABOUT USERS-------------------------------------------------------
+DELETE FROM checklistitems where ChecklistID IN (SELECT ChecklistID FROM checklists where CardID IN (SELECT CardID From cards where ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=14))))
+
+DELETE FROM checklists where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=14)))
+
+DELETE FROM attachments where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=14)))
+
+delete from comments where UserID=14
+
+delete from notifications where UserID=14
+
+delete from cards where ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=14))
+
+delete from lists where BoardID IN (SELECT BoardID FROM boards where UserID=14)
+
+delete from boards where UserID=14
+
+delete from users where UserID=14
+------------------------------------------------------------------------------------------------------------------------------
+
+SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+FROM cards 
+LEFT JOIN checklists ON cards.cardID = checklists.cardID
+LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+WHERE cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = 1))
+GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
+cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
+cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+ORDER BY cards.CardID DESC;
