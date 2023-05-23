@@ -702,14 +702,14 @@ ORDER BY cards.DueDate ASC;";
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"select notifications.NotificationID,notifications.NotificationType,Content,notifications.CreatedDate,users.Username,boards.BoardName,cards.CardName from notifications inner join users
-on notifications.UserID = users.UserID
-inner join cards
-on notifications.CardID=cards.CardID
-inner join boards
-on notifications.BoardID=boards.BoardID
-inner join lists
-on notifications.BoardID=lists.BoardID";
+            Command.CommandText = @"select notifications.NotificationID,notifications.NotificationType,Content,notifications.CreatedDate,users.Username,boards.BoardName,cards.CardName,cards.CardID,boards.BoardID,boards.Labels from notifications inner join users
+                                    on notifications.UserID = users.UserID
+                                    inner join cards
+                                    on notifications.CardID=cards.CardID
+                                    inner join boards
+                                    on notifications.BoardID=boards.BoardID
+                                    inner join lists
+                                    on notifications.BoardID=lists.BoardID";
             DataTable tableNhanVien = Command.GetDataTable();
 
             var respone = new ResultModel
@@ -732,7 +732,7 @@ on notifications.BoardID=lists.BoardID";
     {
         try
         {
-            var fileName = "test.csv";
+            var fileName = "data.csv";
             var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
 
             if (!File.Exists(filePath))
@@ -777,21 +777,22 @@ on notifications.BoardID=lists.BoardID";
             using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))
             using (var csvWriter = new CsvWriter(streamWriter, config))
             {
-                csvWriter.WriteField("userid " + userId.ToString());
-                streamWriter.Flush();
+               csvWriter.WriteField(userId.ToString());
+               csvWriter.NextRecord();
+               streamWriter.Flush();
 
-                // Save the stream to a file
-                var fileName = "test.csv";
-                var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    memoryStream.CopyTo(fileStream);
-                }
+            // Save the stream to a file
+               var fileName = "data.csv";
+               var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+               using (var fileStream = new FileStream(filePath, FileMode.Create))
+               {
+                  memoryStream.Seek(0, SeekOrigin.Begin);
+                  memoryStream.CopyTo(fileStream);
+               }
 
-                // Return the file content to the client
-                var csvContent = File.ReadAllText(filePath);
-                return Ok(csvContent);
+               // Return the file content to the client
+               var csvContent = File.ReadAllText(filePath);
+               return Ok(csvContent);
             }
         }
         catch (Exception ex)
@@ -1087,15 +1088,15 @@ on notifications.BoardID=lists.BoardID";
         {
             Command.ResetAndOpen(CommandType.Text);
             Command.CommandText = @"SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
-FROM cards 
-LEFT JOIN checklists ON cards.cardID = checklists.cardID
-LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
-WHERE cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @UserID))
-GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
-cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
-cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
-cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
-ORDER BY cards.CardID DESC;";
+            FROM cards 
+            LEFT JOIN checklists ON cards.cardID = checklists.cardID
+            LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+            WHERE cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @UserID))
+            GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
+            cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
+            cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+            cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+            ORDER BY cards.CardID DESC;";
             Command.Parameters.AddWithValue("@UserID", userID);
 
             DataTable tableNhanVien = Command.GetDataTable();
