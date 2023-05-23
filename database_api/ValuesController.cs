@@ -1149,6 +1149,3 @@ ORDER BY cards.DueDate ASC;";
     }
 
 }
-
-
-
