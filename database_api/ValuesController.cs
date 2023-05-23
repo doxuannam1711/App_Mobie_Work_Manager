@@ -389,35 +389,35 @@ ORDER BY cards.CardID DESC;";
 
     // GET api/values
     //[Authorize]
-//    [HttpGet]
-//    [Route("api/getCards/{listID}")]
-//    public IHttpActionResult GetChecklists(int listID)
-//    {
-//        try
-//        {
-//            Command.ResetAndOpen(CommandType.Text);
-//            Command.CommandText = @"SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
-//FROM cards
-//LEFT JOIN checklists ON cards.cardID = checklists.cardID
-//LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
-//WHERE cards.ListID = @listID
-//GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist,
-//cards.Label, cards.Comment, cards.CardName, cards.StatusView,
-//cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
-//cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor";
-//            Command.Parameters.AddWithValue("@listID", listID);
-//            DataTable tableChecklists = Command.GetDataTable();
-//            var respone = new ResultModel
-//            {
-//                Data = JsonConvert.SerializeObject(tableChecklists)
-//            };
-//            return Ok(respone);
-//        }
-//        catch (Exception ex)
-//        {
-//            return Ok(ex.Message);
-//        }
-//    }
+    //    [HttpGet]
+    //    [Route("api/getCards/{listID}")]
+    //    public IHttpActionResult GetChecklists(int listID)
+    //    {
+    //        try
+    //        {
+    //            Command.ResetAndOpen(CommandType.Text);
+    //            Command.CommandText = @"SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+    //FROM cards
+    //LEFT JOIN checklists ON cards.cardID = checklists.cardID
+    //LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+    //WHERE cards.ListID = @listID
+    //GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist,
+    //cards.Label, cards.Comment, cards.CardName, cards.StatusView,
+    //cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+    //cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor";
+    //            Command.Parameters.AddWithValue("@listID", listID);
+    //            DataTable tableChecklists = Command.GetDataTable();
+    //            var respone = new ResultModel
+    //            {
+    //                Data = JsonConvert.SerializeObject(tableChecklists)
+    //            };
+    //            return Ok(respone);
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            return Ok(ex.Message);
+    //        }
+    //    }
 
 
 
@@ -488,6 +488,39 @@ cards.Label, cards.Comment, cards.CardName, cards.StatusView,
 cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
 cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
 ORDER BY cards.CardID DESC;";
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
+
+    [Route("api/getcarddetail/{cardID}")]
+    public IHttpActionResult GetCardDetail(int cardID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT cards.*, lists.ListName, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+FROM cards
+LEFT JOIN checklists ON cards.cardID = checklists.cardID
+LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+LEFT JOIN lists ON cards.CardID = lists.ListID
+WHERE cards.CardID = 3
+GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, lists.ListName, 
+cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
+cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor;";
+            Command.Parameters.AddWithValue("@cardID", cardID);
             DataTable tableNhanVien = Command.GetDataTable();
 
             var respone = new ResultModel
@@ -777,22 +810,22 @@ ORDER BY cards.DueDate ASC;";
             using (var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8))
             using (var csvWriter = new CsvWriter(streamWriter, config))
             {
-               csvWriter.WriteField(userId.ToString());
-               csvWriter.NextRecord();
-               streamWriter.Flush();
+                csvWriter.WriteField(userId.ToString());
+                csvWriter.NextRecord();
+                streamWriter.Flush();
 
-            // Save the stream to a file
-               var fileName = "data.csv";
-               var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
-               using (var fileStream = new FileStream(filePath, FileMode.Create))
-               {
-                  memoryStream.Seek(0, SeekOrigin.Begin);
-                  memoryStream.CopyTo(fileStream);
-               }
+                // Save the stream to a file
+                var fileName = "data.csv";
+                var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    memoryStream.CopyTo(fileStream);
+                }
 
-               // Return the file content to the client
-               var csvContent = File.ReadAllText(filePath);
-               return Ok(csvContent);
+                // Return the file content to the client
+                var csvContent = File.ReadAllText(filePath);
+                return Ok(csvContent);
             }
         }
         catch (Exception ex)
@@ -1116,6 +1149,3 @@ ORDER BY cards.DueDate ASC;";
     }
 
 }
-
-
-

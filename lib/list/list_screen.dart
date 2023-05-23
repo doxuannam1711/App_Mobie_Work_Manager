@@ -75,31 +75,31 @@ class _ListScreenState extends State<ListScreen> {
     }
   }
 
-  Future<List<Map<String, dynamic>>> _fetchCard(int listID) async {
-    final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/getCards/$listID'));
-    if (response.statusCode == 200) {
-      try {
-        final data = jsonDecode(response.body)['Data'];
-        final cardData = jsonDecode(data);
-        List<dynamic> cardList = [];
-        if (cardData is List) {
-          cardList = cardData;
-        } else if (cardData is Map) {
-          cardList = [cardData];
-        }
-        final resultList = cardList
-            .map((board) =>
-                Map<String, dynamic>.from(board as Map<String, dynamic>))
-            .toList();
-        return resultList;
-      } catch (e) {
-        throw Exception('Failed to decode board list');
-      }
-    } else {
-      throw Exception('Failed to load board list');
-    }
-  }
+  // Future<List<Map<String, dynamic>>> _fetchCard(int listID) async {
+  //   final response = await http
+  //       .get(Uri.parse('http://192.168.53.160/api/getCards/$listID'));
+  //   if (response.statusCode == 200) {
+  //     try {
+  //       final data = jsonDecode(response.body)['Data'];
+  //       final cardData = jsonDecode(data);
+  //       List<dynamic> cardList = [];
+  //       if (cardData is List) {
+  //         cardList = cardData;
+  //       } else if (cardData is Map) {
+  //         cardList = [cardData];
+  //       }
+  //       final resultList = cardList
+  //           .map((board) =>
+  //               Map<String, dynamic>.from(board as Map<String, dynamic>))
+  //           .toList();
+  //       return resultList;
+  //     } catch (e) {
+  //       throw Exception('Failed to decode board list');
+  //     }
+  //   } else {
+  //     throw Exception('Failed to load board list');
+  //   }
+  // }
 
   Future<void> _fetchData() async {
     final cardLists = await _fetchcardList();
