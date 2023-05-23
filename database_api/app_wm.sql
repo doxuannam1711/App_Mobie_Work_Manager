@@ -763,3 +763,14 @@ delete from boards where UserID=14
 
 delete from users where UserID=14
 ------------------------------------------------------------------------------------------------------------------------------
+
+SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+FROM cards 
+LEFT JOIN checklists ON cards.cardID = checklists.cardID
+LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+WHERE cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = 1))
+GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
+cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
+cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+ORDER BY cards.CardID DESC;
