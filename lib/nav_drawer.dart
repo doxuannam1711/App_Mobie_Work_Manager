@@ -313,14 +313,14 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
             ListTile(
               leading: const Icon(Icons.file_open),
-              title: const Text('Nhập dữ liệu'),
+              title: const Text('Tải lên dữ liệu'),
               onTap: () {
                 _importFile();
               },
             ),
             ListTile(
               leading: const Icon(Icons.file_download),
-              title: const Text('Xuất dữ liệu'),
+              title: const Text('Tải xuống dữ liệu'),
               onTap: () async {
                 getFileCSV(widget.userID);
                 final downloadUrl =

@@ -1147,5 +1147,51 @@ ORDER BY cards.DueDate ASC;";
         }
 
     }
+    [HttpDelete]
+    [Route("api/deleteCard/{cardId}")]
+    public IHttpActionResult DeleteCard(int cardId)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+
+            // Delete related records from checklistitems
+            Command.CommandText = @"DELETE FROM checklistitems WHERE ChecklistID IN (SELECT ChecklistID FROM checklists where CardID=@ChecklistItemsCardID)";
+            Command.Parameters.AddWithValue("@ChecklistItemsCardID", cardId);
+            Command.ExecuteNonQuery();
+
+            // Delete related records from checklists
+            Command.CommandText = @"DELETE FROM checklists WHERE CardID=@ChecklistCardID";
+            Command.Parameters.AddWithValue("@ChecklistCardID", cardId);
+            Command.ExecuteNonQuery();
+
+            // Delete related records from attachments
+            Command.CommandText = @"DELETE FROM attachments WHERE CardID = @AttachmentCardID";
+            Command.Parameters.AddWithValue("@AttachmentCardID", cardId);
+            Command.ExecuteNonQuery();
+
+            // Delete related records from comments
+            Command.CommandText = @"DELETE FROM comments WHERE CardID=@CommentCardID";
+            Command.Parameters.AddWithValue("@CommentCardID", cardId);
+            Command.ExecuteNonQuery();
+
+            // Delete related records from notifications
+            Command.CommandText = @"DELETE FROM notifications WHERE CardID=@NotificationCardID";
+            Command.Parameters.AddWithValue("@NotificationCardID", cardId);
+            Command.ExecuteNonQuery();
+
+            // Delete related records from cards
+            Command.CommandText = @"DELETE FROM cards WHERE CardID = @CardCardID";
+            Command.Parameters.AddWithValue("@CardCardID", cardId);
+            Command.ExecuteNonQuery();
+
+            var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
 
 }
