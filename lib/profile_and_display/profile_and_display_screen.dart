@@ -142,15 +142,15 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
       return AppBar(
         leading: const BackButton(),
-        title: const Text('My Profile'),
+        title: const Text('Hồ sơ của tôi'),
         backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(icon),
-            onPressed: () {},
-          )
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(icon),
+        //     onPressed: () {},
+        //   )
+        // ],
       );
     }
 
@@ -456,7 +456,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'User Name',
+              'Tên người dùng',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
@@ -479,7 +479,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Full Name',
+              'Tên đầy đủ',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
@@ -645,7 +645,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
         ),
         const SizedBox(height: 24),
         ButtonWidget(
-          text: 'Save',
+          text: 'Lưu',
           onClicked: () async {
             if (_oldPassword != password) {
               showDialog(

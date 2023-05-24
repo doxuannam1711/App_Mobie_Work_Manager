@@ -257,7 +257,7 @@ class _NavDrawerState extends State<NavDrawer> {
           children: [
             ListTile(
               leading: const Icon(Icons.space_dashboard_rounded),
-              title: const Text('My boards'),
+              title: const Text('Các bảng của tôi'),
               onTap: () => {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
@@ -267,7 +267,7 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
             ListTile(
               leading: const Icon(Icons.credit_card),
-              title: const Text('My cards'),
+              title: const Text('Các thẻ của tôi'),
               onTap: () => {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
@@ -277,7 +277,7 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
             ListTile(
               leading: const Icon(Icons.search),
-              title: const Text('Search'),
+              title: const Text('Tìm kiếm'),
               onTap: () => {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
@@ -290,7 +290,7 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
             ListTile(
               leading: const Icon(Icons.notifications),
-              title: const Text('Notification'),
+              title: const Text('Thông báo'),
               onTap: () => {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
@@ -300,7 +300,7 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
             ListTile(
               leading: const Icon(Icons.account_circle),
-              title: const Text('Account'),
+              title: const Text('Tài khoản'),
               onTap: () => {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
@@ -313,14 +313,14 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
             ListTile(
               leading: const Icon(Icons.file_open),
-              title: const Text('Import Data'),
+              title: const Text('Nhập dữ liệu'),
               onTap: () {
                 _importFile();
               },
             ),
             ListTile(
               leading: const Icon(Icons.file_download),
-              title: const Text('Export Data'),
+              title: const Text('Xuất dữ liệu'),
               onTap: () async {
                 getFileCSV(widget.userID);
                 final downloadUrl =
@@ -334,12 +334,12 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
             ListTile(
               leading: const Icon(Icons.settings),
-              title: const Text('Setting'),
+              title: const Text('Cài đặt'),
               onTap: () => {Navigator.of(context).pop()},
             ),
             ListTile(
               leading: const Icon(Icons.error_outline),
-              title: const Text('Help'),
+              title: const Text('Trợ giúp'),
               onTap: () => {Navigator.of(context).pop()},
             ),
           ],

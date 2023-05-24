@@ -50,7 +50,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   Future<CardDetail> fetchCardDetail(int cardID) async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/getcarddetail/$cardID'));
+        .get(Uri.parse('http://192.168.1.7/api/getcarddetail/$cardID'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['Data'];
@@ -64,7 +64,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   Future<List<Map<String, dynamic>>> getComments() async {
     final response = await http.get(
-        Uri.parse('http://192.168.53.160/api/getComments/${widget.cardID}'));
+        Uri.parse('http://192.168.1.7/api/getComments/${widget.cardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -240,10 +240,11 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                         'Trong danh sách:',
                         style: TextStyle(
                           color: Colors.grey,
-                          fontSize: 18.0,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(width: 8.0),
+                      const SizedBox(width: 10.0),
                       _listName != null
                           ? Text(
                               _listName,
@@ -257,15 +258,15 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                         thickness: 1.0,
                         height: 24.0,
                       ),
-                      const SizedBox(height: 16.0),
+                      const SizedBox(height: 30.0),
                       const Text(
-                        'Quick Actions:',
+                        'Các thao tác nhanh:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0,
                         ),
                       ),
-                      const SizedBox(height: 8.0),
+                      const SizedBox(height: 10.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -305,7 +306,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                 icon: const Icon(Icons.attach_file),
                                 tooltip: 'Add Attachment',
                               ),
-                              const Text('Attachment'),
+                              const Text('Thêm tệp đính kèm'),
                             ],
                           ),
                           Column(
@@ -325,14 +326,14 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                 icon: const Icon(Icons.person),
                                 tooltip: 'Add Member',
                               ),
-                              const Text('Member'),
+                              const Text('Thành viên'),
                             ],
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16.0),
+                      const SizedBox(height: 30.0),
                       const Text(
-                        'Description:',
+                        'Mô tả:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0,
@@ -357,51 +358,60 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                           const Icon(Icons.description),
                         ],
                       ),
-                      const SizedBox(height: 16.0),
+                      const SizedBox(height: 30.0),
                       const Text(
-                        'DueDate :',
+                        'Ngày hết hạn :',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0,
                         ),
                       ),
                       const SizedBox(height: 8.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          TextButton(
-                            onPressed: () async {
-                              final DateTime? picked = await showDatePicker(
-                                context: context,
-                                initialDate: _expirationDate ?? DateTime.now(),
-                                firstDate: DateTime.now(),
-                                lastDate: DateTime.now()
-                                    .add(const Duration(days: 365)),
-                              );
-                              if (picked != null) {
-                                setState(() {
-                                  _expirationDate = picked;
-                                });
-                              }
-                            },
-                            child: Text(
-                              _expirationDate == null
-                                  ? 'Select date'
-                                  : 'Date: ${_expirationDate!.toString().split(' ')[0]}',
+                      Container(
+                         padding:
+                            const EdgeInsets.all(6.0), // Adjust the padding as needed
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            TextButton(
+                              onPressed: () async {
+                                final DateTime? picked = await showDatePicker(
+                                  context: context,
+                                  initialDate: _expirationDate ?? DateTime.now(),
+                                  firstDate: DateTime.now(),
+                                  lastDate: DateTime.now()
+                                      .add(const Duration(days: 365)),
+                                );
+                                if (picked != null) {
+                                  setState(() {
+                                    _expirationDate = picked;
+                                  });
+                                }
+                              },
+                              child: Text(
+                                _expirationDate == null
+                                    ? 'Select date'
+                                    : 'Date: ${_expirationDate!.toString().split(' ')[0]}',
+                              ),
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _expirationDate = null;
-                              });
-                            },
-                            icon: const Icon(Icons.close),
-                          ),
-                        ],
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _expirationDate = null;
+                                });
+                              },
+                              icon: const Icon(Icons.close),
+                            ),
+                          ],
+                        ),
                       ),
+
+                      const SizedBox(height: 30.0),
                       const Text(
-                        'Label Color:',
+                        'Màu nhãn:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0,
@@ -447,9 +457,9 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                           });
                         },
                       ),
-                      const SizedBox(height: 16.0),
+                      const SizedBox(height: 30.0),
                       const Text(
-                        'Assigned Member:',
+                        'Phân công thành viên:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0,
@@ -498,10 +508,10 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                         ],
                       ),
 
-                      const SizedBox(height: 16.0),
+                      const SizedBox(height: 30.0),
                       // CommentSection(),
                       const Text(
-                        'Comments:',
+                        'Bình luận:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0,
@@ -550,7 +560,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
               right: 0.0,
               child: Container(
                 color: Colors.white,
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Row(
                   children: [
                     Expanded(
@@ -558,7 +568,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                         maxLines: null,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                          hintText: 'Leave a comment...',
+                          hintText: 'Thêm nhận xét',
                         ),
                         onChanged: (value) {
                           setState(() {
@@ -572,7 +582,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                       icon: const Icon(Icons.send),
                       onPressed: () async {
                         _addComment();
-                        await Navigator.of(context).push(
+                        await Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
                             builder: (context) => CardsDetailScreen(
                                 widget.cardName, widget.cardID, widget.userID),
@@ -638,7 +648,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                               onPressed: () async {
                                 if (checkUserID == widget.userID) {
                                   _updateComment(commentID);
-                                  await Navigator.of(context).push(
+                                  await Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                         builder: (context) => CardsDetailScreen(
                                             widget.cardName,
@@ -662,7 +672,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                   print("Deleted");
                                   _deleteComment(commentID);
 
-                                  await Navigator.of(context).push(
+                                  await Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                         builder: (context) => CardsDetailScreen(
                                             widget.cardName,

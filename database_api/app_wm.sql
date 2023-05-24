@@ -57,12 +57,12 @@ CREATE TABLE  lists  (
 ListID  int IDENTITY(1,1) NOT NULL,
 BoardID  int  NOT NULL,
 ListName  nvarchar(255) NOT NULL,
-Position  int  NOT NULL,
-Closed  bit  NOT NULL,
-DateCreated  datetime NOT NULL,
-DateLastActivity  datetime NOT NULL,
+Position  int  ,
+Closed  bit  ,
+DateCreated  datetime ,
+DateLastActivity  datetime ,
 DateArchived  datetime  ,
-Subscribed  bit  NOT NULL,
+Subscribed  bit  ,
 CONSTRAINT PK_lists PRIMARY KEY(ListID),
 CONSTRAINT FK_lists_boards FOREIGN KEY(BoardID)REFERENCES Boards(BoardID)
 )

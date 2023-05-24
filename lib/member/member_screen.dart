@@ -130,7 +130,8 @@ class _MemberScreenState extends State<MemberScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Members'),
+        leading: const BackButton(),
+        title: const Text('Thành viên'),
         actions: [
           IconButton(
             onPressed: () async {
@@ -138,7 +139,7 @@ class _MemberScreenState extends State<MemberScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text('Add member'),
+                    title: const Text('Thêm thành viên'),
                     content: SizedBox(
                       height: MediaQuery.of(context).size.height * 0.4, // set chiều cao bằng 50% của chiều cao màn hình
                       width: MediaQuery.of(context).size.width * 0.75,
@@ -147,7 +148,7 @@ class _MemberScreenState extends State<MemberScreen> {
                         children: [
                           TextField(
                             decoration: InputDecoration(
-                              hintText: 'Search users',
+                              hintText: 'Tìm tên người dùng',
                             ),
                             onChanged: (value) {
                               setState(() {
@@ -197,7 +198,7 @@ class _MemberScreenState extends State<MemberScreen> {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Cancel'),
+                        child: const Text('Thoát'),
                       ),
                     ],
                   );
@@ -236,7 +237,7 @@ class _MemberScreenState extends State<MemberScreen> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Search members',
+                hintText: 'Tìm kiếm thành viên',
                 prefixIcon: const Icon(Icons.search),
               ),
               onChanged: (value) {
@@ -298,15 +299,15 @@ class _MemberScreenState extends State<MemberScreen> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: Text('Delete member'),
+                                    title: Text('Xóa thành viên'),
                                     content: Text(
-                                        'Are you sure you want to delete this member?'),
+                                        'Bạn có chắc muốn xóa thành viên này khỏi thẻ?'),
                                     actions: [
                                       TextButton(
                                         onPressed: () {
                                           Navigator.of(context).pop();
                                         },
-                                        child: Text('Cancel'),
+                                        child: Text('Hủy'),
                                       ),
                                       TextButton(
                                         onPressed: () {
@@ -317,7 +318,7 @@ class _MemberScreenState extends State<MemberScreen> {
                                           });
                                           Navigator.of(context).pop();
                                         },
-                                        child: Text('Delete'),
+                                        child: Text('Xóa'),
                                       ),
                                     ],
                                   );

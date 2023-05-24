@@ -156,9 +156,9 @@ class _LoginScreenState extends State<LoginScreen> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Invalid Credentials'),
+          title: const Text('Đăng nhập không thành công'),
           content:
-              const Text('The username or password you entered is incorrect.'),
+              const Text('Tên người dùng hoặc mật khẩu không đúng'),
           actions: [
             TextButton(
               onPressed: () {
@@ -167,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 passwordFocusNode
                     .requestFocus(); // move focus back to password field
               },
-              child: const Text('OK'),
+              child: const Text('Thử lại'),
             ),
           ],
         ),
@@ -194,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(
-                  labelText: 'Username',
+                  labelText: 'Tên người dùng',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -203,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _passwordController,
                 focusNode: passwordFocusNode,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: 'Mật khẩu',
                   border: const OutlineInputBorder(),
                   suffixIcon: InkWell(
                     onTap: () {
@@ -233,7 +233,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       });
                     },
                   ),
-                  const Text('Remember me'),
+                  const Text('Nhớ thông tin đăng nhập'),
                 ],
               ),
               // const SizedBox(height: 20.0),
@@ -252,7 +252,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                   ),
-                  child: const Text('Log In'),
+                  child: const Text('Đăng nhập'),
                 ),
               ),
 
@@ -280,7 +280,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     child: const Text(
-                      'Forgot Password?',
+                      'Quên mật khẩu?',
                       style: TextStyle(
                         color: Colors.black,
                       ),
@@ -305,7 +305,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     child: const Text(
-                      'Sign Up',
+                      'Đăng ký',
                       style: TextStyle(
                         color: Colors.black,
                       ),

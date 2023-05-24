@@ -22,7 +22,7 @@ class _SearchScreenState extends State<SearchScreen> {
   int _currentTabIndex = 0; // Thêm biến để theo dõi tab hiện tại
 
   Future<List<Map<String, dynamic>>> _searchCards(String keyword) async {
-    final url = Uri.parse('http://192.168.53.160/api/searchCards/$keyword');
+    final url = Uri.parse('http://192.168.1.7/api/searchCards/$keyword');
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -35,7 +35,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _searchBoards(String keyword) async {
-    final url = Uri.parse('http://192.168.53.160/api/searchBoards/$keyword');
+    final url = Uri.parse('http://192.168.1.7/api/searchBoards/$keyword');
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -48,7 +48,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _searchCheckList(String keyword) async {
-    final url = Uri.parse('http://192.168.53.160/api/searchCheckList/$keyword');
+    final url = Uri.parse('http://192.168.1.7/api/searchCheckList/$keyword');
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -101,7 +101,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       drawer: NavDrawer(widget.userID),
       appBar: AppBar(
-        title: const Text('Search'),
+        title: const Text('Tìm kiếm'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -111,7 +111,7 @@ class _SearchScreenState extends State<SearchScreen> {
             child: TextField(
               onChanged: _onSearch,
               decoration: InputDecoration(
-                hintText: 'Enter keyword',
+                hintText: 'Nhập từ khóa',
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,
@@ -135,7 +135,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     tabs: const [
                       Tab(
                         child: Text(
-                          'Cards',
+                          'Thẻ của tôi',
                           style: TextStyle(
                             color: Colors.black, // Đặt màu văn bản là màu đen
                           ),
@@ -143,7 +143,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       Tab(
                         child: Text(
-                          'Boards',
+                          'Bảng của tôi',
                           style: TextStyle(
                             color: Colors.black, // Đặt màu văn bản là màu đen
                           ),
@@ -186,11 +186,11 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _buildCardResultList() {
     if (_searchKeyword.isEmpty) {
       return const Center(
-        child: Text('No keyword entered.'),
+        child: Text('Chưa nhập từ khóa nào.'),
       );
     } else if (_searchCardResult.isEmpty) {
       return const Center(
-        child: Text('No card found.'),
+        child: Text('Không tìm thấy thẻ.'),
       );
     } else {
       return ListView.builder(
@@ -230,11 +230,11 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _buildBoardResultList() {
     if (_searchKeyword.isEmpty) {
       return const Center(
-        child: Text('No keyword entered.'),
+        child: Text('Chưa nhập từ khóa nào.'),
       );
     } else if (_searchBoardResult.isEmpty) {
       return const Center(
-        child: Text('No board found.'),
+        child: Text('Không tìm thấy bảng.'),
       );
     } else {
       return ListView.builder(
@@ -275,11 +275,11 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _buildChecklistResultList() {
     if (_searchKeyword.isEmpty) {
       return const Center(
-        child: Text('No keyword entered.'),
+        child: Text('Chưa nhập từ khóa nào.'),
       );
     } else if (_searchCheckListResult.isEmpty) {
       return const Center(
-        child: Text('No checklist found.'),
+        child: Text('Không tìm thấy checklists.'),
       );
     } else {
       return ListView.builder(

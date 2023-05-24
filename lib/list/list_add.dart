@@ -24,6 +24,7 @@ class ListsAdd extends StatefulWidget {
 
 class _ListsAdd extends State<ListsAdd> with TickerProviderStateMixin {
   late String _listName = "";
+  final listNameFocusNode = FocusNode();
 
   Future<void> addList() async {
     ListModel newList = ListModel(
@@ -31,13 +32,11 @@ class _ListsAdd extends State<ListsAdd> with TickerProviderStateMixin {
       boardID: widget.boardID,
     );
 
-
     final response = await http.post(
-      Uri.parse('http://192.168.1.2/api/addList/'),
+      Uri.parse('http://192.168.1.7/api/addList/'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newList.toJson()),
     );
-
 
     if (response.statusCode == 200) {
       // show success message to the user
@@ -57,7 +56,7 @@ class _ListsAdd extends State<ListsAdd> with TickerProviderStateMixin {
       length: 1,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Create a new list'),
+          title: const Text('Tạo danh sách công việc mới'),
         ),
         body: TabBarView(
           children: [
@@ -66,15 +65,19 @@ class _ListsAdd extends State<ListsAdd> with TickerProviderStateMixin {
               child: Column(
                 children: [
                   const SizedBox(height: 16.0),
-                  const Text(
-                    'List Name',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Tên danh sách',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8.0),
                   TextField(
+                    focusNode: listNameFocusNode,
                     onChanged: (value) {
                       setState(() {
                         _listName = value;
@@ -82,25 +85,30 @@ class _ListsAdd extends State<ListsAdd> with TickerProviderStateMixin {
                     },
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: 'Enter list name',
+                      hintText: 'Nhập tên danh sách',
                     ),
                   ),
                   const SizedBox(height: 16.0),
                   ElevatedButton(
-                    child: const Text('Add'),
+                    child: const Text('Thêm'),
                     onPressed: () {
-                      addList();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddCardScreen(
-                            creatorID: widget.userID,
-                            boardID: widget.boardID,
-                            labels: widget.labels,
-                            boardName: widget.boardName,
+                      if (_listName.isEmpty) {
+                        listNameFocusNode.requestFocus();
+                      }
+                      else{
+                        addList();
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddCardScreen(
+                              creatorID: widget.userID,
+                              boardID: widget.boardID,
+                              labels: widget.labels,
+                              boardName: widget.boardName,
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      }
                     },
                   )
                 ],
