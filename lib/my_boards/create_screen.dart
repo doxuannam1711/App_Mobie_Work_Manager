@@ -81,12 +81,12 @@ class _CreateScreenState extends State<CreateScreen>
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Create'),
+          title: const Text('Tạo mới'),
           // controller: controller,
           bottom: const TabBar(
             tabs: [
-              Tab(text: 'Board'),
-              Tab(text: 'Card'),
+              Tab(text: 'Bảng'),
+              Tab(text: 'Thẻ'),
             ],
           ),
         ),
@@ -100,7 +100,7 @@ class _CreateScreenState extends State<CreateScreen>
                 children: [
                   const SizedBox(height: 16.0),
                   const Text(
-                    'Board Name',
+                    'Tên bảng',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0,
@@ -115,12 +115,12 @@ class _CreateScreenState extends State<CreateScreen>
                     },
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: 'Enter board name',
+                      hintText: 'Nhập tên bảng',
                     ),
                   ),
                   const SizedBox(height: 16.0),
                   const Text(
-                    'Board Color',
+                    'Màu của bảng',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0,
@@ -151,7 +151,7 @@ class _CreateScreenState extends State<CreateScreen>
                   ),
                   const SizedBox(height: 16.0),
                   const Text(
-                    'Background Image',
+                    'Hình nền',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0,
@@ -172,7 +172,7 @@ class _CreateScreenState extends State<CreateScreen>
                         value: '0',
                         child: BackgroundItem(
                           value: 'background_0.jpg',
-                          text: 'Background 1',
+                          text: 'Hình nền 1',
                           image: 'background_0.jpg',
                         ),
                       ),
@@ -180,7 +180,7 @@ class _CreateScreenState extends State<CreateScreen>
                         value: '1',
                         child: BackgroundItem(
                           value: 'background_1.jpg',
-                          text: 'Background 2',
+                          text: 'Hình nền 2',
                           image: 'background_1.jpg',
                         ),
                       ),
@@ -188,7 +188,7 @@ class _CreateScreenState extends State<CreateScreen>
                         value: '2',
                         child: BackgroundItem(
                           value: 'background_2.jpg',
-                          text: 'Background 3',
+                          text: 'Hình nền 3',
                           image: 'background_2.jpg',
                         ),
                       ),
@@ -196,7 +196,7 @@ class _CreateScreenState extends State<CreateScreen>
                         value: '3',
                         child: BackgroundItem(
                           value: 'background_3.jpg',
-                          text: 'Background 4',
+                          text: 'Hình nền 4',
                           image: 'background_3.jpg',
                         ),
                       ),
@@ -204,7 +204,7 @@ class _CreateScreenState extends State<CreateScreen>
                         value: '4',
                         child: BackgroundItem(
                           value: 'background_4.jpg',
-                          text: 'Background 5',
+                          text: 'Hình nền 5',
                           image: 'background_4.jpg',
                         ),
                       ),
@@ -212,7 +212,7 @@ class _CreateScreenState extends State<CreateScreen>
                         value: '9',
                         child: BackgroundItem(
                           value: 'background_9.jpg',
-                          text: 'Background 6',
+                          text: 'Hình nền 6',
                           image: 'background_9.jpg',
                         ),
                       ),
@@ -221,7 +221,7 @@ class _CreateScreenState extends State<CreateScreen>
                   const SizedBox(height: 16.0),
                   
                   ElevatedButton(
-                    child: const Text('Add'),
+                    child: const Text('Thêm'),
                     onPressed: () async{
                       addBoard();
                       await Navigator.of(context).pushReplacement(

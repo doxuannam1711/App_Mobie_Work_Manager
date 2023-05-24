@@ -51,7 +51,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
 
   Future<void> getLists() async {
     final response = await http.get(
-        Uri.parse('http://192.168.53.160/api/getListOption/${widget.boardID}'));
+        Uri.parse('http://192.168.1.7/api/getListOption/${widget.boardID}'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -79,7 +79,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
     );
 
     final response = await http.post(
-      Uri.parse('http://192.168.53.160/api/addCard'),
+      Uri.parse('http://192.168.1.7/api/addCard'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newCard.toJson()),
     );
@@ -101,18 +101,21 @@ class _AddCardScreenState extends State<AddCardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add a new card'),
+        title: const Text('Thêm thẻ mới'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
         child: Column(
           children: [
             const SizedBox(height: 16.0),
-            const Text(
-              'Card Name',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20.0,
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Tên thẻ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                ),
               ),
             ),
             const SizedBox(height: 8.0),
@@ -124,152 +127,211 @@ class _AddCardScreenState extends State<AddCardScreen> {
               },
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: 'Enter card name',
+                hintText: 'Nhập tên thẻ',
               ),
             ),
-            const SizedBox(height: 16.0),
-            const Text(
-              'List Name',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20.0,
+            const SizedBox(height: 30.0),
+            const Align(
+              alignment: Alignment.centerLeft,
+                child: Text(
+                'Tên danh sách',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                ),
               ),
             ),
-            const SizedBox(height: 8.0),
-            DropdownButtonFormField<String>(
-              value: listNames.isNotEmpty ? listNames[0] : null,
-              items: listNames.map((name) {
-                return DropdownMenuItem<String>(
-                  value: name,
-                  child: Text(name),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  selectedListID = list
-                      .firstWhere(
-                        (element) => element['ListName'] == value,
-                      )['ListID']
-                      .toString();
-                });
-              },
-            ),
-            const SizedBox(height: 16.0),
-            const Text(
-              'Label',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20.0,
+            const SizedBox(height: 10.0),
+            Container(
+              padding: const EdgeInsets.all(16.5), // Adjust the padding as needed
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+              ),
+              child: DropdownButtonFormField<String>(
+                value: listNames.isNotEmpty ? listNames[0] : null,
+                items: listNames.map((name) {
+                  return DropdownMenuItem<String>(
+                    value: name,
+                    child: Text(name),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedListID = list
+                        .firstWhere(
+                          (element) => element['ListName'] == value,
+                        )['ListID']
+                        .toString();
+                  });
+                },
+                decoration: const InputDecoration.collapsed(
+                  hintText: '',
+                  border: InputBorder.none,
+                ),
               ),
             ),
-            const SizedBox(height: 8.0),
-            DropdownButtonFormField<String>(
-              value: _selectedLabelOption,
-              items: _labelOptions.map((label) {
-                return DropdownMenuItem<String>(
-                  value: label,
-                  child: Text(label),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedLabelOption = value!;
-                });
-              },
-            ),
-            const SizedBox(height: 16.0),
-            const Text(
-              'Due Date',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20.0,
+            const SizedBox(height: 30.0),
+            const Align(
+              alignment: Alignment.centerLeft,
+                child: Text(
+                'Nhãn',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                ),
               ),
             ),
-            const SizedBox(height: 8.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () async {
-                    final DateTime? picked = await showDatePicker(
-                      context: context,
-                      initialDate: _dueDate ?? DateTime.now(),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(const Duration(days: 365)),
-                    );
-                    if (picked != null) {
-                      setState(() {
-                        _dueDate = picked;
-                      });
-                    }
-                  },
-                  child: Text(
-                    _dueDate == null
-                        ? 'Select date'
-                        : 'Date: ${_dueDate!.toString().split(' ')[0]}',
+            const SizedBox(height: 10.0),
+            Container(
+              padding:
+                  const EdgeInsets.all(16.5), // Adjust the padding as needed
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+              ),
+              child: DropdownButtonFormField<String>(
+                value: _selectedLabelOption,
+                items: _labelOptions.map((label) {
+                  return DropdownMenuItem<String>(
+                    value: label,
+                    child: Text(label),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedLabelOption = value!;
+                  });
+                },
+                decoration: const InputDecoration.collapsed(
+                  hintText: '',
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+            
+            const SizedBox(height: 30.0),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Ngày hết hạn',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10.0),
+            Container(
+              padding:
+                  const EdgeInsets.all(6.0), // Adjust the padding as needed
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () async {
+                      final DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: _dueDate ?? DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(const Duration(days: 365)),
+                      );
+                      if (picked != null) {
+                        setState(() {
+                          _dueDate = picked;
+                        });
+                      }
+                    },
+                    child: Text(
+                      _dueDate == null
+                          ? 'Select date'
+                          : 'Date: ${_dueDate!.toString().split(' ')[0]}',
+                    ),
                   ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _dueDate = null;
-                    });
-                  },
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16.0),
-            const Text(
-              'Label Color',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20.0,
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _dueDate = null;
+                      });
+                    },
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 8.0),
-            DropdownButtonFormField<String>(
-              value: _selectedColorOption,
-              items: _colorOptions.map((color) {
-                return DropdownMenuItem<String>(
-                  value: color,
-                  child: Text(color),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedColorOption = value!;
-                });
-              },
+            
+            const SizedBox(height: 30.0),
+            const Align(
+              alignment: Alignment.centerLeft,
+                child: Text(
+                'Màu nhãn',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                ),
+              ),
             ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              child: const Text('Add'),
-              onPressed: () async {
-                addCard();
-                if (widget.labels == "mycard") {
-                  await Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => MyCardsScreen(
-                        widget.creatorID,
-                      ),
-                    ),
+            const SizedBox(height: 10.0),
+            Container(
+              padding:
+                  const EdgeInsets.all(16.5), // Adjust the padding as needed
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+              ),
+              child: DropdownButtonFormField<String>(
+                value: _selectedColorOption,
+                items: _colorOptions.map((color) {
+                  return DropdownMenuItem<String>(
+                    value: color,
+                    child: Text(color),
                   );
-                } else {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => ListScreen(
-                        widget.boardName,
-                        widget.boardID,
-                        widget.labels,
-                        widget.creatorID,
-                      ),
-                    ),
-                  );
-                }
-                setState(() {});
-              },
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedColorOption = value!;
+                  });
+                },
+                decoration: const InputDecoration.collapsed(
+                  hintText: '',
+                  border: InputBorder.none,
+                ),
+              ),
             ),
+            
+            const SizedBox(height: 30.0),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.3,
+              height: 40,
+              child: ElevatedButton(
+                child: const Text('Thêm'),
+                onPressed: () async {
+                  addCard();
+                  if (widget.labels == "mycard") {
+                    await Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => MyCardsScreen(
+                          widget.creatorID,
+                        ),
+                      ),
+                    );
+                  } else {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ListScreen(
+                          widget.boardName,
+                          widget.boardID,
+                          widget.labels,
+                          widget.creatorID,
+                        ),
+                      ),
+                    );
+                  }
+                  setState(() {});
+                },
+              ),
+            ),
+            const SizedBox(height: 30.0),
           ],
         ),
       ),

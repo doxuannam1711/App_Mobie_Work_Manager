@@ -125,7 +125,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
     return Scaffold(
       drawer:  NavDrawer(widget.userID),
       appBar: AppBar(
-        title: const Text('My Boards'),
+        title: const Text('Các bảng của tôi'),
         actions:<Widget> [
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
@@ -151,7 +151,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
             child: TextField(
               onChanged: (value) => _onSearch(value),
               decoration: InputDecoration(
-                hintText: 'Enter board name',
+                hintText: 'Nhập vào tên bảng ',
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,
@@ -435,19 +435,19 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: const Text('Confirm'),
+                            title: const Text('Xác nhận'),
                             content: const Text(
-                              'Are you sure you want to delete this board?',
+                              'Bạn có chắc muốn xóa bảng này không?',
                             ),
                             actions: <Widget>[
                               TextButton(
-                                child: const Text('Cancel'),
+                                child: const Text('Hủy'),
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
                               ),
                               TextButton(
-                                child: const Text('Delete'),
+                                child: const Text('Xóa'),
                                 onPressed: () async {
                                   // TODO: delete board
                                   _deleteBoard(boardID); 

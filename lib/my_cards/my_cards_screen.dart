@@ -115,7 +115,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
     return Scaffold(
       drawer: NavDrawer(widget.userID),
       appBar: AppBar(
-        title: const Text('My Cards'),
+        title: const Text('Các thẻ của tôi'),
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
@@ -157,11 +157,11 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                   items: const [
                     DropdownMenuItem(
                       value: false,
-                      child: Text('Board'),
+                      child: Text('Bảng'),
                     ),
                     DropdownMenuItem(
                       value: true,
-                      child: Text('Expiration Date'),
+                      child: Text('Ngày hết hạn'),
                     ),
                   ],
                 ),
@@ -173,7 +173,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
             child: TextField(
               onChanged: (value) => _onSearch(value),
               decoration: InputDecoration(
-                hintText: 'Enter card name',
+                hintText: 'Nhập tên bảng',
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,

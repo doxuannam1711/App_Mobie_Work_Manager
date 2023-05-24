@@ -30,7 +30,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Future<void> _fetchBoardList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/getNotifications'));
+        await http.get(Uri.parse('http://192.168.1.7/api/getNotifications'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
@@ -68,7 +68,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return Scaffold(
       drawer: NavDrawer(widget.userID),
       appBar: AppBar(
-        title: const Text('Notifications'),
+        title: const Text('Thông báo'),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
@@ -81,7 +81,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       children: <Widget>[
                         ListTile(
                           leading: const Icon(Icons.markunread),
-                          title: const Text('Unread'),
+                          title: const Text('Chưa đọc'),
                           onTap: () {
                             setState(() {
                               _selectedFilter = 'Unread';
@@ -92,7 +92,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         ),
                         ListTile(
                           leading: const Icon(Icons.category),
-                          title: const Text('All categories'),
+                          title: const Text('Tất cả'),
                           onTap: () {
                             setState(() {
                               _selectedFilter = 'All categories';
@@ -103,7 +103,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         ),
                         ListTile(
                           leading: const Icon(Icons.person),
-                          title: const Text('Me'),
+                          title: const Text('Của tôi'),
                           onTap: () {
                             setState(() {
                               _selectedFilter = 'Me';
@@ -114,7 +114,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         ),
                         ListTile(
                           leading: const Icon(Icons.comment),
-                          title: const Text('Comment'),
+                          title: const Text('Bình luận'),
                           onTap: () {
                             setState(() {
                               _selectedFilter = 'Comment';

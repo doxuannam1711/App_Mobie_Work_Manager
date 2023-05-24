@@ -27,7 +27,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Future<Map<String, dynamic>> getUserList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.2/api/getAccountLogin'));
+        await http.get(Uri.parse('http://192.168.1.7/api/getAccountLogin'));
     if (response.statusCode == 200) {
       setState(() {
         userList = jsonDecode(response.body);

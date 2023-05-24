@@ -173,7 +173,7 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign Up'),
+        title: const Text('Đăng ký tài khoản'),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -205,7 +205,7 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(height: 20),
               TextFormField(
                 decoration: const InputDecoration(
-                  labelText: 'User Name',
+                  labelText: 'Tên đăng nhập',
                   border: OutlineInputBorder(),
                 ),
                 focusNode: userNameFocusNode,
@@ -216,7 +216,7 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(height: 20),
               TextFormField(
                 decoration: const InputDecoration(
-                  labelText: 'Full Name',
+                  labelText: 'Tên đầy đủ',
                   border: OutlineInputBorder(),
                 ),
                 focusNode: fullNameFocusNode,
@@ -238,7 +238,7 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(height: 20),
               TextFormField(
                 decoration: const InputDecoration(
-                  labelText: 'Password',
+                  labelText: 'Mật khẩu',
                   border: OutlineInputBorder(),
                 ),
                 focusNode: passwordFocusNode,
@@ -251,7 +251,7 @@ class _SignupScreenState extends State<SignupScreen> {
               TextFormField(
                 controller: confirmPasswordController,
                 decoration: const InputDecoration(
-                  labelText: 'Confirm Password',
+                  labelText: 'Xác nhận lại mật khẩu',
                   border: OutlineInputBorder(),
                 ),
                 focusNode: confirmPasswordFocusNode,
@@ -262,7 +262,7 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                child: const Text('Sign Up'),
+                child: const Text('Đăng ký'),
                 onPressed: () async {
                   if(_addUsername.isEmpty){
                     userNameFocusNode.requestFocus();

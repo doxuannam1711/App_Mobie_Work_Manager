@@ -69,7 +69,7 @@ class _AccountScreenState extends State<AccountScreen> {
     return Scaffold(
       drawer: NavDrawer(widget.userID),
       appBar: AppBar(
-        title: const Text('Account Management'),
+        title: const Text('Quản lý tài khoản'),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: getUserList(),
@@ -155,7 +155,7 @@ class _AccountScreenState extends State<AccountScreen> {
         const SizedBox(height: 24),
         _buildGroupBox(
           onTap: () {},
-          'Your Boards',
+          'Bảng của tôi',
           const Icon(Icons.dashboard),
           [
             Container(
@@ -231,7 +231,7 @@ class _AccountScreenState extends State<AccountScreen> {
         const SizedBox(height: 16),
         _buildGroupBox(
           onTap: () {},
-          'Account',
+          'Tài khoản',
           const Icon(Icons.account_box),
           [
             Container(
@@ -254,7 +254,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   elevation: 0,
                 ),
                 child: const Text(
-                  'Profile and display',
+                  'Hồ sơ và hiển thị',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 16,
@@ -270,20 +270,20 @@ class _AccountScreenState extends State<AccountScreen> {
                 color: Colors.transparent,
                 border: Border.all(color: Colors.black),
               ),
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                ),
-                child: const Text(
-                  'switch accounts',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
+              // child: ElevatedButton(
+              //   onPressed: () {},
+              //   style: ElevatedButton.styleFrom(
+              //     backgroundColor: Colors.transparent,
+              //     elevation: 0,
+              //   ),
+              //   child: const Text(
+              //     'switch accounts',
+              //     style: TextStyle(
+              //       color: Colors.black,
+              //       fontSize: 16,
+              //     ),
+              //   ),
+              // ),
             ),
             const SizedBox(height: 8),
             Container(
@@ -308,7 +308,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   elevation: 0,
                 ),
                 child: const Text(
-                  'log out',
+                  'Đăng xuất',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 16,
@@ -318,23 +318,23 @@ class _AccountScreenState extends State<AccountScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
-        _buildGroupBox(
-          onTap: () {},
-          'Appearance',
-          const Icon(Icons.palette),
-          [
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('Theme'),
-            ),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('Language'),
-            ),
-          ],
-        ),
+        // const SizedBox(height: 16),
+        // _buildGroupBox(
+        //   onTap: () {},
+        //   'Appearance',
+        //   const Icon(Icons.palette),
+        //   [
+        //     ElevatedButton(
+        //       onPressed: () {},
+        //       child: const Text('Chủ đề'),
+        //     ),
+        //     const SizedBox(height: 8),
+        //     ElevatedButton(
+        //       onPressed: () {},
+        //       child: const Text('Ngôn ngữ'),
+        //     ),
+        //   ],
+        // ),
         const SizedBox(height: 16),
         _buildGroupBox(
           onTap: () {
@@ -342,19 +342,19 @@ class _AccountScreenState extends State<AccountScreen> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: const Text('Confirm'),
+                  title: const Text('Xác nhận'),
                   content: const Text(
-                    'Are you sure you want to delete this account?',
+                    'Bạn có chắc muốn xóa tài khoản này?',
                   ),
                   actions: <Widget>[
                     TextButton(
-                      child: const Text('Cancel'),
+                      child: const Text('Hủy'),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
                     ),
                     TextButton(
-                      child: const Text('Delete'),
+                      child: const Text('Xóa'),
                       onPressed: () async {
                         _deleteUser();
                         await Navigator.of(context).pushAndRemoveUntil(
@@ -371,14 +371,14 @@ class _AccountScreenState extends State<AccountScreen> {
               },
             );
           },
-          'Delete Your Account',
+          'Xóa tài khoản vĩnh viễn',
           const Icon(Icons.delete_forever),
           [],
         ),
         const SizedBox(height: 16),
         _buildGroupBox(
           onTap:(){},
-          'About Us',
+          'Thông tin về chúng tôi',
           const Icon(Icons.info),
           [],
         ),
