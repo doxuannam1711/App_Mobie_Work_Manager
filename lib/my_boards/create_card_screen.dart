@@ -30,6 +30,9 @@ class _AddCardScreenState extends State<AddCardScreen> {
   late String _labelColor;
   late String _selectedLabelOption = 'Low';
   late String _selectedColorOption = 'default';
+
+  final cardNameFocusNode = FocusNode();
+
   DateTime? _dueDate;
   final List<String> _labelOptions = ['High', 'Medium', 'Low'];
   final List<String> _colorOptions = [
@@ -125,6 +128,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   _cardName = value;
                 });
               },
+              focusNode: cardNameFocusNode,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Nhập tên thẻ',
@@ -133,7 +137,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
             const SizedBox(height: 30.0),
             const Align(
               alignment: Alignment.centerLeft,
-                child: Text(
+              child: Text(
                 'Tên danh sách',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -143,7 +147,8 @@ class _AddCardScreenState extends State<AddCardScreen> {
             ),
             const SizedBox(height: 10.0),
             Container(
-              padding: const EdgeInsets.all(16.5), // Adjust the padding as needed
+              padding:
+                  const EdgeInsets.all(16.5), // Adjust the padding as needed
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey),
               ),
@@ -173,7 +178,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
             const SizedBox(height: 30.0),
             const Align(
               alignment: Alignment.centerLeft,
-                child: Text(
+              child: Text(
                 'Nhãn',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -207,7 +212,6 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 ),
               ),
             ),
-            
             const SizedBox(height: 30.0),
             const Align(
               alignment: Alignment.centerLeft,
@@ -260,11 +264,10 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 ],
               ),
             ),
-            
             const SizedBox(height: 30.0),
             const Align(
               alignment: Alignment.centerLeft,
-                child: Text(
+              child: Text(
                 'Màu nhãn',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -298,7 +301,6 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 ),
               ),
             ),
-            
             const SizedBox(height: 30.0),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.3,
@@ -306,28 +308,34 @@ class _AddCardScreenState extends State<AddCardScreen> {
               child: ElevatedButton(
                 child: const Text('Thêm'),
                 onPressed: () async {
-                  addCard();
-                  if (widget.labels == "mycard") {
-                    await Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) => MyCardsScreen(
-                          widget.creatorID,
-                        ),
-                      ),
-                    );
-                  } else {
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ListScreen(
-                          widget.boardName,
-                          widget.boardID,
-                          widget.labels,
-                          widget.creatorID,
-                        ),
-                      ),
-                    );
+                  if (_cardName.isEmpty) {
+                    cardNameFocusNode.requestFocus();
                   }
-                  setState(() {});
+                  else{
+                    addCard();
+                    if (widget.labels == "mycard") {
+                      await Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => MyCardsScreen(
+                            widget.creatorID,
+                          ),
+                        ),
+                      );
+                    } else {
+                      await Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => ListScreen(
+                            widget.boardName,
+                            widget.boardID,
+                            widget.labels,
+                            widget.creatorID,
+                          ),
+                        ),
+                      );
+                    }
+                    setState(() {});
+                  }
+                  
                 },
               ),
             ),

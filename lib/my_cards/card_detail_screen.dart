@@ -63,8 +63,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<List<Map<String, dynamic>>> getComments() async {
-    final response = await http.get(
-        Uri.parse('http://192.168.1.7/api/getComments/${widget.cardID}'));
+    final response = await http
+        .get(Uri.parse('http://192.168.1.7/api/getComments/${widget.cardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -112,6 +112,21 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Comment added failed!')),
       );
+    }
+  }
+
+  Future<void> _deleteCard() async {
+    final url = Uri.parse('http://192.168.1.7/api/deleteCard/${widget.cardID}');
+    final response = await http.delete(url);
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Card deleted successfully!')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to delete card!')),
+      );
+      print('Failed to delete board. Error: ${response.reasonPhrase}');
     }
   }
 
@@ -217,11 +232,47 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                 _updateCard(widget.cardID);
                 await Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
-                    builder: (context) => MyCardsScreen(widget.userID)
-                  ),
+                      builder: (context) => MyCardsScreen(widget.userID)),
                   (route) => false, // Remove all previous routes
                 );
                 setState(() {});
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () async {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Xác nhận'),
+                      content: const Text(
+                        'Bạn có chắc muốn xóa thẻ này?',
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('Hủy'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        TextButton(
+                          child: const Text('Xóa'),
+                          onPressed: () async {
+                            _deleteCard();
+                            await Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      MyCardsScreen(widget.userID)),
+                              (route) => false, // Remove all previous routes
+                            );
+                            setState(() {});
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
             ),
           ],
@@ -368,8 +419,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                       ),
                       const SizedBox(height: 8.0),
                       Container(
-                         padding:
-                            const EdgeInsets.all(6.0), // Adjust the padding as needed
+                        padding: const EdgeInsets.all(
+                            6.0), // Adjust the padding as needed
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey),
                         ),
@@ -380,7 +431,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                               onPressed: () async {
                                 final DateTime? picked = await showDatePicker(
                                   context: context,
-                                  initialDate: _expirationDate ?? DateTime.now(),
+                                  initialDate:
+                                      _expirationDate ?? DateTime.now(),
                                   firstDate: DateTime.now(),
                                   lastDate: DateTime.now()
                                       .add(const Duration(days: 365)),

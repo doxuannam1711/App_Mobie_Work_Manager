@@ -7,7 +7,6 @@ import 'package:flutter_application/model/board.dart';
 import 'background_item.dart';
 
 class CreateScreen extends StatefulWidget {
-
   final int userID;
   const CreateScreen(this.userID);
 
@@ -19,7 +18,7 @@ class CreateScreen extends StatefulWidget {
 
 class _CreateScreenState extends State<CreateScreen>
     with TickerProviderStateMixin {
-  late String _boardName = "test";
+  late String _boardName = "";
   // late int userID = 1;
   late String _boardColor;
   late String _cardName;
@@ -31,6 +30,7 @@ class _CreateScreenState extends State<CreateScreen>
   List<String> myStringList = ['string1', 'string2', 'string3'];
   String _backgroundImage = "0";
   // TabController controller = TabController(length: 2, vsync: this);
+  final boardNameFocusNode = FocusNode();
 
   Future<void> addBoard() async {
     // get the current user ID or use a default value
@@ -78,56 +78,63 @@ class _CreateScreenState extends State<CreateScreen>
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Tạo mới'),
-          // controller: controller,
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Bảng'),
-              Tab(text: 'Thẻ'),
-            ],
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Tạo bảng mới'),
+            // controller: controller,
+            // bottom: const TabBar(
+            //   tabs: [
+            //     Tab(text: 'Bảng'),
+            //     Tab(text: 'Thẻ'),
+            //   ],
+            // ),
           ),
-        ),
-        body:
-        TabBarView(
-          children: [
-            SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
-              child:Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16.0),
-                  const Text(
-                    'Tên bảng',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    ),
+          body:
+              // TabBarView(
+              //   children: [
+              SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16.0),
+                const Text(
+                  'Tên bảng',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
                   ),
-                  const SizedBox(height: 8.0),
-                  TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        _boardName = value;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Nhập tên bảng',
-                    ),
+                ),
+                const SizedBox(height: 8.0),
+                TextField(
+                  focusNode: boardNameFocusNode,
+                  onChanged: (value) {
+                    setState(() {
+                      _boardName = value;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Nhập tên bảng',
                   ),
-                  const SizedBox(height: 16.0),
-                  const Text(
-                    'Màu của bảng',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    ),
+                ),
+                const SizedBox(height: 30.0),
+                const Text(
+                  'Màu của bảng',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
                   ),
-                  const SizedBox(height: 8.0),
-                  DropdownButtonFormField<String>(
+                ),
+                const SizedBox(height: 10.0),
+                Container(
+                  padding: const EdgeInsets.all(
+                      16.5), // Adjust the padding as needed
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: DropdownButtonFormField<String>(
                     value: _boardColor,
                     items: <String>[
                       'Blue',
@@ -148,18 +155,29 @@ class _CreateScreenState extends State<CreateScreen>
                         _boardColor = value!;
                       });
                     },
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text(
-                    'Hình nền',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
+                    decoration: const InputDecoration.collapsed(
+                      hintText: '',
+                      border: InputBorder.none,
                     ),
                   ),
-                  const SizedBox(height: 8.0),
-
-                  DropdownButton<String>(
+                ),
+                const SizedBox(height: 30.0),
+                const Text(
+                  'Hình nền',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
+                  ),
+                ),
+                const SizedBox(height: 10.0),
+                Container(
+                  width: MediaQuery.of(context).size.width * 1,
+                  padding:
+                      const EdgeInsets.all(4.5), // Adjust the padding as needed
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: DropdownButton<String>(
                     key: UniqueKey(),
                     value: _backgroundImage,
                     onChanged: (value) {
@@ -167,6 +185,7 @@ class _CreateScreenState extends State<CreateScreen>
                         _backgroundImage = value!;
                       });
                     },
+                    underline: const SizedBox.shrink(),
                     items: const [
                       DropdownMenuItem<String>(
                         value: '0',
@@ -218,182 +237,194 @@ class _CreateScreenState extends State<CreateScreen>
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16.0),
-                  
-                  ElevatedButton(
-                    child: const Text('Thêm'),
-                    onPressed: () async{
-                      addBoard();
-                      await Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => MyBoardsScreen(widget.userID)),
-                      );
-                      setState(() {});
-                    },    
+                ),
+                const SizedBox(height: 30.0),
+                Align(
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    height: 40,
+                    child: ElevatedButton(
+                      child: const Text('Thêm'),
+                      onPressed: () async {
+                        if (_boardName.isEmpty) {
+                          boardNameFocusNode.requestFocus();
+                        }
+                        else{
+                          addBoard();
+                          await Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    MyBoardsScreen(widget.userID)),
+                          );
+                          setState(() {});
+                        }
+                      },
+                    ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            // Board section
+          ),
+          // Board section
 
-            // Card section
-            SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16.0),
-                  const Text(
-                    'Card List',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  DropdownButtonFormField<String>(
-                    value: null,
-                    items: <String>['List 1', 'List 2', 'List 3']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (value) {},
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Select a list',
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text(
-                    'Card Name',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        _cardName = value;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Enter card name',
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text(
-                    'Card Description',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        _cardDescription = value;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Enter card description',
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text(
-                    'Start Date',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        _startDate = DateTime.parse(value);
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Enter start date',
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text(
-                    'Expiration Date',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        _expirationDate = DateTime.parse(value);
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Enter expiration date',
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text(
-                    'Members',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        myStringList.add(value);
-                        _members = myStringList;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Enter members',
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text(
-                    'Attachments',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        myStringList.add(value);
-                        _attachments = myStringList;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Enter attachments',
-                    ),
-                  ),
-                ]
-              )
-            )
-          ],
-        ) 
-      )
-    );
+          // Card section
+          // SingleChildScrollView(
+          //   padding: const EdgeInsets.all(16.0),
+          //   child: Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       const SizedBox(height: 16.0),
+          //       const Text(
+          //         'Card List',
+          //         style: TextStyle(
+          //           fontWeight: FontWeight.bold,
+          //           fontSize: 20.0,
+          //         ),
+          //       ),
+          //       const SizedBox(height: 8.0),
+          //       DropdownButtonFormField<String>(
+          //         value: null,
+          //         items: <String>['List 1', 'List 2', 'List 3']
+          //             .map<DropdownMenuItem<String>>((String value) {
+          //           return DropdownMenuItem<String>(
+          //             value: value,
+          //             child: Text(value),
+          //           );
+          //         }).toList(),
+          //         onChanged: (value) {},
+          //         decoration: const InputDecoration(
+          //           border: OutlineInputBorder(),
+          //           hintText: 'Select a list',
+          //         ),
+          //       ),
+          //       const SizedBox(height: 16.0),
+          //       const Text(
+          //         'Card Name',
+          //         style: TextStyle(
+          //           fontWeight: FontWeight.bold,
+          //           fontSize: 20.0,
+          //         ),
+          //       ),
+          //       const SizedBox(height: 8.0),
+          //       TextField(
+          //         onChanged: (value) {
+          //           setState(() {
+          //             _cardName = value;
+          //           });
+          //         },
+          //         decoration: const InputDecoration(
+          //           border: OutlineInputBorder(),
+          //           hintText: 'Enter card name',
+          //         ),
+          //       ),
+          //       const SizedBox(height: 16.0),
+          //       const Text(
+          //         'Card Description',
+          //         style: TextStyle(
+          //           fontWeight: FontWeight.bold,
+          //           fontSize: 20.0,
+          //         ),
+          //       ),
+          //       const SizedBox(height: 8.0),
+          //       TextField(
+          //         onChanged: (value) {
+          //           setState(() {
+          //             _cardDescription = value;
+          //           });
+          //         },
+          //         decoration: const InputDecoration(
+          //           border: OutlineInputBorder(),
+          //           hintText: 'Enter card description',
+          //         ),
+          //       ),
+          //       const SizedBox(height: 16.0),
+          //       const Text(
+          //         'Start Date',
+          //         style: TextStyle(
+          //           fontWeight: FontWeight.bold,
+          //           fontSize: 20.0,
+          //         ),
+          //       ),
+          //       const SizedBox(height: 8.0),
+          //       TextField(
+          //         onChanged: (value) {
+          //           setState(() {
+          //             _startDate = DateTime.parse(value);
+          //           });
+          //         },
+          //         decoration: const InputDecoration(
+          //           border: OutlineInputBorder(),
+          //           hintText: 'Enter start date',
+          //         ),
+          //       ),
+          //       const SizedBox(height: 16.0),
+          //       const Text(
+          //         'Expiration Date',
+          //         style: TextStyle(
+          //           fontWeight: FontWeight.bold,
+          //           fontSize: 20.0,
+          //         ),
+          //       ),
+          //       const SizedBox(height: 8.0),
+          //       TextField(
+          //         onChanged: (value) {
+          //           setState(() {
+          //             _expirationDate = DateTime.parse(value);
+          //           });
+          //         },
+          //         decoration: const InputDecoration(
+          //           border: OutlineInputBorder(),
+          //           hintText: 'Enter expiration date',
+          //         ),
+          //       ),
+          //       const SizedBox(height: 16.0),
+          //       const Text(
+          //         'Members',
+          //         style: TextStyle(
+          //           fontWeight: FontWeight.bold,
+          //           fontSize: 20.0,
+          //         ),
+          //       ),
+          //       const SizedBox(height: 8.0),
+          //       TextField(
+          //         onChanged: (value) {
+          //           setState(() {
+          //             myStringList.add(value);
+          //             _members = myStringList;
+          //           });
+          //         },
+          //         decoration: const InputDecoration(
+          //           border: OutlineInputBorder(),
+          //           hintText: 'Enter members',
+          //         ),
+          //       ),
+          //       const SizedBox(height: 16.0),
+          //       const Text(
+          //         'Attachments',
+          //         style: TextStyle(
+          //           fontWeight: FontWeight.bold,
+          //           fontSize: 20.0,
+          //         ),
+          //       ),
+          //       const SizedBox(height: 8.0),
+          //       TextField(
+          //         onChanged: (value) {
+          //           setState(() {
+          //             myStringList.add(value);
+          //             _attachments = myStringList;
+          //           });
+          //         },
+          //         decoration: const InputDecoration(
+          //           border: OutlineInputBorder(),
+          //           hintText: 'Enter attachments',
+          //         ),
+          //       ),
+          //     ]
+          //   )
+          // )
+          //   ],
+          // )
+        ));
   }
 }

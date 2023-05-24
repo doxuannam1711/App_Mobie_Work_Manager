@@ -102,13 +102,13 @@ CREATE TABLE  cards  (
 CardID  int IDENTITY(1,1) NOT NULL,
 ListID  int  NOT NULL,
 AssignedToID  int,
-CreatorID  int  NOT NULL,
+CreatorID  int,
 Checklist int ,
 Label  nvarchar(255)  ,
 Comment  int,
 CardName  nvarchar(255) NOT NULL,
 StatusView  nvarchar(255)  ,
-CreatedDate  datetime NOT NULL,
+CreatedDate  datetime,
 StartDate date ,
 DueDate  date,
 Attachment  nvarchar(max)  ,
@@ -915,3 +915,18 @@ END
 insert into checklistitems VALUES(1,N'Khảo sát, phân tích nghiệp vụ 2','','','false','','2023-2-20 10:51:50 AM','',1)
 insert into comments VALUES(3,12,N'Không hiểu kiểu gì lỗi này ở đâu ra dị')
 insert into attachments VALUES(1,N'https://drive.google.com/uc?id=1IFsLihg2jGUF9vmjk5ox2G25atpNYqlQ&export=download','sample-docx-file-for-testing')
+
+--------------------------------------------------------DELETE EVERYTHING ABOUT CARD---------------------------------------------------------------------------------
+DELETE FROM checklistitems WHERE ChecklistID IN (SELECT ChecklistID FROM checklists where CardID=22)
+
+DELETE FROM checklists WHERE CardID=22
+
+DELETE FROM comments WHERE CardID=22
+
+DELETE FROM attachments WHERE CardID = 22
+
+DELETE FROM notifications WHERE CardID=22
+
+DELETE FROM cards WHERE CardID = 22
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
