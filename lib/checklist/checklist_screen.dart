@@ -108,7 +108,7 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
         children: [
           Icon(Icons.add),
           SizedBox(width: 8.0),
-          Text('Add an item'),
+          Text('Thêm đầu mục công việc'),
         ],
       ),
     );
@@ -123,7 +123,7 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
               filled: true,
               fillColor: Colors.grey[200],
               border: const OutlineInputBorder(),
-              hintText: 'Enter item name',
+              hintText: 'Tên đầu mục công việc',
             ),
             controller: _itemNameController,
             focusNode: _itemNameFocusNode,
