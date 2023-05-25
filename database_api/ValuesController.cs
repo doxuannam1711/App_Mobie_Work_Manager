@@ -769,7 +769,7 @@ Where users.UserID = @userID";
                                     inner join boards
                                     on notifications.BoardID=boards.BoardID
                                     inner join lists
-                                    on notifications.BoardID=lists.BoardID";
+                                    on notifications.BoardID=lists.BoardID ORDER BY notifications.NotificationID DESC";
             DataTable tableNhanVien = Command.GetDataTable();
 
             var respone = new ResultModel
