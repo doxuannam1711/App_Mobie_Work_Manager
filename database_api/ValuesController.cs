@@ -285,9 +285,17 @@ public class ValuesController : ApiControllerBase
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"UPDATE cards SET DueDate = @DueDate WHERE CardID = @CardID";
+            Command.CommandText = @"UPDATE cards SET 
+CardName = @CardName,
+DueDate = @DueDate,
+Label = @Label,
+LabelColor = @LabelColor
+WHERE CardID = @CardID";
+            Command.Parameters.AddWithValue("@CardName", card.CardName);
+            Command.Parameters.AddWithValue("@Label", card.Label);
+            Command.Parameters.AddWithValue("@LabelColor", card.LabelColor);
             Command.Parameters.AddWithValue("@DueDate", card.DueDate);
-            Command.Parameters.AddWithValue("@CardID", card.CardID);
+            Command.Parameters.AddWithValue("@CardID", cardID);
             Command.ExecuteNonQuery();
             var response = new ResultModel { };
             return Ok(response);
@@ -510,16 +518,10 @@ ORDER BY cards.CardID DESC;";
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"SELECT cards.*, lists.ListName, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+            Command.CommandText = @"SELECT *
 FROM cards
-LEFT JOIN checklists ON cards.cardID = checklists.cardID
-LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
-LEFT JOIN lists ON cards.CardID = lists.ListID
-WHERE cards.CardID = 3
-GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, lists.ListName, 
-cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
-cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
-cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor;";
+LEFT JOIN lists ON cards.ListID = lists.ListID
+WHERE cards.CardID = @cardID;";
             Command.Parameters.AddWithValue("@cardID", cardID);
             DataTable tableNhanVien = Command.GetDataTable();
 
@@ -579,6 +581,31 @@ ORDER BY cards.DueDate ASC;";
                                  INNER JOIN cards ON lists.ListID = cards.ListID
                                  WHERE lists.BoardID = @boardID";
             Command.Parameters.AddWithValue("@boardID", boardID);
+            DataTable tableChecklists = Command.GetDataTable();
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableChecklists)
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("api/getAllListOption/{userID}")]
+    public IHttpActionResult GetAllListOption(int userID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"Select * from users 
+INNER JOIN boards on users.UserID = boards.UserID
+INNER JOIN lists on lists.BoardID = boards.BoardID
+Where users.UserID = @userID";
+            Command.Parameters.AddWithValue("@userID", userID);
             DataTable tableChecklists = Command.GetDataTable();
             var respone = new ResultModel
             {

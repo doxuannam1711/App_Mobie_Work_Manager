@@ -21,9 +21,12 @@ class CardsDetailScreen extends StatefulWidget {
 
 class _CardsDetailScreenState extends State<CardsDetailScreen> {
   late CardDetail _cardDetail;
+  String _cardName = '';
+  // late String _cardName;
   String _listName = ''; // List within which the card is contained
   String _description = ''; // Description of the card
   DateTime? _expirationDate; // Expiration date of the card
+
   String _member = 'Đỗ Xuân Nam'; // Member assigned to the card
 
   final List<Color> _labelColors = [
@@ -34,23 +37,59 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
     Colors.yellow,
   ];
 
+  final List<String> _labelList = [
+    'High',
+    'Medium',
+    'Low',
+  ];
+
+  Color? label;
+  String? labelName;
+  String? label2;
+
   String _comment = "test comment";
   String _editComment = "";
+
+  var _cardNameController;
 
   @override
   void initState() {
     super.initState();
+    _cardName = widget.cardName; // Khởi tạo giá trị của _cardName
+    _cardNameController = TextEditingController(text: widget.cardName);
     fetchCardDetail(widget.cardID).then((cardDetail) {
       setState(() {
         _cardDetail = cardDetail;
         _listName = cardDetail.listName;
+        _expirationDate = DateTime.parse(cardDetail.dueDate);
+        // _expirationDate = cardDetail.expirationDate;
       });
+    });
+  }
+
+  @override
+  void dispose() {
+    _cardNameController.dispose();
+    super.dispose();
+  }
+
+  void _updateCardName(String value) {
+    // Cập nhật giá trị của _cardName khi thay đổi
+    setState(() {
+      _cardName = value;
+    });
+  }
+
+  void _saveCardName() {
+    // Cập nhật tên thẻ trong CardDetail
+    setState(() {
+      _cardDetail.cardName = _cardName;
     });
   }
 
   Future<CardDetail> fetchCardDetail(int cardID) async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.7/api/getcarddetail/$cardID'));
+        .get(Uri.parse('http://192.168.53.160/api/getcarddetail/$cardID'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['Data'];
@@ -63,8 +102,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<List<Map<String, dynamic>>> getComments() async {
-    final response = await http
-        .get(Uri.parse('http://192.168.1.7/api/getComments/${widget.cardID}'));
+    final response = await http.get(
+        Uri.parse('http://192.168.53.160/api/getComments/${widget.cardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -91,7 +130,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _addComment() async {
-    final url = Uri.parse('http://192.168.1.7/api/addComment');
+    final url = Uri.parse('http://192.168.53.160/api/addComment');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -116,7 +155,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _deleteCard() async {
-    final url = Uri.parse('http://192.168.1.7/api/deleteCard/${widget.cardID}');
+    final url =
+        Uri.parse('http://192.168.53.160/api/deleteCard/${widget.cardID}');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -131,7 +171,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _deleteComment(int commentID) async {
-    final url = Uri.parse('http://192.168.1.7/api/deleteComment/$commentID');
+    final url = Uri.parse('http://192.168.53.160/api/deleteComment/$commentID');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -147,7 +187,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   Future<void> _updateComment(int commentID) async {
     final url = Uri.parse(
-        'http://192.168.1.7/api/updateComment/${widget.userID}/$commentID');
+        'http://192.168.53.160/api/updateComment/${widget.userID}/$commentID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -172,40 +212,43 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _updateCard(int cardID) async {
-    final url = Uri.parse('http://192.168.1.7/api/updateCard/$cardID');
+    final url = Uri.parse('http://192.168.53.160/api/updateCard/$cardID');
     final response = await http.put(
       url,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, dynamic>{
+        'cardName': _cardNameController.text,
+        'label': label2,
+        'LabelColor': labelName,
         'dueDate': _expirationDate?.toIso8601String(),
-        'cardID': cardID,
       }),
     );
-
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('UPDATE successfully!')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('UPDATE failure')),
-      );
+    if (mounted) {
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('UPDATE successfully!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('UPDATE failure')),
+        );
+      }
     }
   }
 
   String getColorName(Color color) {
     if (color == Colors.red) {
-      return 'Red';
+      return 'red';
     } else if (color == Colors.green) {
-      return 'Green';
+      return 'green';
     } else if (color == Colors.blue) {
-      return 'Blue';
+      return 'blue';
     } else if (color == Colors.orange) {
-      return 'Orange';
+      return 'orange';
     } else if (color == Colors.yellow) {
-      return 'Yellow';
+      return 'yellow';
     } else {
       // Add more color cases as needed
       return 'Unknown';
@@ -214,7 +257,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Color? label = _labelColors[0];
+    label = _labelColors[0];
     return GestureDetector(
       // add this widget to detect taps outside TextField
       onTap: () {
@@ -224,7 +267,59 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
         resizeToAvoidBottomInset: true,
         // drawer: NavDrawer(widget.userID),
         appBar: AppBar(
-          title: Text(widget.cardName),
+          title: TextButton(
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: Size(0, 40),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              // backgroundColor: Colors.grey[100],
+              alignment: Alignment.centerLeft,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              // side: BorderSide(color: Colors.grey[300]!),
+            ),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (_) {
+                  return AlertDialog(
+                    title: const Text('Nhập tên thẻ'),
+                    content: TextField(
+                      controller: _cardNameController,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Nhập tên thẻ',
+                      ),
+                      onChanged: _updateCardName,
+                    ),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Hủy'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          _saveCardName();
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Lưu'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: Text(
+              _cardName,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
+          ),
           actions: [
             IconButton(
               icon: const Icon(Icons.check),
@@ -463,13 +558,48 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
                       const SizedBox(height: 30.0),
                       const Text(
-                        'Màu nhãn:',
+                        'Mức độ ưu tiên:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0,
                         ),
                       ),
                       const SizedBox(height: 8.0),
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                          border: const OutlineInputBorder(),
+                        ),
+                        value: label2 ??
+                            _labelList[
+                                0], // Đặt giá trị mặc định cho DropdownButtonFormField
+                        items: _labelList.map((label) {
+                          return DropdownMenuItem<String>(
+                            value: label,
+                            child: Text(
+                              label,
+                              style: const TextStyle(
+                                color: Colors.black,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (String? value) {
+                          setState(() {
+                            label2 = value;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 30.0),
+                      const Text(
+                        'Nhãn màu:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                      const SizedBox(height: 30.0),
                       DropdownButtonFormField<Color>(
                         decoration: InputDecoration(
                           filled: true,
@@ -506,6 +636,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                         onChanged: (Color? value) {
                           setState(() {
                             label = value;
+                            labelName = getColorName(value!);
                           });
                         },
                       ),

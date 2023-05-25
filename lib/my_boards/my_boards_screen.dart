@@ -5,13 +5,11 @@ import '../list/list_screen.dart';
 import '../nav_drawer.dart';
 import 'create_screen.dart';
 
-
 class MyBoardsScreen extends StatefulWidget {
   final int userID;
-  
+
   // const MyBoardsScreen({Key? key, required this.userID});
   const MyBoardsScreen(this.userID);
-
 
   //  const MyBoardsScreen({super.key});
   @override
@@ -22,7 +20,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
   String _searchKeyword = "";
   late Future<List<Map<String, dynamic>>> _boardListFuture;
   List<Map<String, dynamic>> _searchResult = [];
-  
+
   @override
   void initState() {
     super.initState();
@@ -30,8 +28,8 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _fetchBoardList() async {
-    final response =
-        await http.get(Uri.parse('http://192.168.1.7/api/getboards/${widget.userID}'));
+    final response = await http
+        .get(Uri.parse('http://192.168.53.160/api/getboards/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -56,7 +54,9 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _searchBoards(String keyword) async {
-    final url = Uri.parse('http://192.168.1.7/api/searchBoards/$keyword');
+    final encodedKeyword = Uri.encodeComponent(keyword);
+    final url =
+        Uri.parse('http://192.168.53.160/api/searchBoards/$encodedKeyword');
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -64,12 +64,17 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
           (jsonData['Data'] as List).cast<Map<String, dynamic>>();
       return boardList;
     } else {
-      throw Exception('Failed to load data');
+      // Xử lý khi tìm kiếm thất bại
+      try {
+        return await _fetchBoardList();
+      } catch (e) {
+        throw Exception('Failed to load data');
+      }
     }
   }
 
   Future<void> _deleteBoard(int boardId) async {
-    final url = Uri.parse('http://192.168.1.7/api/deleteBoard/$boardId');
+    final url = Uri.parse('http://192.168.53.160/api/deleteBoard/$boardId');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -119,17 +124,16 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
     return AssetImage(imagePath);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer:  NavDrawer(widget.userID),
+      drawer: NavDrawer(widget.userID),
       appBar: AppBar(
         title: const Text('Các bảng của tôi'),
-        actions:<Widget> [
+        actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
-            child:GestureDetector(
+            child: GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
@@ -139,9 +143,8 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                 );
               },
               child: const Icon(Icons.add),
-            ),         
+            ),
           ),
-
         ],
       ),
       body: Column(
@@ -177,33 +180,33 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                 } else if (snapshot.hasError) {
                   return const Center(child: Text('Error loading data'));
                 } else {
-                  final boardList = snapshot.data!;          
+                  final boardList = snapshot.data!;
                   return ListView.builder(
                     physics: const BouncingScrollPhysics(),
                     itemCount: boardList.length,
                     itemBuilder: (BuildContext context, int index) {
                       final board = boardList[index];
-                        return _buildBoard(
-                          board['BoardName'],
-                          board['LabelsColor'],
-                          board['CreatedDate'] != null
-                              ? DateTime.parse(board['CreatedDate'])
-                              : null,
-                          board['Labels'],                          
-                          board['BoardID'],
-                        );
+                      return _buildBoard(
+                        board['BoardName'],
+                        board['LabelsColor'],
+                        board['CreatedDate'] != null
+                            ? DateTime.parse(board['CreatedDate'])
+                            : null,
+                        board['Labels'],
+                        board['BoardID'],
+                      );
                     },
-                      // Build the board item widget
+                    // Build the board item widget
                     //   return GestureDetector(
                     //     onTap: () {
                     //       Navigator.push(
                     //         context,
                     //         MaterialPageRoute(
-                    //           builder: (context) => ListScreen(BoardName: 'Công việc ở công ty',),                             
+                    //           builder: (context) => ListScreen(BoardName: 'Công việc ở công ty',),
                     //         ),
                     //       );
                     //     },
-                      
+
                     //     child: Container(
                     //       decoration: BoxDecoration(
                     //         borderRadius: BorderRadius.circular(8),
@@ -258,13 +261,13 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                     //                             child: const Text('Delete'),
                     //                             onPressed: () async {
                     //                               // TODO: delete board
-                    //                               _deleteBoard(boardList[index]['BoardID']); 
+                    //                               _deleteBoard(boardList[index]['BoardID']);
                     //                               // call _deleteBoard function
                     //                               await Navigator.of(context).push(
                     //                                 MaterialPageRoute(builder: (context) =>const MyBoardsScreen()),
                     //                               );
                     //                               setState(() {});
-                                                  
+
                     //                             },
                     //                           ),
                     //                         ],
@@ -336,7 +339,6 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                     // separatorBuilder: (BuildContext context, int index) {
                     //   return SizedBox(height: 16);
                     // },
-                  
                   );
                 }
               },
@@ -346,6 +348,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
       ),
     );
   }
+
   // case 'green':
   //       rectangleColor = Colors.green;
   //     case 'red':
@@ -364,10 +367,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
     DateTime? CreatedDate,
     String labels,
     int boardID,
-    
-
-  ){
-    
+  ) {
     Color rectangleColor = Colors.blue;
     switch (label.trim()) {
       case 'green':
@@ -385,148 +385,147 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
       default:
         rectangleColor = Colors.grey;
     }
-  
+
     return GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ListScreen(boardName, boardID, labels,widget.userID,),                            
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ListScreen(
+              boardName,
+              boardID,
+              labels,
+              widget.userID,
             ),
-          );
-        },
-      
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.3),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Add image to the label and bottom container
-              Container(
-                width: double.infinity,
-                height: 100,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: _getImageLabel(
-                      'assets/images/background/background_$labels.jpg',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(8),
-                    topRight: Radius.circular(8),
-                  ),
-                ),
-                child: Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                    icon: const Icon(Icons.delete_outline),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Xác nhận'),
-                            content: const Text(
-                              'Bạn có chắc muốn xóa bảng này không?',
-                            ),
-                            actions: <Widget>[
-                              TextButton(
-                                child: const Text('Hủy'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                              TextButton(
-                                child: const Text('Xóa'),
-                                onPressed: () async {
-                                  // TODO: delete board
-                                  _deleteBoard(boardID); 
-                                  // call _deleteBoard function
-                                  await Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                      builder: (context) => MyBoardsScreen(widget.userID)
-                                    ),
-                                  );
-                                  setState(() {});
-                                  
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 16,
-                  horizontal: 24,
-                ),
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,                                 
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 20,
-                          height: 20,
-                          margin: const EdgeInsets.only(right: 8),
-                          decoration: BoxDecoration(
-                            color: _getLabelColor(
-                              label,
-                            ),
-                            borderRadius:
-                                BorderRadius.circular(4),
-                          ),
-                        ),
-                        Text(
-                          boardName,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      CreatedDate.toString(),
-                      style:
-                          TextStyle(color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                height: 8,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(8),
-                    bottomRight: Radius.circular(8),
-                  ),
-                  color: Colors.grey[200],
-                ),
-              ),
-            ],
-          ),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-      );
-    }
-    // // itemBuilder: (BuildContext context, int index) {
-    // //   return SizedBox(height: 16);
-    // },
-  
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Add image to the label and bottom container
+            Container(
+              width: double.infinity,
+              height: 100,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: _getImageLabel(
+                    'assets/images/background/background_$labels.jpg',
+                  ),
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(8),
+                ),
+              ),
+              child: Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Xác nhận'),
+                          content: const Text(
+                            'Bạn có chắc muốn xóa bảng này không?',
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('Hủy'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: const Text('Xóa'),
+                              onPressed: () async {
+                                // TODO: delete board
+                                _deleteBoard(boardID);
+                                // call _deleteBoard function
+                                await Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          MyBoardsScreen(widget.userID)),
+                                );
+                                setState(() {});
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 16,
+                horizontal: 24,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          color: _getLabelColor(
+                            label,
+                          ),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      Text(
+                        boardName,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    CreatedDate.toString(),
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              height: 8,
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(8),
+                  bottomRight: Radius.circular(8),
+                ),
+                color: Colors.grey[200],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
+  // // itemBuilder: (BuildContext context, int index) {
+  // //   return SizedBox(height: 16);
+  // },
+}

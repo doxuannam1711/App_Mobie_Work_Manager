@@ -51,7 +51,7 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchcardList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.7/api/getLists/${widget.boardID}'));
+        .get(Uri.parse('http://192.168.53.160/api/getLists/${widget.boardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -77,7 +77,7 @@ class _ListScreenState extends State<ListScreen> {
 
   // Future<List<Map<String, dynamic>>> _fetchCard(int listID) async {
   //   final response = await http
-  //       .get(Uri.parse('http://192.168.1.7/api/getCards/$listID'));
+  //       .get(Uri.parse('http://192.168.53.160/api/getCards/$listID'));
   //   if (response.statusCode == 200) {
   //     try {
   //       final data = jsonDecode(response.body)['Data'];
@@ -268,6 +268,7 @@ class _ListScreenState extends State<ListScreen> {
         Expanded(
           child: ListView.separated(
             itemBuilder: (BuildContext context, int index) {
+              int cardID = cardList[index]['CardID'];
               String title = cardList[index]['CardName'];
               // int test = cardList[index]['ListID'];
               // debugPrint(cardList.toString());
@@ -281,6 +282,7 @@ class _ListScreenState extends State<ListScreen> {
               List<String> avatars = List.castFrom<dynamic, String>(
                   cardList[index]['Avatars'] ?? []);
               return _buildCard(
+                cardID,
                 title,
                 label,
                 expirationDate,
@@ -322,6 +324,7 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   Widget _buildCard(
+    int cardID,
     String title,
     String label,
     DateTime? expirationDate,
@@ -337,7 +340,7 @@ class _ListScreenState extends State<ListScreen> {
           context,
           MaterialPageRoute(
             builder: (context) =>
-                CardsDetailScreen('Front End', 1, widget.userID),
+                CardsDetailScreen(title, cardID, widget.userID),
           ),
         );
       },
