@@ -44,8 +44,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   ];
 
   Color? label;
-  String? labelName;
-  String? label2;
+  String? labelName = "red";
+  String? label2 = "High";
 
   String _comment = "test comment";
   String _editComment = "";
@@ -267,58 +267,106 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
         resizeToAvoidBottomInset: true,
         // drawer: NavDrawer(widget.userID),
         appBar: AppBar(
-          title: TextButton(
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              minimumSize: Size(0, 40),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-              // backgroundColor: Colors.grey[100],
-              alignment: Alignment.centerLeft,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              // side: BorderSide(color: Colors.grey[300]!),
-            ),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (_) {
-                  return AlertDialog(
-                    title: const Text('Nhập tên thẻ'),
-                    content: TextField(
-                      controller: _cardNameController,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Nhập tên thẻ',
-                      ),
-                      onChanged: _updateCardName,
+          title: Row(
+            children: [
+              // InkWell(
+              //   onTap: () {
+              //     showDialog(
+              //       context: context,
+              //       builder: (_) {
+              //         return AlertDialog(
+              //           title: const Text('Nhập tên thẻ'),
+              //           content: TextField(
+              //             controller: _cardNameController,
+              //             decoration: const InputDecoration(
+              //               border: InputBorder.none,
+              //               hintText: 'Nhập tên thẻ',
+              //             ),
+              //             onChanged: _updateCardName,
+              //           ),
+              //           actions: [
+              //             ElevatedButton(
+              //               onPressed: () {
+              //                 Navigator.pop(context);
+              //               },
+              //               child: const Text('Hủy'),
+              //             ),
+              //             ElevatedButton(
+              //               onPressed: () {
+              //                 _saveCardName();
+              //                 Navigator.pop(context);
+              //               },
+              //               child: const Text('Lưu'),
+              //             ),
+              //           ],
+              //         );
+              //       },
+              //     );
+              //   },
+              //   child: Icon(
+              //     Icons.edit,
+              //     size: 20,
+              //     color: Colors.grey,
+              //   ),
+              // ),
+              Expanded(
+                child: TextButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) {
+                        return AlertDialog(
+                          title: const Text('Nhập tên thẻ'),
+                          content: TextField(
+                            controller: _cardNameController,
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Nhập tên thẻ',
+                            ),
+                            onChanged: _updateCardName,
+                          ),
+                          actions: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text('Hủy'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                _saveCardName();
+                                Navigator.pop(context);
+                              },
+                              child: const Text('Lưu'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size(0, 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0),
                     ),
-                    actions: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Hủy'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          _saveCardName();
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Lưu'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            child: Text(
-              _cardName,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
+                    // backgroundColor: Colors.grey[100],
+                    alignment: Alignment.centerLeft,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    // side: BorderSide(color: Colors.grey[300]!),
+                  ),
+                  child: Text(
+                    _cardName,
+                    maxLines: null,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              
+            ],
           ),
           actions: [
             IconButton(
@@ -327,7 +375,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                 _updateCard(widget.cardID);
                 await Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
-                      builder: (context) => MyCardsScreen(widget.userID)),
+                    builder: (context) => MyCardsScreen(widget.userID),
+                  ),
                   (route) => false, // Remove all previous routes
                 );
                 setState(() {});
@@ -357,8 +406,9 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                             _deleteCard();
                             await Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      MyCardsScreen(widget.userID)),
+                                builder: (context) =>
+                                    MyCardsScreen(widget.userID),
+                              ),
                               (route) => false, // Remove all previous routes
                             );
                             setState(() {});
@@ -372,6 +422,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
             ),
           ],
         ),
+
         body: Stack(
           children: [
             ListView(
