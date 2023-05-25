@@ -220,9 +220,9 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[400],
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                   ),
-                  child: const Text('Save'),
+                  child: const Text('Lưu'),
                 ),
               ],
             ),
@@ -313,7 +313,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
         children: [
           Icon(Icons.add),
           SizedBox(width: 8.0),
-          Text('Add an item'),
+          Text('Thêm đầu mục công việc'),
         ],
       ),
     );
@@ -331,7 +331,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
                   filled: true,
                   fillColor: Colors.grey[200],
                   border: const OutlineInputBorder(),
-                  hintText: 'Enter item name',
+                  hintText: 'Nhập tên đầu mục',
                 ),
                 controller: _itemNameController,
                 focusNode: _itemNameFocusNode,

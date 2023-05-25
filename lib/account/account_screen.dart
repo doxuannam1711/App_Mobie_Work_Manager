@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../list/list_screen.dart';
 import '../login/login_screen.dart';
 import '../nav_drawer.dart';
 import 'dart:convert';
@@ -15,12 +16,35 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-
+  Future<List<Map<String, dynamic>>> _fetchBoardList() async {
+    final response = await http.get(
+        Uri.parse('http://192.168.1.7/api/get3FirstBoards/${widget.userID}'));
+    if (response.statusCode == 200) {
+      try {
+        final data = jsonDecode(response.body)['Data'];
+        final boardData = jsonDecode(data);
+        List<dynamic> boardList = [];
+        if (boardData is List) {
+          boardList = boardData;
+        } else if (boardData is Map) {
+          boardList = [boardData];
+        }
+        final resultList = boardList
+            .map((board) =>
+                Map<String, dynamic>.from(board as Map<String, dynamic>))
+            .toList();
+        return resultList;
+      } catch (e) {
+        throw Exception('Failed to decode board list');
+      }
+    } else {
+      throw Exception('Failed to load board list');
+    }
+  }
 
   Future<List<Map<String, dynamic>>> getUserList() async {
-
-    final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/getAccount/${widget.userID}'));
+    final response = await http
+        .get(Uri.parse('http://192.168.1.7/api/getAccount/${widget.userID}'));
 
     if (response.statusCode == 200) {
       try {
@@ -49,7 +73,7 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Future<void> _deleteUser() async {
-    final url = Uri.parse('http://192.168.53.160/api/deleteUser/${widget.userID}');
+    final url = Uri.parse('http://192.168.1.7/api/deleteUser/${widget.userID}');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -105,6 +129,53 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
+  Widget buildMyBoards(
+    String boardName,
+    int boardID,
+    String labels,
+  ) {
+    return Column(
+      children: [
+        const SizedBox(height: 10),
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4),
+            color: Colors.transparent,
+            border: Border.all(color: Colors.black),
+          ),
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ListScreen(
+                    boardName,
+                    boardID,
+                    labels,
+                    widget.userID,
+                  ),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+            ),
+            child: Text(
+              boardName,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+    ;
+  }
+
   Widget buildAccount(
     String imagePath,
     String fullName,
@@ -158,74 +229,101 @@ class _AccountScreenState extends State<AccountScreen> {
           'Bảng của tôi',
           const Icon(Icons.dashboard),
           [
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                color: Colors.transparent,
-                border: Border.all(color: Colors.black),
-              ),
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                ),
-                child: const Text(
-                  'Board 1',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                color: Colors.transparent,
-                border: Border.all(color: Colors.black),
-              ),
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                ),
-                child: const Text(
-                  'Board 2',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                color: Colors.transparent,
-                border: Border.all(color: Colors.black),
-              ),
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                ),
-                child: const Text(
-                  'Board 3',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
+            FutureBuilder<List<Map<String, dynamic>>>(
+                future: _fetchBoardList(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      return const Center(
+                        child: Text('Failed to load card list'),
+                      );
+                    } else {
+                      final boardList = snapshot.data!;
+                      return Column(
+                        children: [
+                          for (final boardData in boardList)
+                            buildMyBoards(
+                              boardData["BoardName"],
+                              boardData["BoardID"],
+                              boardData["Labels"],
+                            ),
+                        ],
+                      );
+                    }
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                }),
+            // Container(
+            //   width: double.infinity,
+            //   decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.circular(4),
+            //     color: Colors.transparent,
+            //     border: Border.all(color: Colors.black),
+            //   ),
+            //   child: ElevatedButton(
+            //     onPressed: () {},
+            //     style: ElevatedButton.styleFrom(
+            //       backgroundColor: Colors.transparent,
+            //       elevation: 0,
+            //     ),
+            //     child: const Text(
+            //       'Board 1',
+            //       style: TextStyle(
+            //         color: Colors.black,
+            //         fontSize: 16,
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // const SizedBox(height: 8),
+            // Container(
+            //   width: double.infinity,
+            //   decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.circular(4),
+            //     color: Colors.transparent,
+            //     border: Border.all(color: Colors.black),
+            //   ),
+            //   child: ElevatedButton(
+            //     onPressed: () {},
+            //     style: ElevatedButton.styleFrom(
+            //       backgroundColor: Colors.transparent,
+            //       elevation: 0,
+            //     ),
+            //     child: const Text(
+            //       'Board 2',
+            //       style: TextStyle(
+            //         color: Colors.black,
+            //         fontSize: 16,
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // const SizedBox(height: 8),
+            // Container(
+            //   width: double.infinity,
+            //   decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.circular(4),
+            //     color: Colors.transparent,
+            //     border: Border.all(color: Colors.black),
+            //   ),
+            //   child: ElevatedButton(
+            //     onPressed: () {},
+            //     style: ElevatedButton.styleFrom(
+            //       backgroundColor: Colors.transparent,
+            //       elevation: 0,
+            //     ),
+            //     child: const Text(
+            //       'Board 3',
+            //       style: TextStyle(
+            //         color: Colors.black,
+            //         fontSize: 16,
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
         const SizedBox(height: 16),
@@ -359,8 +457,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         _deleteUser();
                         await Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
-                            builder: (context) =>  const LoginScreen()
-                          ),
+                              builder: (context) => const LoginScreen()),
                           (route) => false, // Remove all previous routes
                         );
                         setState(() {});
@@ -377,7 +474,7 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
         const SizedBox(height: 16),
         _buildGroupBox(
-          onTap:(){},
+          onTap: () {},
           'Thông tin về chúng tôi',
           const Icon(Icons.info),
           [],
@@ -386,7 +483,8 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _buildGroupBox(String title, Widget icon, List<Widget> children, {required VoidCallback onTap}) {
+  Widget _buildGroupBox(String title, Widget icon, List<Widget> children,
+      {required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Card(
