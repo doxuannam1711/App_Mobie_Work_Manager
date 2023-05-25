@@ -19,6 +19,12 @@ class MyCardsScreen extends StatefulWidget {
 }
 
 class _MyCardsScreenState extends State<MyCardsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _fetchCardList();
+  }
+
   String _searchKeyword = "";
   bool _filterByDate = true;
   final int _cardID = 1;
@@ -31,8 +37,8 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
   List<Map<String, dynamic>> _searchResult = [];
   bool _sortByDate = false;
   Future<List<Map<String, dynamic>>> _fetchCardList() async {
-    final response =
-        await http.get(Uri.parse('http://192.168.1.7/api/getCards/${widget.userID}'));
+    final response = await http
+        .get(Uri.parse('http://192.168.53.160/api/getCards/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -58,7 +64,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchSortCardList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.7/api/sortCard'));
+        await http.get(Uri.parse('http://192.168.53.160/api/sortCard'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -83,7 +89,9 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _searchCards(String keyword) async {
-    final url = Uri.parse('http://192.168.1.7/api/searchCards/$keyword');
+    final encodedKeyword = Uri.encodeComponent(keyword);
+    final url =
+        Uri.parse('http://192.168.53.160/api/searchCards/$encodedKeyword');
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -91,7 +99,12 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
           (jsonData['Data'] as List).cast<Map<String, dynamic>>();
       return cardList;
     } else {
-      throw Exception('Failed to load data');
+      // Xử lý khi tìm kiếm thất bại
+      try {
+        return await _fetchCardList();
+      } catch (e) {
+        throw Exception('Failed to load data');
+      }
     }
   }
 
@@ -126,9 +139,9 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                   MaterialPageRoute(
                     builder: (context) => AddCardScreen(
                       creatorID: widget.userID,
-                      boardID: 1,
+                      boardID: -1,
                       labels: "mycard",
-                      boardName: "Công việc ở công ty",
+                      boardName: "",
                     ),
                   ),
                 );

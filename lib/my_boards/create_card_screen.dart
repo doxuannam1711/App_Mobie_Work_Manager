@@ -49,12 +49,33 @@ class _AddCardScreenState extends State<AddCardScreen> {
   @override
   void initState() {
     super.initState();
-    getLists();
+    if (widget.boardID == -1) {
+      geAlltLists();
+    } else {
+      getLists();
+    }
+  }
+
+  Future<void> geAlltLists() async {
+    final response = await http.get(
+        Uri.parse('http://192.168.53.160/api/getAllListOption/${widget.creatorID}'));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final jsonString = data['Data'] as String;
+      list = jsonDecode(jsonString) as List<dynamic>;
+      listNames = list.map((e) => e['ListName'] as String).toList();
+      selectedListID = list.first['ID'].toString();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error fetching lists!')),
+      );
+    }
   }
 
   Future<void> getLists() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.7/api/getListOption/${widget.boardID}'));
+        Uri.parse('http://192.168.53.160/api/getListOption/${widget.boardID}'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -82,7 +103,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
     );
 
     final response = await http.post(
-      Uri.parse('http://192.168.1.7/api/addCard'),
+      Uri.parse('http://192.168.53.160/api/addCard'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newCard.toJson()),
     );
@@ -310,8 +331,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 onPressed: () async {
                   if (_cardName.isEmpty) {
                     cardNameFocusNode.requestFocus();
-                  }
-                  else{
+                  } else {
                     addCard();
                     if (widget.labels == "mycard") {
                       await Navigator.of(context).pushReplacement(
@@ -335,7 +355,6 @@ class _AddCardScreenState extends State<AddCardScreen> {
                     }
                     setState(() {});
                   }
-                  
                 },
               ),
             ),
