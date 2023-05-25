@@ -1193,5 +1193,27 @@ ORDER BY cards.DueDate ASC;";
             return Ok(ex.Message);
         }
     }
+    [Route("api/get3FirstBoards/{userID}")]
+    public IHttpActionResult GetThreeFirstBoards(int userID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT TOP 3 * FROM boards where UserID= @userID ORDER BY BoardID DESC";
+            Command.Parameters.AddWithValue("@userID", userID);
+            DataTable tableNhanVien = Command.GetDataTable();
 
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
 }
