@@ -579,8 +579,8 @@ WHERE cards.CardID = @cardID;";
 
     }
 
-    [Route("api/sortCard")]
-    public IHttpActionResult GetSortCard()
+    [Route("api/sortCard/{userId}")]
+    public IHttpActionResult GetSortCard(int userID)
     {
         try
         {
@@ -589,11 +589,50 @@ WHERE cards.CardID = @cardID;";
 FROM cards
 LEFT JOIN checklists ON cards.cardID = checklists.cardID
 LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+WHERE cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @UserID))
 GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
 cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
 cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
 cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
 ORDER BY cards.DueDate ASC;";
+
+            Command.Parameters.AddWithValue("@UserID", userID);
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
+
+    [Route("api/sortCardLabel/{userId}")]
+    public IHttpActionResult GetSortCardLabel(int userID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT cards.*,
+       COUNT(checklistitems.ChecklistItemID) AS 'SUM',
+       SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+FROM cards
+LEFT JOIN checklists ON cards.cardID = checklists.cardID
+LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+WHERE cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @UserID))
+GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist,
+         cards.Label, cards.Comment, cards.CardName, cards.StatusView,
+         cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+         cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+ORDER BY cards.LabelColor ASC;";
+
+            Command.Parameters.AddWithValue("@UserID", userID);
             DataTable tableNhanVien = Command.GetDataTable();
 
             var respone = new ResultModel
