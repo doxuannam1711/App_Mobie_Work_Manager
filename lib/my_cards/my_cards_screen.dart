@@ -38,7 +38,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
   bool _sortByDate = false;
   Future<List<Map<String, dynamic>>> _fetchCardList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/getCards/${widget.userID}'));
+        .get(Uri.parse('http://192.168.1.7/api/getCards/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -64,7 +64,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchSortCardList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/sortCard'));
+        await http.get(Uri.parse('http://192.168.1.7/api/sortCard'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -91,7 +91,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
   Future<List<Map<String, dynamic>>> _searchCards(String keyword) async {
     final encodedKeyword = Uri.encodeComponent(keyword);
     final url =
-        Uri.parse('http://192.168.53.160/api/searchCards/$encodedKeyword');
+        Uri.parse('http://192.168.1.7/api/searchCards/$encodedKeyword');
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
