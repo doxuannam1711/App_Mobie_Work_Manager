@@ -900,7 +900,7 @@ AS
 BEGIN
   DECLARE @title nvarchar(255);
   SELECT @title = N' đã bình luận: ' + Detail + N' ở thẻ' FROM inserted;
-  insert into notifications VALUES(1,1,N'Bình Luận',1,1,@title,'2023-3-8 09:55:21 AM','true')
+  insert into notifications VALUES(1,4,N'Bình Luận',1,1,@title,'2023-3-8 09:55:21 AM','true')
 END
 -------------------------------------------------------
 CREATE TRIGGER [dbo].[trg_attach] ON [dbo].attachments

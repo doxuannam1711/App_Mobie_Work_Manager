@@ -610,6 +610,39 @@ ORDER BY cards.DueDate ASC;";
 
     }
 
+    [Route("api/sortCardLabel")]
+    public IHttpActionResult GetSortCardLabel()
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT cards.*,
+       COUNT(checklistitems.ChecklistItemID) AS 'SUM',
+       SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+FROM cards
+LEFT JOIN checklists ON cards.cardID = checklists.cardID
+LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist,
+         cards.Label, cards.Comment, cards.CardName, cards.StatusView,
+         cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+         cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+ORDER BY cards.LabelColor ASC";
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
+
     [HttpGet]
     [Route("api/getLists/{boardID}")]
     public IHttpActionResult GetLists(int boardID)
