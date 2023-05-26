@@ -359,7 +359,7 @@ class _AttachmentPageState extends State<AttachmentPage> {
     return Column(
       children: [
         ListTile(
-          leading: const Icon(Icons.attachment),
+          leading: attachmentName.contains('.png') || attachmentName.contains('.jpg') || attachmentName.contains('.jpg') ? Image.asset('assets/images/imageIcon.png',width: 35,height: 35) : attachmentName.contains('.docx') ? Image.asset('assets/images/Word-icon.png',width: 30,height: 30) : attachmentName.contains('.pdf') ? Image.asset('assets/images/pdf.png', width: 35, height: 35) : const Icon(Icons.attachment),
           title: GestureDetector(
             child: Text(attachmentName),
             onTap: () async {

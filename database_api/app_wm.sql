@@ -118,11 +118,7 @@ IntCheckList int,
 LabelColor nvarchar(10),
 CONSTRAINT PK_cards PRIMARY KEY(CardID),
 CONSTRAINT FK_cards_lists FOREIGN KEY(ListID) REFERENCES lists(ListID),
-CONSTRAINT FK_cards_creators FOREIGN KEY(CreatorID) REFERENCES creators(CreatorID),
-CONSTRAINT FK_cards_assignedTo FOREIGN KEY(AssignedToID) REFERENCES assignedTo(AssignedToID),
-
 )
-
 
 --
 -- Cấu trúc bảng cho bảng  attachments
@@ -744,23 +740,27 @@ BEGIN
 END
 
 ----------------------------------------QUERY DELETE EVERYTHING ABOUT USERS-------------------------------------------------------
-DELETE FROM checklistitems where ChecklistID IN (SELECT ChecklistID FROM checklists where CardID IN (SELECT CardID From cards where ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=14))))
+DELETE FROM checklistitems where ChecklistID IN (SELECT ChecklistID FROM checklists where CardID IN (SELECT CardID From cards where ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=3))))
 
-DELETE FROM checklists where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=14)))
+DELETE FROM checklists where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=3)))
 
-DELETE FROM attachments where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=14)))
+DELETE FROM attachments where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=3)))
 
-delete from comments where UserID=14
+delete from comments where CardID IN ( SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN(SELECT BoardID FROM boards WHERE UserID=3)))
 
-delete from notifications where UserID=14
+delete from notifications where CardID IN ( SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN(SELECT BoardID FROM boards WHERE UserID=3)))
 
-delete from cards where ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=14))
+delete from creators  WHERE UserID=3
 
-delete from lists where BoardID IN (SELECT BoardID FROM boards where UserID=14)
+delete from assignedTo WHERE UserID=3
 
-delete from boards where UserID=14
+delete from cards where ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=3))
 
-delete from users where UserID=14
+delete from lists where BoardID IN (SELECT BoardID FROM boards where UserID=3)
+
+delete from boards where UserID=3
+
+delete from users where UserID=3
 ------------------------------------------------------------------------------------------------------------------------------
 
 SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
@@ -929,4 +929,31 @@ DELETE FROM notifications WHERE CardID=22
 
 DELETE FROM cards WHERE CardID = 22
 
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------Update 26_05---------------------------------
+ALTER TABLE cards
+DROP CONSTRAINT FK_cards_assignedTo;
+ALTER TABLE cards
+DROP CONSTRAINT FK_cards_creators;
+----------------------------------------QUERY DELETE EVERYTHING ABOUT BOARDS-------------------------------------------------------
+DELETE FROM checklistitems WHERE ChecklistID IN (SELECT ChecklistID FROM checklists where CardID IN(SELECT CardID FROM cards where ListID IN(SELECT ListID FROM lists where BoardID=23)))
+
+DELETE FROM checklists WHERE CardID IN(SELECT CardID FROM cards where ListID IN(SELECT ListID FROM lists where BoardID=23))
+
+DELETE FROM attachments where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID =23))
+
+delete from comments where CardID IN ( SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID =23 ))
+
+delete from notifications where CardID IN ( SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID = 23))
+
+delete from creators  WHERE BoardID=23
+
+delete from assignedTo WHERE BoardID=23
+
+delete from cards where ListID IN (SELECT ListID FROM lists WHERE BoardID = 23)
+
+delete from lists where BoardID = 23
+
+DELETE FROM boards WHERE BoardID = 23
 ----------------------------------------------------------------------------------------------------------------------------------------------------

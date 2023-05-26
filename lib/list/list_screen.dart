@@ -51,7 +51,7 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchcardList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/getLists/${widget.boardID}'));
+        .get(Uri.parse('http://192.168.1.7/api/getLists/${widget.boardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -77,7 +77,7 @@ class _ListScreenState extends State<ListScreen> {
 
   // Future<List<Map<String, dynamic>>> _fetchCard(int listID) async {
   //   final response = await http
-  //       .get(Uri.parse('http://192.168.53.160/api/getCards/$listID'));
+  //       .get(Uri.parse('http://192.168.1.7/api/getCards/$listID'));
   //   if (response.statusCode == 200) {
   //     try {
   //       final data = jsonDecode(response.body)['Data'];
@@ -130,7 +130,7 @@ class _ListScreenState extends State<ListScreen> {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () async {
-              await Navigator.of(context).push(
+              await Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
                   builder: (context) => ListsAdd(
                     userID: widget.userID,
