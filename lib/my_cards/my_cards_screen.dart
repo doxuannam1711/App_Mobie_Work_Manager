@@ -88,6 +88,32 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
     }
   }
 
+  Future<List<Map<String, dynamic>>> _fetchSortCardLabel() async {
+    final response =
+        await http.get(Uri.parse('http://192.168.53.160/api/sortCardLabel'));
+    if (response.statusCode == 200) {
+      try {
+        final data = jsonDecode(response.body)['Data'];
+        final cardData = jsonDecode(data);
+        List<dynamic> cardList = [];
+        if (cardData is List) {
+          cardList = cardData;
+        } else if (cardData is Map) {
+          cardList = [cardData];
+        }
+        final resultList = cardList
+            .map((board) =>
+                Map<String, dynamic>.from(board as Map<String, dynamic>))
+            .toList();
+        return resultList;
+      } catch (e) {
+        throw Exception('Failed to decode board list');
+      }
+    } else {
+      throw Exception('Failed to load board list');
+    }
+  }
+
   Future<List<Map<String, dynamic>>> _searchCards(String keyword) async {
     final encodedKeyword = Uri.encodeComponent(keyword);
     final url =
@@ -170,7 +196,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                   items: const [
                     DropdownMenuItem(
                       value: false,
-                      child: Text('Bảng'),
+                      child: Text('Màu Nhãn'),
                     ),
                     DropdownMenuItem(
                       value: true,
@@ -204,7 +230,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
           Expanded(
             child: FutureBuilder<List<Map<String, dynamic>>>(
               future: _searchResult.isEmpty
-                  ? (_sortByDate ? _fetchSortCardList() : _fetchCardList())
+                  ? (_sortByDate ? _fetchSortCardList() : _fetchSortCardLabel())
                   : Future<List<Map<String, dynamic>>>.value(_searchResult),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {

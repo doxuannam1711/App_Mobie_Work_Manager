@@ -269,46 +269,6 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
         appBar: AppBar(
           title: Row(
             children: [
-              // InkWell(
-              //   onTap: () {
-              //     showDialog(
-              //       context: context,
-              //       builder: (_) {
-              //         return AlertDialog(
-              //           title: const Text('Nhập tên thẻ'),
-              //           content: TextField(
-              //             controller: _cardNameController,
-              //             decoration: const InputDecoration(
-              //               border: InputBorder.none,
-              //               hintText: 'Nhập tên thẻ',
-              //             ),
-              //             onChanged: _updateCardName,
-              //           ),
-              //           actions: [
-              //             ElevatedButton(
-              //               onPressed: () {
-              //                 Navigator.pop(context);
-              //               },
-              //               child: const Text('Hủy'),
-              //             ),
-              //             ElevatedButton(
-              //               onPressed: () {
-              //                 _saveCardName();
-              //                 Navigator.pop(context);
-              //               },
-              //               child: const Text('Lưu'),
-              //             ),
-              //           ],
-              //         );
-              //       },
-              //     );
-              //   },
-              //   child: Icon(
-              //     Icons.edit,
-              //     size: 20,
-              //     color: Colors.grey,
-              //   ),
-              // ),
               Expanded(
                 child: TextButton(
                   onPressed: () {
@@ -365,7 +325,46 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                   ),
                 ),
               ),
-              
+              InkWell(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) {
+                      return AlertDialog(
+                        title: const Text('Nhập tên thẻ'),
+                        content: TextField(
+                          controller: _cardNameController,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Nhập tên thẻ',
+                          ),
+                          onChanged: _updateCardName,
+                        ),
+                        actions: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Hủy'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              _saveCardName();
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Lưu'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: Icon(
+                  Icons.edit,
+                  size: 20,
+                  color: Colors.white,
+                ),
+              ),
             ],
           ),
           actions: [
