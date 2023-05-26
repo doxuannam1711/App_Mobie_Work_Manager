@@ -579,8 +579,8 @@ WHERE cards.CardID = @cardID;";
 
     }
 
-    [Route("api/sortCard")]
-    public IHttpActionResult GetSortCard()
+    [Route("api/sortCard/{userId}")]
+    public IHttpActionResult GetSortCard(int userID)
     {
         try
         {
@@ -589,11 +589,14 @@ WHERE cards.CardID = @cardID;";
 FROM cards
 LEFT JOIN checklists ON cards.cardID = checklists.cardID
 LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+WHERE cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @UserID))
 GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
 cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
 cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
 cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
 ORDER BY cards.DueDate ASC;";
+
+            Command.Parameters.AddWithValue("@UserID", userID);
             DataTable tableNhanVien = Command.GetDataTable();
 
             var respone = new ResultModel
@@ -610,8 +613,8 @@ ORDER BY cards.DueDate ASC;";
 
     }
 
-    [Route("api/sortCardLabel")]
-    public IHttpActionResult GetSortCardLabel()
+    [Route("api/sortCardLabel/{userId}")]
+    public IHttpActionResult GetSortCardLabel(int userID)
     {
         try
         {
@@ -622,11 +625,14 @@ ORDER BY cards.DueDate ASC;";
 FROM cards
 LEFT JOIN checklists ON cards.cardID = checklists.cardID
 LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+WHERE cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @UserID))
 GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist,
          cards.Label, cards.Comment, cards.CardName, cards.StatusView,
          cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
          cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
-ORDER BY cards.LabelColor ASC";
+ORDER BY cards.LabelColor ASC;";
+
+            Command.Parameters.AddWithValue("@UserID", userID);
             DataTable tableNhanVien = Command.GetDataTable();
 
             var respone = new ResultModel
