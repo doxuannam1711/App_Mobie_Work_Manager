@@ -114,32 +114,6 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
     }
   }
 
-  Future<List<Map<String, dynamic>>> _fetchSortCardLabel() async {
-    final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/sortCardLabel'));
-    if (response.statusCode == 200) {
-      try {
-        final data = jsonDecode(response.body)['Data'];
-        final cardData = jsonDecode(data);
-        List<dynamic> cardList = [];
-        if (cardData is List) {
-          cardList = cardData;
-        } else if (cardData is Map) {
-          cardList = [cardData];
-        }
-        final resultList = cardList
-            .map((board) =>
-                Map<String, dynamic>.from(board as Map<String, dynamic>))
-            .toList();
-        return resultList;
-      } catch (e) {
-        throw Exception('Failed to decode board list');
-      }
-    } else {
-      throw Exception('Failed to load board list');
-    }
-  }
-
   Future<List<Map<String, dynamic>>> _searchCards(String keyword) async {
     final encodedKeyword = Uri.encodeComponent(keyword);
     final url =
