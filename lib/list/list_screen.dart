@@ -42,18 +42,18 @@ class _ListScreenState extends State<ListScreen> {
   final int _ListID = 0;
   final bool _isEditingName = false;
   var listNameController;
-
   Map<String, List<Map<String, dynamic>>> _cardLists = {};
 
   @override
   void initState() {
     super.initState();
     _fetchData();
+    listNameController = TextEditingController(text: "");
   }
 
   Future<List<Map<String, dynamic>>> _fetchcardList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.7/api/getLists/${widget.boardID}'));
+        .get(Uri.parse('http://192.168.53.160/api/getLists/${widget.boardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -78,7 +78,7 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   Future<void> _updateList(int listID) async {
-    final url = Uri.parse('http://192.168.1.7/api/updateList/$listID');
+    final url = Uri.parse('http://192.168.53.160/api/updateList/$listID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -103,7 +103,7 @@ class _ListScreenState extends State<ListScreen> {
 
   // Future<List<Map<String, dynamic>>> _fetchCard(int listID) async {
   //   final response = await http
-  //       .get(Uri.parse('http://192.168.1.7/api/getCards/$listID'));
+  //       .get(Uri.parse('http://192.168.53.160/api/getCards/$listID'));
   //   if (response.statusCode == 200) {
   //     try {
   //       final data = jsonDecode(response.body)['Data'];
@@ -131,19 +131,10 @@ class _ListScreenState extends State<ListScreen> {
     Map<String, List<Map<String, dynamic>>> tempCardLists = {};
 
     // Dùng một Set để lưu trữ tên danh sách đã gặp
-    Set<String> encounteredListNames = {};
+    List<String> encounteredListNames = [];
 
     for (var card in cardLists) {
       String listName = card['ListName'];
-
-      // Kiểm tra xem tên danh sách đã được gặp trước đó chưa
-      // Nếu đã gặp thì bỏ qua và không thêm vào danh sách tạm thời
-      if (encounteredListNames.contains(listName)) {
-        continue;
-      }
-
-      // Thêm tên danh sách vào danh sách đã gặp
-      encounteredListNames.add(listName);
 
       // Thêm card vào danh sách tạm thời
       if (!tempCardLists.containsKey(listName)) {
@@ -155,6 +146,12 @@ class _ListScreenState extends State<ListScreen> {
     setState(() {
       _cardLists = tempCardLists;
     });
+  }
+
+  @override
+  void dispose() {
+    listNameController.dispose();
+    super.dispose();
   }
 
   void _updateCardName(String value) {
@@ -186,6 +183,24 @@ class _ListScreenState extends State<ListScreen> {
         });
       });
     });
+
+    List<Map<String, dynamic>> filteredListNames = [];
+    Set<String> uniqueListNames =
+        {}; // Set để lưu trữ các tên danh sách duy nhất
+
+    for (var listItem in listNames) {
+      String listName = listItem['ListName'];
+
+      // Kiểm tra xem listName đã tồn tại trong uniqueListNames chưa
+      // Nếu đã tồn tại, bỏ qua và không thêm vào filteredListNames
+      if (uniqueListNames.contains(listName)) {
+        continue;
+      }
+
+      // Thêm listName vào uniqueListNames và thêm listItem vào filteredListNames
+      uniqueListNames.add(listName);
+      filteredListNames.add(listItem);
+    }
 
     bool sortByIncreasing =
         true; // Default option is to sort by increasing expiration date
@@ -229,8 +244,9 @@ class _ListScreenState extends State<ListScreen> {
                   });
                 },
                 itemBuilder: (context, index) {
-                  String listName = listNames[index]['ListName'];
-                  int listID = listNames[index]['ListID'];
+                  String listName = filteredListNames[index]['ListName'];
+                  // listNameController.text = listName;
+                  int listID = filteredListNames[index]['ListID'];
                   List<Map<String, dynamic>> cardList =
                       _cardLists.values.toList()[index];
                   // List<Map<String, dynamic>> cardList = _cardLists.values
@@ -280,12 +296,16 @@ class _ListScreenState extends State<ListScreen> {
                                             context: context,
                                             builder: (_) {
                                               return AlertDialog(
-                                                title: const Text('Nhập tên danh sách'),
+                                                title: const Text(
+                                                    'Nhập tên danh sách'),
                                                 content: TextField(
-                                                  controller: listNameController,
-                                                  decoration: const InputDecoration(
+                                                  controller:
+                                                      listNameController,
+                                                  decoration:
+                                                      const InputDecoration(
                                                     border: InputBorder.none,
-                                                    hintText: 'Nhập tên danh sách',
+                                                    hintText:
+                                                        'Nhập tên danh sách',
                                                   ),
                                                   onChanged: _updateCardName,
                                                 ),
@@ -313,51 +333,9 @@ class _ListScreenState extends State<ListScreen> {
                                       ),
                                     ],
                                   ),
-                                  
                                 ),
                               ),
                             ),
-                            // IconButton(
-                            //   icon: Icon(
-                            //     Icons.edit,
-                            //     color: Colors.blue[900],
-                            //   ),
-                            //   onPressed: () {
-                            //     showDialog(
-                            //       context: context,
-                            //       builder: (_) {
-                            //         return AlertDialog(
-                            //           title: const Text('Nhập tên danh sách'),
-                            //           content: TextField(
-                            //             controller: listNameController,
-                            //             decoration: const InputDecoration(
-                            //               border: InputBorder.none,
-                            //               hintText: 'Nhập tên danh sách',
-                            //             ),
-                            //             onChanged: _updateCardName,
-                            //           ),
-                            //           actions: [
-                            //             ElevatedButton(
-                            //               onPressed: () {
-                            //                 Navigator.pop(context);
-                            //               },
-                            //               child: const Text('Hủy'),
-                            //             ),
-                            //             ElevatedButton(
-                            //               onPressed: () {
-                            //                 _saveListName(listID);
-                            //                 setState(() {
-                            //                   _fetchData();
-                            //                 });
-                            //               },
-                            //               child: const Text('Lưu'),
-                            //             ),
-                            //           ],
-                            //         );
-                            //       },
-                            //     );
-                            //   },
-                            // ),
                           ],
                         ),
                       ),
@@ -392,7 +370,7 @@ class _ListScreenState extends State<ListScreen> {
               child: Center(
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: listNames.length,
+                  itemCount: filteredListNames.length,
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
