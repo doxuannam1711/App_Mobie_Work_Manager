@@ -280,7 +280,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               // const SizedBox(height: 1.0),
               Padding(
-                padding: EdgeInsets.only(right: 8),
+                padding: EdgeInsets.only(right: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -300,7 +300,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    
                     Container(
                       padding: EdgeInsets.zero,
                       child: Text(
@@ -311,7 +310,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    
                   ],
                 ),
               ),              

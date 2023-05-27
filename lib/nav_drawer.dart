@@ -275,6 +275,10 @@ class _NavDrawerState extends State<NavDrawer> {
                 )
               },
             ),
+            
+            const Divider(
+              thickness: 2,
+            ),
             ListTile(
               leading: const Icon(Icons.search),
               title: const Text('Tìm kiếm'),
@@ -284,9 +288,6 @@ class _NavDrawerState extends State<NavDrawer> {
                       builder: (context) => SearchScreen(widget.userID)),
                 )
               },
-            ),
-            const Divider(
-              thickness: 2,
             ),
             ListTile(
               leading: const Icon(Icons.notifications),
@@ -331,6 +332,9 @@ class _NavDrawerState extends State<NavDrawer> {
                   throw Exception('Could not launch $downloadUrl');
                 }
               },
+            ),
+            const Divider(
+              thickness: 2,
             ),
             ListTile(
               leading: const Icon(Icons.settings),

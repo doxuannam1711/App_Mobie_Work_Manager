@@ -80,7 +80,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 decoration: InputDecoration(
                   labelText: 'NHẬP MẬT KHẨU MỚI',
                   labelStyle: TextStyle(
-                    color: Colors.blue[900],
+                    color: Colors.black,
                     fontSize: 14,
                   ),
                   enabledBorder: OutlineInputBorder(
@@ -109,7 +109,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 decoration: InputDecoration(
                   labelText: 'NHẬP LẠI MẬT KHẨU',
                   labelStyle: TextStyle(
-                    color: Colors.blue[900],
+                    color: Colors.black,
                     fontSize: 14,
                   ),
                   enabledBorder: OutlineInputBorder(
