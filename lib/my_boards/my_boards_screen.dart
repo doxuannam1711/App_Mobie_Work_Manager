@@ -131,6 +131,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
       drawer: NavDrawer(widget.userID),
       appBar: AppBar(
         title: const Text('Các bảng của tôi'),
+        backgroundColor: Colors.blue[900],
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
@@ -440,19 +441,31 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: const Text('Xác nhận'),
+                          backgroundColor: Colors.blue[200],
+                          title: const Text('XÁC NHẬN'),
                           content: const Text(
                             'Bạn có chắc muốn xóa bảng này không?',
                           ),
                           actions: <Widget>[
                             TextButton(
-                              child: const Text('Hủy'),
+                              child: Text(
+                                'HỦY',
+                                style: TextStyle(
+                                  fontSize: 14, color: Colors.blue[900]
+                                ),
+                              ),
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
                             ),
                             TextButton(
-                              child: const Text('Xóa'),
+                              child: Text(
+                                'XÓA',
+                                style: TextStyle(
+                                  fontSize: 14, 
+                                  color: Colors.blue[900]
+                                ),
+                              ),
                               onPressed: () async {
                                 // TODO: delete board
                                 _deleteBoard(boardID);

@@ -410,6 +410,7 @@ class _AttachmentPageState extends State<AttachmentPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Các tệp đính kèm'),
+        backgroundColor: Colors.blue[900],
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: getAttachments(),

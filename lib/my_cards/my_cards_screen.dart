@@ -154,6 +154,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
     return Scaffold(
       drawer: NavDrawer(widget.userID),
       appBar: AppBar(
+        backgroundColor: Colors.blue[900],
         title: const Text('Các thẻ của tôi'),
         actions: <Widget>[
           Padding(

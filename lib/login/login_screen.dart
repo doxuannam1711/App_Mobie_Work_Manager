@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<Map<String, dynamic>> getUserList() async {
     // Change this line
     final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/getAccountLogin'));
+        await http.get(Uri.parse('http://192.168.1.7/api/getAccountLogin'));
     if (response.statusCode == 200) {
       setState(() {
         userList = jsonDecode(response.body);
@@ -157,7 +157,8 @@ class _LoginScreenState extends State<LoginScreen> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Đăng nhập không thành công'),
+          backgroundColor: Colors.blue[200],
+          title: const Text('ĐĂNG NHẬP THẤT BẠI'),
           content:
               const Text('Tên người dùng hoặc mật khẩu không đúng'),
           actions: [
@@ -168,7 +169,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 passwordFocusNode
                     .requestFocus(); // move focus back to password field
               },
-              child: const Text('Thử lại'),
+              child: Text(
+                'THỬ LẠI',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.blue[900]
+                ),
+              ),
             ),
           ],
         ),
@@ -185,10 +192,10 @@ class _LoginScreenState extends State<LoginScreen> {
           scrollDirection: Axis.vertical,
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: 25),
               SvgPicture.asset(
                 "assets/images/login.svg",
                 width: MediaQuery.of(context).size.width * 0.65,
@@ -219,7 +226,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: ColorFiltered(
                       colorFilter:
                           ColorFilter.mode(Colors.blue.shade900, BlendMode.srcIn),
-                      child: Icon(Icons.person),
+                      child: Icon(
+                        Icons.person,
+                        color: Colors.blue[900],
+                      ),
                     ),
                   ),
                 ),
@@ -245,7 +255,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: ColorFiltered(
                       colorFilter: ColorFilter.mode(
                           Colors.blue.shade900, BlendMode.srcIn),
-                      child: Icon(Icons.lock),
+                      child: Icon(
+                        Icons.lock,
+                        color: Colors.blue[900],
+                      ),
                     ),
                   ),
                   border: const OutlineInputBorder(),
@@ -266,27 +279,42 @@ class _LoginScreenState extends State<LoginScreen> {
                 obscureText: !isPasswordVisible,
               ),
               // const SizedBox(height: 1.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Checkbox(
-                    activeColor: Colors.blue[900],
-                    value: _rememberMe,
-                    onChanged: (value) {
-                      setState(() {
-                        _rememberMe = value ?? false;
-                      });
-                    },
-                  ),
-                  Text(
-                    'NHỚ TÀI KHOẢN',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.blue[900],
+              Padding(
+                padding: EdgeInsets.only(right: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.zero,
+                      child: Transform.scale(
+                        scale: 1,
+                        child: Checkbox(
+                          visualDensity: VisualDensity.compact,
+                          activeColor: Colors.blue[900],
+                          value: _rememberMe,
+                          onChanged: (value) {
+                            setState(() {
+                              _rememberMe = value ?? false;
+                            });
+                          },
+                        ),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                    
+                    Container(
+                      padding: EdgeInsets.zero,
+                      child: Text(
+                        'NHỚ TÀI KHOẢN',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    
+                  ],
+                ),
+              ),              
               // const SizedBox(height: 20.0),
               Align(
                 alignment: Alignment.center,
@@ -347,7 +375,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text(
                       'QUÊN MẬT KHẨU?',
                       style: TextStyle(
-                        color: Colors.blue[900],
+                        color: Colors.black,
                       ),
                     ),
                   ),
@@ -372,7 +400,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text(
                       'ĐĂNG KÝ',
                       style: TextStyle(
-                        color: Colors.blue[900],
+                        color: Colors.black,
                       ),
                     ),
                   ),

@@ -74,6 +74,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return Scaffold(
       drawer: NavDrawer(widget.userID),
       appBar: AppBar(
+        backgroundColor: Colors.blue[900],
         title: const Text('Thông báo'),
         actions: [
           IconButton(

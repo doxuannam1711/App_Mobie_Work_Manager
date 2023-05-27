@@ -126,6 +126,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Thêm thẻ mới'),
+        backgroundColor: Colors.blue[900],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),

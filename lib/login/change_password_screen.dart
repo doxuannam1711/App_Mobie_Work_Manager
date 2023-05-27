@@ -61,6 +61,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       backgroundColor: Colors.blue[200],
       appBar: AppBar(
         title: const Text('Đổi mật khẩu'),
+        backgroundColor: Colors.blue[900],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
@@ -68,81 +69,138 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                'Mật khẩu mới',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
+              // Text(
+              //   'Mật khẩu mới',
+              //   style: Theme.of(context).textTheme.titleLarge,
+              // ),
               const SizedBox(height: 16.0),
               TextFormField(
                 controller: passwordController,
                 focusNode: passwordFocusNode,
-                decoration: const InputDecoration(
-                  labelText: 'Nhập mật khẩu mới',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: 'NHẬP MẬT KHẨU MỚI',
+                  labelStyle: TextStyle(
+                    color: Colors.blue[900],
+                    fontSize: 14,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  filled: true,
+                  fillColor: Colors.blue[200],
                 ),
                 onChanged: (value) {
                   _updatePassword = value;
                 },
               ),
-              const SizedBox(height: 16.0),
-              Text(
-                'Nhập lại mật khẩu',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
+              // const SizedBox(height: 16.0),
+              // Text(
+              //   'Nhập lại mật khẩu',
+              //   style: Theme.of(context).textTheme.titleLarge,
+              // ),
               const SizedBox(height: 16.0),
               TextFormField(
                 controller: confirmPasswordController,
                 focusNode: confirmPasswordFocusNode,
-                decoration: const InputDecoration(
-                  labelText: 'Nhập lại mật khẩu',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: 'NHẬP LẠI MẬT KHẨU',
+                  labelStyle: TextStyle(
+                    color: Colors.blue[900],
+                    fontSize: 14,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  filled: true,
+                  fillColor: Colors.blue[200],
                 ),
                 onChanged: (value) {
                   _confirmPassword = value;
                 },
               ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                child: const Text('Đổi mật khẩu'),
-                onPressed: () async {
-                  if (_updatePassword.isEmpty) {
-                    passwordFocusNode.requestFocus();
-                  }
-                  else if(_confirmPassword.isEmpty){
-                    confirmPasswordFocusNode.requestFocus();
-                  }
-                  else if (_updatePassword == _confirmPassword) {
-                    _changePassword();
-                    await Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen()
+              const SizedBox(height: 25.0),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 1,
+                height: 55,
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            35), // Adjust the value to your desired roundness
                       ),
-                      (route) => false, // Remove all previous routes
-                    );
-                  }
-                  else {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Mật khẩu nhập lại sai'),
-                        content:
-                            const Text('Mật khẩu nhập lại không trùng khớp.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              confirmPasswordController
-                                  .clear(); // clear password input
-                              confirmPasswordFocusNode
-                                  .requestFocus(); // move focus back to password field
-                            },
-                            child: const Text('Nhập lại'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                },
+                    ),
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.hovered)) {
+                          return Colors.black;
+                        }
+                        return Colors.blue.shade900;
+                      },
+                    ),
+                  ),
+                  child: const Text(
+                    'ĐỔI MẬT KHẨU',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                  onPressed: () async {
+                    if (_updatePassword.isEmpty) {
+                      passwordFocusNode.requestFocus();
+                    }
+                    else if(_confirmPassword.isEmpty){
+                      confirmPasswordFocusNode.requestFocus();
+                    }
+                    else if (_updatePassword == _confirmPassword) {
+                      _changePassword();
+                      await Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen()
+                        ),
+                        (route) => false, // Remove all previous routes
+                      );
+                    }
+                    else {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          backgroundColor: Colors.blue[200],
+                          title: const Text('MẬT KHẨU NHẬP LẠI SAI'),
+                          content:
+                              const Text('Mật khẩu nhập lại không trùng khớp.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                confirmPasswordController
+                                    .clear(); // clear password input
+                                confirmPasswordFocusNode
+                                    .requestFocus(); // move focus back to password field
+                              },
+                              child: Text(
+                                'NHẬP LẠI',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.blue[900]
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                ),
               ),
             ],
           ),

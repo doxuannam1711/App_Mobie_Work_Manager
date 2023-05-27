@@ -82,6 +82,7 @@ class _CreateScreenState extends State<CreateScreen>
         child: Scaffold(
           appBar: AppBar(
             title: const Text('Tạo bảng mới'),
+            backgroundColor: Colors.blue[900],
             // controller: controller,
             // bottom: const TabBar(
             //   tabs: [
