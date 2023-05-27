@@ -180,21 +180,32 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
             const SizedBox(height: 8.0),
             // Display the checklist name as text
             if (!_isEditingName)
-              Text(
-                _checklistName,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16.0,
+              Padding(
+                padding: EdgeInsets.only(left:16),
+                child: Text(
+                  _checklistName,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0,
+                  ),
                 ),
               ),
+              
+            // Text(
+            //   _checklistName,
+            //   style: const TextStyle(
+            //     fontWeight: FontWeight.bold,
+            //     fontSize: 18.0,
+            //   ),
+            // ),
             const SizedBox(height: 8.0),
             // Display the items based on the selected filter option
             for (final item in filteredItems)
               _buildChecklistItem(_items.indexOf(item), item),
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 20.0),
             _buildAddNewItemRow(),
             if (_isAddingNewItem) _buildNewItemRow(),
-            const SizedBox(height: 64.0),
+            const SizedBox(height: 30.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -210,23 +221,42 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
                 //   },
                 //   child: Text('Save'),
                 // ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => MyCardsScreen(widget.userID)),
-                      (route) =>
-                          false, // Xoá tất cả các screen còn lại trên stack
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MyCardsScreen(widget.userID)),
+                        (route) =>
+                            false, // Xoá tất cả các screen còn lại trên stack
+                      );
+                    },
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              35), // Adjust the value to your desired roundness
+                        ),
+                      ),
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.hovered)) {
+                            return Colors.black;
+                          }
+                          return Colors.blue.shade900;
+                        },
+                      ),
+                    ),
+                    child: const Text('LƯU'),
                   ),
-                  child: const Text('Lưu'),
                 ),
+                
               ],
             ),
+            const SizedBox(height: 30.0),
           ],
         ),
       ),
@@ -314,7 +344,13 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
         children: [
           Icon(Icons.add),
           SizedBox(width: 8.0),
-          Text('Thêm đầu mục công việc'),
+          Text(
+            'THÊM ĐẦU MỤC CÔNG VIỆC',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold
+            ),
+          ),
         ],
       ),
     );

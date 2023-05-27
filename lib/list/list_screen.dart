@@ -53,7 +53,7 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchcardList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/getLists/${widget.boardID}'));
+        .get(Uri.parse('http://192.168.1.7/api/getLists/${widget.boardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -78,7 +78,7 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   Future<void> _updateList(int listID) async {
-    final url = Uri.parse('http://192.168.53.160/api/updateList/$listID');
+    final url = Uri.parse('http://192.168.1.7/api/updateList/$listID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -103,7 +103,7 @@ class _ListScreenState extends State<ListScreen> {
 
   // Future<List<Map<String, dynamic>>> _fetchCard(int listID) async {
   //   final response = await http
-  //       .get(Uri.parse('http://192.168.53.160/api/getCards/$listID'));
+  //       .get(Uri.parse('http://192.168.1.7/api/getCards/$listID'));
   //   if (response.statusCode == 200) {
   //     try {
   //       final data = jsonDecode(response.body)['Data'];
@@ -349,21 +349,48 @@ class _ListScreenState extends State<ListScreen> {
                 controller: PageController(initialPage: _currentPage),
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddCardScreen(
-                      creatorID: widget.userID,
-                      boardID: widget.boardID,
-                      labels: widget.labels,
-                      boardName: widget.boardName,
+            const SizedBox(height: 15),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.4,
+              height: 50,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          35), // Adjust the value to your desired roundness
                     ),
                   ),
-                );
-              },
-              child: const Text('Thêm thẻ mới'),
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.hovered)) {
+                        return Colors.black;
+                      }
+                      return Colors.blue.shade900;
+                    },
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddCardScreen(
+                        creatorID: widget.userID,
+                        boardID: widget.boardID,
+                        labels: widget.labels,
+                        boardName: widget.boardName,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'THÊM THẺ MỚI',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
             SizedBox(
               height: 48,
