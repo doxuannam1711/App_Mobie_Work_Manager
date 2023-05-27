@@ -248,60 +248,116 @@ class _ListScreenState extends State<ListScreen> {
                           children: [
                             Expanded(
                               child: Container(
-                                color: Colors.blue,
+                                decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  border: Border.all(
+                                    color: Colors.blue,
+                                    width: 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    listName,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                    ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          listName,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.edit,
+                                          color: Colors.white,
+                                        ),
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) {
+                                              return AlertDialog(
+                                                title: const Text('Nhập tên danh sách'),
+                                                content: TextField(
+                                                  controller: listNameController,
+                                                  decoration: const InputDecoration(
+                                                    border: InputBorder.none,
+                                                    hintText: 'Nhập tên danh sách',
+                                                  ),
+                                                  onChanged: _updateCardName,
+                                                ),
+                                                actions: [
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: const Text('Hủy'),
+                                                  ),
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      _saveListName(listID);
+                                                      setState(() {
+                                                        _fetchData();
+                                                      });
+                                                    },
+                                                    child: const Text('Lưu'),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    ],
                                   ),
+                                  
                                 ),
                               ),
                             ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.edit,
-                              ),
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) {
-                                    return AlertDialog(
-                                      title: const Text('Nhập tên danh sách'),
-                                      content: TextField(
-                                        controller: listNameController,
-                                        decoration: const InputDecoration(
-                                          border: InputBorder.none,
-                                          hintText: 'Nhập tên danh sách',
-                                        ),
-                                        onChanged: _updateCardName,
-                                      ),
-                                      actions: [
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text('Hủy'),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            _saveListName(listID);
-                                            setState(() {
-                                              _fetchData();
-                                            });
-                                          },
-                                          child: const Text('Lưu'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                            ),
+                            // IconButton(
+                            //   icon: Icon(
+                            //     Icons.edit,
+                            //     color: Colors.blue[900],
+                            //   ),
+                            //   onPressed: () {
+                            //     showDialog(
+                            //       context: context,
+                            //       builder: (_) {
+                            //         return AlertDialog(
+                            //           title: const Text('Nhập tên danh sách'),
+                            //           content: TextField(
+                            //             controller: listNameController,
+                            //             decoration: const InputDecoration(
+                            //               border: InputBorder.none,
+                            //               hintText: 'Nhập tên danh sách',
+                            //             ),
+                            //             onChanged: _updateCardName,
+                            //           ),
+                            //           actions: [
+                            //             ElevatedButton(
+                            //               onPressed: () {
+                            //                 Navigator.pop(context);
+                            //               },
+                            //               child: const Text('Hủy'),
+                            //             ),
+                            //             ElevatedButton(
+                            //               onPressed: () {
+                            //                 _saveListName(listID);
+                            //                 setState(() {
+                            //                   _fetchData();
+                            //                 });
+                            //               },
+                            //               child: const Text('Lưu'),
+                            //             ),
+                            //           ],
+                            //         );
+                            //       },
+                            //     );
+                            //   },
+                            // ),
                           ],
                         ),
                       ),
