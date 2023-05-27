@@ -27,23 +27,29 @@ class _ListsAdd extends State<ListsAdd> with TickerProviderStateMixin {
   final listNameFocusNode = FocusNode();
 
   Future<void> addList() async {
+    if (!mounted) return; // Check if the widget is still active
+
     ListModel newList = ListModel(
       listName: _listName,
       boardID: widget.boardID,
     );
 
     final response = await http.post(
-      Uri.parse('http://192.168.1.7/api/addList/'),
+      Uri.parse('http://192.168.53.160/api/addList/'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newList.toJson()),
     );
 
     if (response.statusCode == 200) {
+      if (!mounted) return; // Check if the widget is still active
+
       // show success message to the user
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('List added successfully!')),
       );
     } else {
+      if (!mounted) return; // Check if the widget is still active
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error adding list item!')),
       );
@@ -95,8 +101,7 @@ class _ListsAdd extends State<ListsAdd> with TickerProviderStateMixin {
                     onPressed: () {
                       if (_listName.isEmpty) {
                         listNameFocusNode.requestFocus();
-                      }
-                      else{
+                      } else {
                         addList();
                         Navigator.pushReplacement(
                           context,

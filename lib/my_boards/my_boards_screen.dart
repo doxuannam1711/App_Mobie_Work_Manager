@@ -435,7 +435,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
               child: Align(
                 alignment: Alignment.topRight,
                 child: IconButton(
-                  icon: const Icon(Icons.delete_outline),
+                  icon: const Icon(Icons.delete_forever),
                   onPressed: () {
                     showDialog(
                       context: context,
