@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<Map<String, dynamic>> getUserList() async {
     // Change this line
     final response =
-        await http.get(Uri.parse('http://192.168.1.7/api/getAccountLogin'));
+        await http.get(Uri.parse('http://192.168.53.160/api/getAccountLogin'));
     if (response.statusCode == 200) {
       setState(() {
         userList = jsonDecode(response.body);
@@ -279,9 +279,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   Text(
-                    'NHỚ THÔNG TIN ĐĂNG NHẬP',
+                    'NHỚ TÀI KHOẢN',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 13,
                       color: Colors.blue[900],
                     ),
                   ),
