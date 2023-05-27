@@ -740,27 +740,33 @@ BEGIN
 END
 
 ----------------------------------------QUERY DELETE EVERYTHING ABOUT USERS-------------------------------------------------------
-DELETE FROM checklistitems where ChecklistID IN (SELECT ChecklistID FROM checklists where CardID IN (SELECT CardID From cards where ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=3))))
+DELETE FROM checklistitems where ChecklistID IN (SELECT ChecklistID FROM checklists where CardID IN (SELECT CardID From cards where ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=5))))
 
-DELETE FROM checklists where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=3)))
+DELETE FROM checklists where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=5)))
 
-DELETE FROM attachments where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=3)))
+DELETE FROM attachments where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=5)))
 
-delete from comments where CardID IN ( SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN(SELECT BoardID FROM boards WHERE UserID=3)))
+delete from comments where CardID IN ( SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN(SELECT BoardID FROM boards WHERE UserID=5)))
 
-delete from notifications where CardID IN ( SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN(SELECT BoardID FROM boards WHERE UserID=3)))
+delete from comments where UserID = 5
 
-delete from creators  WHERE UserID=3
+delete from notifications where CardID IN ( SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN(SELECT BoardID FROM boards WHERE UserID=5)))
 
-delete from assignedTo WHERE UserID=3
+delete from notifications where BoardID IN (SELECT BoardID FROM boards WHERE UserID=5)
 
-delete from cards where ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=3))
+delete from notifications where UserID=5
 
-delete from lists where BoardID IN (SELECT BoardID FROM boards where UserID=3)
+delete from creators  WHERE UserID=5
 
-delete from boards where UserID=3
+delete from assignedTo WHERE UserID=5
 
-delete from users where UserID=3
+delete from cards where ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=5))
+
+delete from lists where BoardID IN (SELECT BoardID FROM boards where UserID=5)
+
+delete from boards where UserID=5
+
+delete from users where UserID=5
 ------------------------------------------------------------------------------------------------------------------------------
 
 SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
