@@ -172,6 +172,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue[200],
       appBar: AppBar(
         title: const Text('Đăng ký tài khoản'),
       ),

@@ -5,6 +5,7 @@ import 'package:flutter_application/login/sing_up_screen.dart';
 import 'package:flutter_application/my_boards/create_screen.dart';
 import 'package:flutter_application/my_cards/my_cards_screen.dart';
 import 'package:flutter_application/notifications/notification_screen.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../my_boards/my_boards_screen.dart';
@@ -178,24 +179,49 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blue[200],
       body: Center(
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset(
-                'assets/images/logo.jpg',
-                width: 150,
-                height: 150,
+              const SizedBox(height: 20),
+              SvgPicture.asset(
+                "assets/images/login.svg",
+                width: MediaQuery.of(context).size.width * 0.65,
+                height: MediaQuery.of(context).size.width * 0.65,
               ),
-              const SizedBox(height: 50),
+              // const SizedBox(height: 20),
+              // Text(
+              //   "Xin chào😀Mừng bạn trở lại",
+              //   style: TextStyle(color: Colors.black, fontSize: 16),
+              // ),
+              const SizedBox(height: 30),
               TextFormField(
                 controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Tên người dùng',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  // labelText: 'TÊN NGƯỜI DÙNG',
+                  hintText: 'TÊN NGƯỜI DÙNG',
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                    borderSide: BorderSide(color: Colors.black!),
+                  ),
+                  filled: true,
+                  fillColor: Colors.blue[200],
+                  prefixIcon:  Padding(
+                    padding: EdgeInsets.all(1),
+                    child: ColorFiltered(
+                      colorFilter:
+                          ColorFilter.mode(Colors.blue.shade900, BlendMode.srcIn),
+                      child: Icon(Icons.person),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -203,7 +229,25 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _passwordController,
                 focusNode: passwordFocusNode,
                 decoration: InputDecoration(
-                  labelText: 'Mật khẩu',
+                  // labelText: 'MẬT KHẨU',
+                  hintText: 'MẬT KHẨU',
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                    borderSide: BorderSide(color: Colors.black!),
+                  ),
+                  filled: true,
+                  fillColor: Colors.blue[200],
+                  prefixIcon: Padding(
+                    padding: EdgeInsets.all(1),
+                    child: ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                          Colors.blue.shade900, BlendMode.srcIn),
+                      child: Icon(Icons.lock),
+                    ),
+                  ),
                   border: const OutlineInputBorder(),
                   suffixIcon: InkWell(
                     onTap: () {
@@ -215,7 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       isPasswordVisible
                           ? Icons.visibility
                           : Icons.visibility_off,
-                      color: Colors.grey,
+                      color: Colors.blue[900],
                     ),
                   ),
                 ),
@@ -226,6 +270,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Checkbox(
+                    activeColor: Colors.blue[900],
                     value: _rememberMe,
                     onChanged: (value) {
                       setState(() {
@@ -233,29 +278,49 @@ class _LoginScreenState extends State<LoginScreen> {
                       });
                     },
                   ),
-                  const Text('Nhớ thông tin đăng nhập'),
+                  Text(
+                    'NHỚ THÔNG TIN ĐĂNG NHẬP',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.blue[900],
+                    ),
+                  ),
                 ],
               ),
               // const SizedBox(height: 20.0),
-              SizedBox(
-                width: double.infinity,
-                height: 40,
-                child: ElevatedButton(
-                  onPressed: handleLogin,
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) {
-                        if (states.contains(MaterialState.hovered)) {
-                          return Colors.black;
-                        }
-                        return Colors.blue;
-                      },
+              Align(
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 1,
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: handleLogin,
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              35), // Adjust the value to your desired roundness
+                        ),
+                      ),
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.hovered)) {
+                            return Colors.black;
+                          }
+                          return Colors.blue.shade900;
+                        },
+                      ),
+                    ),
+                    child: const Text(
+                      'ĐĂNG NHẬP',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                  child: const Text('Đăng nhập'),
                 ),
               ),
-
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -279,10 +344,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                     ),
-                    child: const Text(
-                      'Quên mật khẩu?',
+                    child: Text(
+                      'QUÊN MẬT KHẨU?',
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.blue[900],
                       ),
                     ),
                   ),
@@ -304,10 +369,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                     ),
-                    child: const Text(
-                      'Đăng ký',
+                    child: Text(
+                      'ĐĂNG KÝ',
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.blue[900],
                       ),
                     ),
                   ),
@@ -316,7 +381,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
         ),
-      ),
+      ), 
     );
   }
 }
