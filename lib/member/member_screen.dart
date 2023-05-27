@@ -131,6 +131,7 @@ class _MemberScreenState extends State<MemberScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const BackButton(),
+        backgroundColor: Colors.blue[900],
         title: const Text('Thành viên'),
         actions: [
           IconButton(
@@ -139,9 +140,10 @@ class _MemberScreenState extends State<MemberScreen> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text('Thêm thành viên'),
+                    backgroundColor: Colors.blue[200],
+                    title: Text('THÊM THÀNH VIÊN'),
                     content: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.4, // set chiều cao bằng 50% của chiều cao màn hình
+                      height: MediaQuery.of(context).size.height * 0.4,
                       width: MediaQuery.of(context).size.width * 0.75,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -198,7 +200,10 @@ class _MemberScreenState extends State<MemberScreen> {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: const Text('Thoát'),
+                        child: Text(
+                          'THOÁT',
+                          style: TextStyle(fontSize: 14, color: Colors.blue[900]),
+                        ),
                       ),
                     ],
                   );
@@ -299,7 +304,8 @@ class _MemberScreenState extends State<MemberScreen> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: Text('Xóa thành viên'),
+                                    backgroundColor: Colors.blue[200],
+                                    title: Text('XÓA THÀNH VIÊN'),
                                     content: Text(
                                         'Bạn có chắc muốn xóa thành viên này khỏi thẻ?'),
                                     actions: [
@@ -307,7 +313,13 @@ class _MemberScreenState extends State<MemberScreen> {
                                         onPressed: () {
                                           Navigator.of(context).pop();
                                         },
-                                        child: Text('Hủy'),
+                                        child: Text(
+                                          'HỦY',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.blue[900]
+                                          ),
+                                        ),
                                       ),
                                       TextButton(
                                         onPressed: () {
@@ -318,7 +330,13 @@ class _MemberScreenState extends State<MemberScreen> {
                                           });
                                           Navigator.of(context).pop();
                                         },
-                                        child: Text('Xóa'),
+                                        child: Text(
+                                          'XÓA',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.blue[900]
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   );

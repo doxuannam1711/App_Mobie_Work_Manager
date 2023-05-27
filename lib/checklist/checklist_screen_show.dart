@@ -114,6 +114,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
     }
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue[900],
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {

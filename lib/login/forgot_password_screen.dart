@@ -64,7 +64,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Tài khoản email không đúng'),
+          backgroundColor: Colors.blue[200],
+          title: const Text('TÀI KHOẢN EMAIL KHÔNG ĐÚNG'),
           content:
               const Text('Nhập tài khoản email hợp lệ.'),
           actions: [
@@ -75,7 +76,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 emailFocusNode
                     .requestFocus(); // move focus back to password field
               },
-              child: const Text('Nhập lại'),
+              child: Text(
+                'NHẬP LẠI',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.blue[900]
+                ),
+              ),
             ),
           ],
         ),
@@ -89,29 +96,68 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       backgroundColor: Colors.blue[200],
       appBar: AppBar(
         title: const Text('Quên mật khẩu'),
+        backgroundColor: Colors.blue[900],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Nhập tài khoản email để đổi mật khẩu',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            // Text(
+            //   'Nhập tài khoản email để đổi mật khẩu',
+            //   style: Theme.of(context).textTheme.titleLarge,
+            // ),
             const SizedBox(height: 16.0),
             TextFormField(
               controller: emailController,
               focusNode: emailFocusNode,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: 'NHẬP TÀI KHOẢN EMAIL ĐỂ ĐỔI MẬT KHẨU',
+                labelStyle: TextStyle(
+                  color: Colors.blue[900],
+                  fontSize: 14,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(35),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(35),
+                  borderSide: BorderSide(color: Colors.black),
+                ),
+                filled: true,
+                fillColor: Colors.blue[200],
               ),
             ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () => onPressedNext(context),
-              child: const Text('Tiếp theo'),
+            const SizedBox(height: 25.0),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 1,
+              height: 55,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          35), // Adjust the value to your desired roundness
+                    ),
+                  ),
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.hovered)) {
+                        return Colors.black;
+                      }
+                      return Colors.blue.shade900;
+                    },
+                  ),
+                ),
+                onPressed: () => onPressedNext(context),
+                child: const Text(
+                  'TIẾP THEO',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
           ],
         ),

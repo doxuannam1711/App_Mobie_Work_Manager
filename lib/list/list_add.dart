@@ -57,6 +57,7 @@ class _ListsAdd extends State<ListsAdd> with TickerProviderStateMixin {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Tạo danh sách công việc mới'),
+          backgroundColor: Colors.blue[900],
         ),
         body: TabBarView(
           children: [

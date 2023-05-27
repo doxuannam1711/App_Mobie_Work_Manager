@@ -23,7 +23,6 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   // late File _imageFile;
 
-
   String _addUsername = "";
   String _addFullname = "";
   String _addPassword = "";
@@ -31,19 +30,18 @@ class _SignupScreenState extends State<SignupScreen> {
   String _addEmail = "";
 
   String _confirmPassword = "";
-  final String _defaultAvatar = 'https://drive.google.com/uc?export=view&id=1KRAnJasEh6mSrI_JzKmgitiTJE6W2BQL';
-
+  final String _defaultAvatar =
+      'https://drive.google.com/uc?export=view&id=1KRAnJasEh6mSrI_JzKmgitiTJE6W2BQL';
 
   late drive.DriveApi _driveApi;
 
   TextEditingController confirmPasswordController = TextEditingController();
-  
+
   final userNameFocusNode = FocusNode();
   final fullNameFocusNode = FocusNode();
   final confirmPasswordFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
   final emailFocusNode = FocusNode();
-
 
   @override
   void initState() {
@@ -175,22 +173,30 @@ class _SignupScreenState extends State<SignupScreen> {
       backgroundColor: Colors.blue[200],
       appBar: AppBar(
         title: const Text('Đăng ký tài khoản'),
+        backgroundColor: Colors.blue[900],
       ),
       body: Center(
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ProfileWidget(
-                imagePath:_addAvatarUrl.isNotEmpty ? _addAvatarUrl: _defaultAvatar,
-                isEdit: true,
-                onClicked: () {
-                  _openFilePicker();
-                  setState(() {});
-                },
+              const SizedBox(height: 10,),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.28,
+                height: MediaQuery.of(context).size.width * 0.28,
+                child: ProfileWidget(
+                  imagePath:
+                      _addAvatarUrl.isNotEmpty ? _addAvatarUrl : _defaultAvatar,
+                  isEdit: true,
+                  onClicked: () {
+                    _openFilePicker();
+                    setState(() {});
+                  },
+                ),
               ),
+              
               // InkWell(
               //   onTap: _openFilePicker,
               //   child: CircleAvatar(
@@ -205,9 +211,20 @@ class _SignupScreenState extends State<SignupScreen> {
               // ),
               const SizedBox(height: 20),
               TextFormField(
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Tên đăng nhập',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(
+                    color: Colors.blue[900],
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  filled: true,
+                  fillColor: Colors.blue[200],
                 ),
                 focusNode: userNameFocusNode,
                 onChanged: (value) {
@@ -216,9 +233,20 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Tên đầy đủ',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(
+                    color: Colors.blue[900],
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  filled: true,
+                  fillColor: Colors.blue[200],
                 ),
                 focusNode: fullNameFocusNode,
                 onChanged: (value) {
@@ -227,9 +255,20 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Email',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(
+                    color:Colors.blue[900],
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  filled: true,
+                  fillColor: Colors.blue[200],
                 ),
                 focusNode: emailFocusNode,
                 onChanged: (value) {
@@ -238,9 +277,20 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Mật khẩu',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(
+                    color: Colors.blue[900],
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  filled: true,
+                  fillColor: Colors.blue[200],
                 ),
                 focusNode: passwordFocusNode,
                 onChanged: (value) {
@@ -251,9 +301,20 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(height: 20),
               TextFormField(
                 controller: confirmPasswordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Xác nhận lại mật khẩu',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(
+                    color: Colors.blue[900],
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(35),
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  filled: true,
+                  fillColor: Colors.blue[200],
                 ),
                 focusNode: confirmPasswordFocusNode,
                 onChanged: (value) {
@@ -261,59 +322,85 @@ class _SignupScreenState extends State<SignupScreen> {
                 },
                 obscureText: true,
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                child: const Text('Đăng ký'),
-                onPressed: () async {
-                  if(_addUsername.isEmpty){
-                    userNameFocusNode.requestFocus();
-                  }
-                  else if(_addFullname.isEmpty){
-                    fullNameFocusNode.requestFocus();
-                  }
-                  else if (_addEmail.isEmpty) {
-                    emailFocusNode.requestFocus();
-                  }
-                  else if (_addPassword.isEmpty) {
-                    passwordFocusNode.requestFocus();
-                  }
-                  else if (_confirmPassword.isEmpty) {
-                    confirmPasswordFocusNode.requestFocus();
-                  }
-                  else if(_addPassword==_confirmPassword){
-                    _addUser();
-                    await Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen()
+              const SizedBox(height: 40),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 1,
+                height: 55,
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                            35), // Adjust the value to your desired roundness
                       ),
-                      (route) => false, // Remove all previous routes  
-                    );
-                  } 
-                  else{
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Mật khẩu nhập lại sai'),
-                        content: const Text(
-                            'Mật khẩu nhập lại không trùng khớp.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              confirmPasswordController
-                                  .clear(); // clear password input
-                              confirmPasswordFocusNode
-                                  .requestFocus(); // move focus back to password field
-                            },
-                            child: const Text('Nhập lại'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                },
+                    ),
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                      (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.hovered)) {
+                          return Colors.black;
+                        }
+                        return Colors.blue.shade900;
+                      },
+                    ),
+                  ),
+                  onPressed: () async {
+                    if (_addUsername.isEmpty) {
+                      userNameFocusNode.requestFocus();
+                    } else if (_addFullname.isEmpty) {
+                      fullNameFocusNode.requestFocus();
+                    } else if (_addEmail.isEmpty) {
+                      emailFocusNode.requestFocus();
+                    } else if (_addPassword.isEmpty) {
+                      passwordFocusNode.requestFocus();
+                    } else if (_confirmPassword.isEmpty) {
+                      confirmPasswordFocusNode.requestFocus();
+                    } else if (_addPassword == _confirmPassword) {
+                      _addUser();
+                      await Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                            builder: (context) => const LoginScreen()),
+                        (route) => false, // Remove all previous routes
+                      );
+                    } else {
+                      showDialog( 
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          backgroundColor: Colors.blue[200],
+                          title: const Text('MẬT KHẨU NHẬP LẠI SAI'),
+                          content:
+                              const Text('Mật khẩu nhập lại không trùng khớp.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                confirmPasswordController
+                                    .clear(); // clear password input
+                                confirmPasswordFocusNode
+                                    .requestFocus(); // move focus back to password field
+                              },
+                              child: Text(
+                                'NHẬP LẠI',
+                                style: TextStyle(
+                                  fontSize: 14, 
+                                  color: Colors.blue[900]
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    'ĐĂNG KÝ',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 40),
             ],
           ),
         ),

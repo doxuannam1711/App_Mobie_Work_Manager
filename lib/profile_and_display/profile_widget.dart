@@ -8,13 +8,14 @@ class ProfileWidget extends StatelessWidget {
   const ProfileWidget({
     Key? key,
     required this.imagePath,
-    this.isEdit=false,
+    this.isEdit = false,
     required this.onClicked,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme.primary;
+    final color = Colors.blue.shade900;
+    // Theme.of(context).colorScheme.primary;
 
     return Center(
       child: Stack(children: [
@@ -46,30 +47,26 @@ class ProfileWidget extends StatelessWidget {
 
   Widget buildEditIcon(Color color) {
     return buildCircle(
-      all: 3,
-      color: Colors.white,
-      child:buildCircle(
-        color: color,
-        all: 8,
-        child: const Icon(
-          Icons.add_a_photo,
-          color: Colors.white,
-          size: 20,
-        ),
-      
-      ) 
-    );
+        all: 3,
+        color: Colors.white,
+        child: buildCircle(
+          color: color,
+          all: 8,
+          child: const Icon(
+            Icons.add_a_photo,
+            color: Colors.white,
+            size: 20,
+          ),
+        ));
   }
 
   Widget buildCircle(
       {required Widget child, required double all, required Color color}) {
     return ClipOval(
-      child: Container(
-        padding: EdgeInsets.all(all),
-        color: color,
-        child: child,
-      )
-
-    );
+        child: Container(
+      padding: EdgeInsets.all(all),
+      color: color,
+      child: child,
+    ));
   }
 }

@@ -143,7 +143,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
       return AppBar(
         leading: const BackButton(),
         title: const Text('Hồ sơ của tôi'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Colors.blue[900],
         elevation: 0,
         // actions: [
         //   IconButton(
@@ -643,15 +643,16 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 30),
         ButtonWidget(
-          text: 'Lưu',
+          text: 'LƯU',
           onClicked: () async {
             if (_oldPassword != password) {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('Mật khẩu cũ sai'),
+                  backgroundColor: Colors.blue[200],
+                  title: const Text('MẬT KHẨU CŨ SAI'),
                   content: const Text('Nhập lại mật khẩu cũ.'),
                   actions: [
                     TextButton(
@@ -661,7 +662,10 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
                         oldPasswordFocusNode
                             .requestFocus(); // move focus back to password field
                       },
-                      child: const Text('Nhập lại'),
+                      child: Text(
+                        'NHẬP LẠI',
+                        style: TextStyle(fontSize: 14, color: Colors.blue[900]),
+                      ),
                     ),
                   ],
                 ),
@@ -683,7 +687,8 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('Mật khẩu nhập lại sai'),
+                  backgroundColor: Colors.blue[200],
+                  title: const Text('MẬT KHẨU NHẬP LẠI SAI'),
                   content: const Text('Mật khẩu nhập lại không trùng khớp.'),
                   actions: [
                     TextButton(
@@ -694,7 +699,10 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
                         confirmPasswordFocusNode
                             .requestFocus(); // move focus back to password field
                       },
-                      child: const Text('Nhập lại'),
+                      child: Text(
+                        'NHẬP LẠI',
+                        style: TextStyle(fontSize: 14, color: Colors.blue[900]),
+                      ),
                     ),
                   ],
                 ),

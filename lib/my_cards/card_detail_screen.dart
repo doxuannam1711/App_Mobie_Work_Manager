@@ -267,6 +267,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
         resizeToAvoidBottomInset: true,
         // drawer: NavDrawer(widget.userID),
         appBar: AppBar(
+          backgroundColor: Colors.blue[900],
           title: Row(
             children: [
               Expanded(
@@ -276,7 +277,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                       context: context,
                       builder: (_) {
                         return AlertDialog(
-                          title: const Text('Nhập tên thẻ'),
+                          backgroundColor: Colors.blue[200],
+                          title: const Text('NHẬP TÊN THẺ'),
                           content: TextField(
                             controller: _cardNameController,
                             decoration: const InputDecoration(
@@ -290,14 +292,23 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                               onPressed: () {
                                 Navigator.pop(context);
                               },
-                              child: const Text('Hủy'),
+                              child: Text(
+                                'HỦY',
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.blue[900]),
+                              ),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 _saveCardName();
                                 Navigator.pop(context);
                               },
-                              child: const Text('Lưu'),
+                              child: Text(
+                                'LƯU',
+                                style: TextStyle(
+                                  fontSize: 14, color: Colors.blue[900]
+                                ),
+                              ),
                             ),
                           ],
                         );
@@ -331,7 +342,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                     context: context,
                     builder: (_) {
                       return AlertDialog(
-                        title: const Text('Nhập tên thẻ'),
+                        backgroundColor: Colors.blue[200],
+                        title: const Text('NHẬP TÊN THẺ'),
                         content: TextField(
                           controller: _cardNameController,
                           decoration: const InputDecoration(
@@ -345,14 +357,24 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            child: const Text('Hủy'),
+                            child: Text(
+                              'HỦY',
+                              style: TextStyle(
+                                fontSize: 14, color: Colors.blue[900]
+                              ),
+                            ),
                           ),
                           ElevatedButton(
                             onPressed: () {
                               _saveCardName();
                               Navigator.pop(context);
                             },
-                            child: const Text('Lưu'),
+                            child: Text(
+                              'LƯU',
+                              style: TextStyle(
+                                fontSize: 14, color: Colors.blue[900]
+                              ),
+                            ),
                           ),
                         ],
                       );
@@ -388,19 +410,30 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: const Text('Xác nhận'),
+                      backgroundColor: Colors.blue[200],
+                      title: const Text('XÁC NHẬN'),
                       content: const Text(
                         'Bạn có chắc muốn xóa thẻ này?',
                       ),
                       actions: <Widget>[
                         TextButton(
-                          child: const Text('Hủy'),
+                          child: Text(
+                            'HỦY',
+                            style: TextStyle(
+                              fontSize: 14, color: Colors.blue[900]
+                            ),
+                          ),
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
                         ),
                         TextButton(
-                          child: const Text('Xóa'),
+                          child: Text(
+                            'XÓA',
+                            style: TextStyle(
+                              fontSize: 14, color: Colors.blue[900]
+                            ),
+                          ),
                           onPressed: () async {
                             _deleteCard();
                             await Navigator.of(context).pushAndRemoveUntil(

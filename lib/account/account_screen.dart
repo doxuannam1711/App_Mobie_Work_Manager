@@ -93,6 +93,7 @@ class _AccountScreenState extends State<AccountScreen> {
       drawer: NavDrawer(widget.userID),
       appBar: AppBar(
         title: const Text('Quản lý tài khoản'),
+        backgroundColor: Colors.blue[900],
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: getUserList(),
@@ -439,19 +440,26 @@ class _AccountScreenState extends State<AccountScreen> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: const Text('Xác nhận'),
+                  backgroundColor: Colors.blue[200],
+                  title: const Text('XÁC NHẬN'),
                   content: const Text(
                     'Bạn có chắc muốn xóa tài khoản này?',
                   ),
                   actions: <Widget>[
                     TextButton(
-                      child: const Text('Hủy'),
+                      child: Text(
+                        'HỦY',
+                        style: TextStyle(fontSize: 14, color: Colors.blue[900]),
+                      ),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
                     ),
                     TextButton(
-                      child: const Text('Xóa'),
+                      child: Text(
+                        'XÓA',
+                        style: TextStyle(fontSize: 14, color: Colors.blue[900]),
+                      ),
                       onPressed: () async {
                         _deleteUser();
                         await Navigator.of(context).pushAndRemoveUntil(

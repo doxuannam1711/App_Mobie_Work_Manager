@@ -243,7 +243,7 @@ class _NavDrawerState extends State<NavDrawer> {
             ),
           ),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
+            color: Colors.blue[900],
             // image: DecorationImage(
             //   image: NetworkImage(imagePath),
             //   // AssetImage(imagePath),
