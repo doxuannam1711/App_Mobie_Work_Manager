@@ -53,7 +53,7 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchcardList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.7/api/getLists/${widget.boardID}'));
+        .get(Uri.parse('http://192.168.53.160/api/getLists/${widget.boardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -78,7 +78,7 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   Future<void> _updateList(int listID) async {
-    final url = Uri.parse('http://192.168.1.7/api/updateList/$listID');
+    final url = Uri.parse('http://192.168.53.160/api/updateList/$listID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -103,7 +103,7 @@ class _ListScreenState extends State<ListScreen> {
 
   // Future<List<Map<String, dynamic>>> _fetchCard(int listID) async {
   //   final response = await http
-  //       .get(Uri.parse('http://192.168.1.7/api/getCards/$listID'));
+  //       .get(Uri.parse('http://192.168.53.160/api/getCards/$listID'));
   //   if (response.statusCode == 200) {
   //     try {
   //       final data = jsonDecode(response.body)['Data'];
@@ -248,60 +248,116 @@ class _ListScreenState extends State<ListScreen> {
                           children: [
                             Expanded(
                               child: Container(
-                                color: Colors.blue,
+                                decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  border: Border.all(
+                                    color: Colors.blue,
+                                    width: 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    listName,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                    ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          listName,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.edit,
+                                          color: Colors.white,
+                                        ),
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) {
+                                              return AlertDialog(
+                                                title: const Text('Nhập tên danh sách'),
+                                                content: TextField(
+                                                  controller: listNameController,
+                                                  decoration: const InputDecoration(
+                                                    border: InputBorder.none,
+                                                    hintText: 'Nhập tên danh sách',
+                                                  ),
+                                                  onChanged: _updateCardName,
+                                                ),
+                                                actions: [
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: const Text('Hủy'),
+                                                  ),
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      _saveListName(listID);
+                                                      setState(() {
+                                                        _fetchData();
+                                                      });
+                                                    },
+                                                    child: const Text('Lưu'),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    ],
                                   ),
+                                  
                                 ),
                               ),
                             ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.edit,
-                              ),
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) {
-                                    return AlertDialog(
-                                      title: const Text('Nhập tên danh sách'),
-                                      content: TextField(
-                                        controller: listNameController,
-                                        decoration: const InputDecoration(
-                                          border: InputBorder.none,
-                                          hintText: 'Nhập tên danh sách',
-                                        ),
-                                        onChanged: _updateCardName,
-                                      ),
-                                      actions: [
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text('Hủy'),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            _saveListName(listID);
-                                            setState(() {
-                                              _fetchData();
-                                            });
-                                          },
-                                          child: const Text('Lưu'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                            ),
+                            // IconButton(
+                            //   icon: Icon(
+                            //     Icons.edit,
+                            //     color: Colors.blue[900],
+                            //   ),
+                            //   onPressed: () {
+                            //     showDialog(
+                            //       context: context,
+                            //       builder: (_) {
+                            //         return AlertDialog(
+                            //           title: const Text('Nhập tên danh sách'),
+                            //           content: TextField(
+                            //             controller: listNameController,
+                            //             decoration: const InputDecoration(
+                            //               border: InputBorder.none,
+                            //               hintText: 'Nhập tên danh sách',
+                            //             ),
+                            //             onChanged: _updateCardName,
+                            //           ),
+                            //           actions: [
+                            //             ElevatedButton(
+                            //               onPressed: () {
+                            //                 Navigator.pop(context);
+                            //               },
+                            //               child: const Text('Hủy'),
+                            //             ),
+                            //             ElevatedButton(
+                            //               onPressed: () {
+                            //                 _saveListName(listID);
+                            //                 setState(() {
+                            //                   _fetchData();
+                            //                 });
+                            //               },
+                            //               child: const Text('Lưu'),
+                            //             ),
+                            //           ],
+                            //         );
+                            //       },
+                            //     );
+                            //   },
+                            // ),
                           ],
                         ),
                       ),
