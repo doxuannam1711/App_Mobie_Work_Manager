@@ -58,7 +58,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
 
   Future<void> geAlltLists() async {
     final response = await http.get(Uri.parse(
-        'http://192.168.53.160/api/getAllListOption/${widget.creatorID}'));
+        'http://192.168.1.7/api/getAllListOption/${widget.creatorID}'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -75,7 +75,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
 
   Future<void> getLists() async {
     final response = await http.get(
-        Uri.parse('http://192.168.53.160/api/getListOption/${widget.boardID}'));
+        Uri.parse('http://192.168.1.7/api/getListOption/${widget.boardID}'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -103,7 +103,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
     );
 
     final response = await http.post(
-      Uri.parse('http://192.168.53.160/api/addCard'),
+      Uri.parse('http://192.168.1.7/api/addCard'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newCard.toJson()),
     );
@@ -326,9 +326,31 @@ class _AddCardScreenState extends State<AddCardScreen> {
             const SizedBox(height: 30.0),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.3,
-              height: 40,
+              height: 50,
               child: ElevatedButton(
-                child: const Text('Thêm'),
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          35), // Adjust the value to your desired roundness
+                    ),
+                  ),
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.hovered)) {
+                        return Colors.black;
+                      }
+                      return Colors.blue.shade900;
+                    },
+                  ),
+                ),
+                child: const Text(
+                  'THÊM',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
                 onPressed: () async {
                   if (_cardName.isEmpty) {
                     cardNameFocusNode.requestFocus();

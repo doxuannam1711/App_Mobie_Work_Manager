@@ -214,7 +214,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 decoration: InputDecoration(
                   labelText: 'Tên đăng nhập',
                   labelStyle: TextStyle(
-                    color: Colors.blue[900],
+                    color: Colors.black,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(35),
@@ -236,7 +236,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 decoration: InputDecoration(
                   labelText: 'Tên đầy đủ',
                   labelStyle: TextStyle(
-                    color: Colors.blue[900],
+                    color: Colors.black,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(35),
@@ -258,7 +258,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle: TextStyle(
-                    color:Colors.blue[900],
+                    color:Colors.black,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(35),
@@ -280,7 +280,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 decoration: InputDecoration(
                   labelText: 'Mật khẩu',
                   labelStyle: TextStyle(
-                    color: Colors.blue[900],
+                    color: Colors.black,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(35),
@@ -304,7 +304,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 decoration: InputDecoration(
                   labelText: 'Xác nhận lại mật khẩu',
                   labelStyle: TextStyle(
-                    color: Colors.blue[900],
+                    color: Colors.black,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(35),

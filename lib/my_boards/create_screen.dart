@@ -239,14 +239,31 @@ class _CreateScreenState extends State<CreateScreen>
                     ],
                   ),
                 ),
-                const SizedBox(height: 30.0),
+                const SizedBox(height: 40.0),
                 Align(
                   alignment: Alignment.center,
                   child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.3,
-                    height: 40,
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    height: 50,
                     child: ElevatedButton(
-                      child: const Text('Thêm'),
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                35), // Adjust the value to your desired roundness
+                          ),
+                        ),
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return Colors.black;
+                            }
+                            return Colors.blue.shade900;
+                          },
+                        ),
+                      ),
                       onPressed: () async {
                         if (_boardName.isEmpty) {
                           boardNameFocusNode.requestFocus();
@@ -261,6 +278,13 @@ class _CreateScreenState extends State<CreateScreen>
                           setState(() {});
                         }
                       },
+                      child: const Text(
+                        'THÊM',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ),

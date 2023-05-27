@@ -35,7 +35,7 @@ class _ListsAdd extends State<ListsAdd> with TickerProviderStateMixin {
     );
 
     final response = await http.post(
-      Uri.parse('http://192.168.53.160/api/addList/'),
+      Uri.parse('http://192.168.1.7/api/addList/'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newList.toJson()),
     );
@@ -95,28 +95,56 @@ class _ListsAdd extends State<ListsAdd> with TickerProviderStateMixin {
                       hintText: 'Nhập tên danh sách',
                     ),
                   ),
-                  const SizedBox(height: 16.0),
-                  ElevatedButton(
-                    child: const Text('Thêm'),
-                    onPressed: () {
-                      if (_listName.isEmpty) {
-                        listNameFocusNode.requestFocus();
-                      } else {
-                        addList();
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AddCardScreen(
-                              creatorID: widget.userID,
-                              boardID: widget.boardID,
-                              labels: widget.labels,
-                              boardName: widget.boardName,
-                            ),
+                  const SizedBox(height: 35.0),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                35), // Adjust the value to your desired roundness
                           ),
-                        );
-                      }
-                    },
-                  )
+                        ),
+                        backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return Colors.black;
+                            }
+                            return Colors.blue.shade900;
+                          },
+                        ),
+                      ),
+                      child: const Text(
+                        'THÊM',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      onPressed: () {
+                        if (_listName.isEmpty) {
+                          listNameFocusNode.requestFocus();
+                        }
+                        else{
+                          addList();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddCardScreen(
+                                creatorID: widget.userID,
+                                boardID: widget.boardID,
+                                labels: widget.labels,
+                                boardName: widget.boardName,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                    )
+                  ),
                 ],
               ),
             )

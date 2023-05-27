@@ -845,7 +845,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                     ),
                     const SizedBox(width: 8.0),
                     IconButton(
-                      icon: const Icon(Icons.send),
+                      icon: Icon(Icons.send,color: Colors.blue[900],size: 30),
                       onPressed: () async {
                         _addComment();
                         await Navigator.of(context).pushReplacement(
