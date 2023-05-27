@@ -346,6 +346,28 @@ WHERE CardID = @CardID";
         }
     }
 
+    [HttpPut]
+    [Route("api/updateList/{listID}")]
+    public IHttpActionResult UpdateList(int listID, [FromBody] ListModel List)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"UPDATE lists SET 
+ListName = @ListName
+WHERE ListID = @ListID";
+            Command.Parameters.AddWithValue("@ListName", List.ListName);
+            Command.Parameters.AddWithValue("@ListID", listID);
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
 
     [Route("api/searchCards/{keyword}")]
     public IHttpActionResult SearchCards(string keyword)

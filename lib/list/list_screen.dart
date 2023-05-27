@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -16,7 +17,7 @@ class ListScreen extends StatefulWidget {
     this.boardName,
     this.boardID,
     this.labels,
-    this.userID, 
+    this.userID,
   );
 
   @override
@@ -36,10 +37,11 @@ class _ListScreenState extends State<ListScreen> {
   final _itemNameController = TextEditingController();
   final _itemNameFocusNode = FocusNode();
   final bool _isAddingNewList = false;
-  final String _ListName = '';
+  String listName = "";
   // int _BoardID = 0;
   final int _ListID = 0;
   final bool _isEditingName = false;
+  var listNameController;
 
   Map<String, List<Map<String, dynamic>>> _cardLists = {};
 
@@ -51,7 +53,7 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchcardList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.7/api/getLists/${widget.boardID}'));
+        .get(Uri.parse('http://192.168.53.160/api/getLists/${widget.boardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -75,9 +77,33 @@ class _ListScreenState extends State<ListScreen> {
     }
   }
 
+  Future<void> _updateList(int listID) async {
+    final url = Uri.parse('http://192.168.53.160/api/updateList/$listID');
+    final response = await http.put(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'ListName': listNameController.text,
+      }),
+    );
+    if (mounted) {
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Đổi tên danh sách thành công!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Đổi tên danh sách thất bại!')),
+        );
+      }
+    }
+  }
+
   // Future<List<Map<String, dynamic>>> _fetchCard(int listID) async {
   //   final response = await http
-  //       .get(Uri.parse('http://192.168.1.7/api/getCards/$listID'));
+  //       .get(Uri.parse('http://192.168.53.160/api/getCards/$listID'));
   //   if (response.statusCode == 200) {
   //     try {
   //       final data = jsonDecode(response.body)['Data'];
@@ -100,20 +126,46 @@ class _ListScreenState extends State<ListScreen> {
   //     throw Exception('Failed to load board list');
   //   }
   // }
-
   Future<void> _fetchData() async {
     final cardLists = await _fetchcardList();
     Map<String, List<Map<String, dynamic>>> tempCardLists = {};
     for (var card in cardLists) {
       String listName = card['ListName'];
+      listNameController = TextEditingController(text: listName);
+      String listID =
+          card['ListID'].toString(); // Chuyển đổi ListID thành chuỗi
       if (!tempCardLists.containsKey(listName)) {
         tempCardLists[listName] = [];
       }
-      tempCardLists[listName]!.add(card); // add a null check here
+      if (!tempCardLists.containsKey(listID)) {
+        tempCardLists[listID] = [];
+      }
+      tempCardLists[listName]!.add(card);
     }
     setState(() {
       _cardLists = tempCardLists;
     });
+  }
+
+  @override
+  void dispose() {
+    // _cardNameController.dispose();
+    super.dispose();
+  }
+
+  void _updateCardName(String value) {
+    // Cập nhật giá trị của listName khi thay đổi
+    setState(() {
+      listName = value;
+    });
+  }
+
+  void _saveListName(int listID) {
+    // Gọi hàm cập nhật tên danh sách
+    _updateList(listID); // Thay "listID" bằng giá trị thực tế của danh sách
+
+    // Đóng dialog
+    Navigator.pop(context);
   }
 
   int _currentPage = 2;
@@ -163,7 +215,7 @@ class _ListScreenState extends State<ListScreen> {
                   });
                 },
                 itemBuilder: (context, index) {
-                  String listName = listNames[index];
+                  listName = listNames[index];
                   List<Map<String, dynamic>> cardList =
                       _cardLists.values.toList()[index];
                   // List<Map<String, dynamic>> cardList = _cardLists.values
@@ -177,19 +229,67 @@ class _ListScreenState extends State<ListScreen> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Card(
-                          color: Theme.of(context).colorScheme.secondary,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              listName,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                color: Colors.blue,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    listName,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                            IconButton(
+                              icon: Icon(
+                                Icons.edit,
+                              ),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) {
+                                    return AlertDialog(
+                                      title: const Text('Nhập tên danh sách'),
+                                      content: TextField(
+                                        controller: listNameController,
+                                        decoration: const InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: 'Nhập tên danh sách',
+                                        ),
+                                        onChanged: _updateCardName,
+                                      ),
+                                      actions: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('Hủy'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            _saveListName(
+                                              int.parse(listNames[1]),
+                                            );
+                                            setState(() {
+                                              _fetchData();
+                                            });
+                                          },
+                                          child: const Text('Lưu'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ),
                       Expanded(

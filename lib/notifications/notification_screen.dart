@@ -30,7 +30,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Future<void> _fetchBoardList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.7/api/getNotifications'));
+        await http.get(Uri.parse('http://192.168.53.160/api/getNotifications'));
     if (mounted) {
       // Check if the widget is still mounted
       if (response.statusCode == 200) {
@@ -55,8 +55,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
             .toList();
       case 'Me':
         return _notifications
-            .where((notification) => notification['NotificationType'] == 3)
+            .where((notification) =>
+                notification['NotificationType'] == 5 ||
+                notification['NotificationType'] == 6)
             .toList();
+
       case 'Comment':
         return _notifications
             .where((notification) => notification['NotificationType'] == 4)
@@ -153,6 +156,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
               break;
             case 4:
               iconData = Icons.comment;
+              break;
+            case 5:
+              iconData = Icons.attachment;
+              break;
+            case 6:
+              iconData = Icons.check_circle;
               break;
             case 0:
               iconData = Icons.notification_important;

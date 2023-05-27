@@ -957,3 +957,82 @@ delete from lists where BoardID = 23
 
 DELETE FROM boards WHERE BoardID = 23
 ----------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------UPDATE 27/05 --------------------------------------------------------------------
+---------- comments table ----------------
+ALTER TRIGGER [dbo].[trg_comments_comment] ON [dbo].[comments]
+AFTER INSERT
+AS
+BEGIN
+  DECLARE @UserID INT, @CardID INT, @title NVARCHAR(255), @Detail NVARCHAR(255);
+  
+  SELECT @UserID = UserID, @CardID = CardID, @Detail = Detail FROM inserted;
+  
+  SELECT @title =  N' đã bình luận: ' + @Detail + N' ở thẻ ' ;
+  
+  INSERT INTO notifications VALUES (@UserID, 4, N'Bình Luận', @CardID, 1, @title, GETDATE(), 'true');
+END
+
+-------------- attachment table ----------------------
+ALTER TRIGGER [dbo].[trg_attach] ON [dbo].[attachments]
+AFTER INSERT
+AS
+BEGIN
+  DECLARE @UserID INT, @CardID INT, @title NVARCHAR(255), @Detail NVARCHAR(255);
+  
+  SELECT @CardID = CardID, @Detail = AttachmentName FROM inserted;
+  
+  SELECT @title =  N' đính kèm tệp: ' + @Detail +  N' ở thẻ ' ;
+  
+  INSERT INTO notifications VALUES (1, 5, N'Bình Luận', @CardID, 1, @title, GETDATE(), 'true');
+END
+
+-------------- checklist table --------------------------
+GO
+ALTER TRIGGER [dbo].[trg_checklistitem] ON [dbo].[checklistitems]
+AFTER INSERT
+AS
+BEGIN
+  DECLARE @UserID INT, @CardID INT, @title NVARCHAR(255), @Detail NVARCHAR(255);
+  
+  SELECT @Detail = Title FROM inserted;
+  
+  SELECT @title =  N' đã thêm CheckList: ' + @Detail +  N' ở thẻ ' ;
+  
+  INSERT INTO notifications VALUES (1, 6, N'CheckList', 1, 1, @title, GETDATE(), 'true');
+END
+--------------- notitication table ----------------------
+ALTER TRIGGER [dbo].[tr_InsertNotification] ON [dbo].[notifications]
+AFTER
+INSERT
+    AS BEGIN DECLARE @title NVARCHAR(MAX),
+    @body NVARCHAR(MAX)
+	DECLARE @http INT
+SELECT
+    @title = Title,
+    @body = (SELECT TOP 1 users.Fullname from users INNER JOIN notifications on notifications.UserID = users.UserID where users.UserID = notifications.UserID) + Content + (SELECT TOP 1 cards.CardName from cards INNER JOIN notifications on notifications.CardID = cards.CardID where cards.CardID = notifications.CardID) 
+FROM
+    inserted DECLARE @json NVARCHAR(MAX)
+SET
+    @json = '{ "to": "/topics/doan", "notification": { "title": "' + @title + '", "body": "' + @body + '" } }' DECLARE @url NVARCHAR(MAX)
+SET
+    @url = 'https://fcm.googleapis.com/fcm/send' DECLARE @http_status INT EXEC sp_OACreate 'MSXML2.ServerXMLHTTP',
+    @http OUT EXEC sp_OAMethod @http,
+    'open',
+    NULL,
+    'POST',
+    @url,
+    'false' EXEC sp_OAMethod @http,
+    'setRequestHeader',
+    NULL,
+    'Content-Type',
+    'application/json' EXEC sp_OAMethod @http,
+    'setRequestHeader',
+    NULL,
+    'Authorization',
+    'key=AAAAxSfIJ_w:APA91bEAoU12d3K0wSKatVnHIzSyBTaRVXrBgJIL4eE_aeEdCg0JmVBbu3UwK7LLDGabgDk8JAs_2jWl-Ezf6MgsRdN0BtwAdzfiNaWDodxJmLBKWReRpYHFo9X8-iVxvE6in4ObsOtR' EXEC sp_OAMethod @http,
+    'send',
+    NULL,
+    @json EXEC sp_OAGetProperty @http,
+    'status',
+    @http_status OUT EXEC sp_OADestroy @http PRINT 'Notification sent: ' + @title + ' - ' + @body
+END 
