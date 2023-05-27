@@ -349,21 +349,48 @@ class _ListScreenState extends State<ListScreen> {
                 controller: PageController(initialPage: _currentPage),
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddCardScreen(
-                      creatorID: widget.userID,
-                      boardID: widget.boardID,
-                      labels: widget.labels,
-                      boardName: widget.boardName,
+            const SizedBox(height: 15),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.4,
+              height: 50,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          35), // Adjust the value to your desired roundness
                     ),
                   ),
-                );
-              },
-              child: const Text('Thêm thẻ mới'),
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.hovered)) {
+                        return Colors.black;
+                      }
+                      return Colors.blue.shade900;
+                    },
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddCardScreen(
+                        creatorID: widget.userID,
+                        boardID: widget.boardID,
+                        labels: widget.labels,
+                        boardName: widget.boardName,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'THÊM THẺ MỚI',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
             SizedBox(
               height: 48,

@@ -451,6 +451,7 @@ class _AttachmentPageState extends State<AttachmentPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blue[900],
         onPressed: _openFilePicker,
         tooltip: 'Add Attach File',
         child: const Icon(Icons.add),
