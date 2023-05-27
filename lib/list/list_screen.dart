@@ -53,7 +53,7 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchcardList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.7/api/getLists/${widget.boardID}'));
+        .get(Uri.parse('http://192.168.53.160/api/getLists/${widget.boardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -78,7 +78,7 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   Future<void> _updateList(int listID) async {
-    final url = Uri.parse('http://192.168.1.7/api/updateList/$listID');
+    final url = Uri.parse('http://192.168.53.160/api/updateList/$listID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -103,7 +103,7 @@ class _ListScreenState extends State<ListScreen> {
 
   // Future<List<Map<String, dynamic>>> _fetchCard(int listID) async {
   //   final response = await http
-  //       .get(Uri.parse('http://192.168.1.7/api/getCards/$listID'));
+  //       .get(Uri.parse('http://192.168.53.160/api/getCards/$listID'));
   //   if (response.statusCode == 200) {
   //     try {
   //       final data = jsonDecode(response.body)['Data'];
@@ -129,28 +129,32 @@ class _ListScreenState extends State<ListScreen> {
   Future<void> _fetchData() async {
     final cardLists = await _fetchcardList();
     Map<String, List<Map<String, dynamic>>> tempCardLists = {};
+
+    // Dùng một Set để lưu trữ tên danh sách đã gặp
+    Set<String> encounteredListNames = {};
+
     for (var card in cardLists) {
       String listName = card['ListName'];
-      listNameController = TextEditingController(text: listName);
-      String listID =
-          card['ListID'].toString(); // Chuyển đổi ListID thành chuỗi
+
+      // Kiểm tra xem tên danh sách đã được gặp trước đó chưa
+      // Nếu đã gặp thì bỏ qua và không thêm vào danh sách tạm thời
+      if (encounteredListNames.contains(listName)) {
+        continue;
+      }
+
+      // Thêm tên danh sách vào danh sách đã gặp
+      encounteredListNames.add(listName);
+
+      // Thêm card vào danh sách tạm thời
       if (!tempCardLists.containsKey(listName)) {
         tempCardLists[listName] = [];
       }
-      if (!tempCardLists.containsKey(listID)) {
-        tempCardLists[listID] = [];
-      }
       tempCardLists[listName]!.add(card);
     }
+
     setState(() {
       _cardLists = tempCardLists;
     });
-  }
-
-  @override
-  void dispose() {
-    // _cardNameController.dispose();
-    super.dispose();
   }
 
   void _updateCardName(String value) {
@@ -172,7 +176,17 @@ class _ListScreenState extends State<ListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> listNames = _cardLists.keys.toList();
+    List<Map<String, dynamic>> listNames = [];
+    _cardLists.forEach((listName, cards) {
+      cards.forEach((card) {
+        int listID = card['ListID'];
+        listNames.add({
+          'ListName': listName,
+          'ListID': listID,
+        });
+      });
+    });
+
     bool sortByIncreasing =
         true; // Default option is to sort by increasing expiration date
     return Scaffold(
@@ -183,7 +197,7 @@ class _ListScreenState extends State<ListScreen> {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () async {
-              await Navigator.of(context).pushReplacement(
+              await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => ListsAdd(
                     userID: widget.userID,
@@ -193,7 +207,6 @@ class _ListScreenState extends State<ListScreen> {
                   ),
                 ),
               );
-              setState(() {});
             }, // Navigate to the form to add a new list.
           ),
         ],
@@ -216,7 +229,8 @@ class _ListScreenState extends State<ListScreen> {
                   });
                 },
                 itemBuilder: (context, index) {
-                  listName = listNames[index];
+                  String listName = listNames[index]['ListName'];
+                  int listID = listNames[index]['ListID'];
                   List<Map<String, dynamic>> cardList =
                       _cardLists.values.toList()[index];
                   // List<Map<String, dynamic>> cardList = _cardLists.values
@@ -275,9 +289,7 @@ class _ListScreenState extends State<ListScreen> {
                                         ),
                                         ElevatedButton(
                                           onPressed: () {
-                                            _saveListName(
-                                              int.parse(listNames[1]),
-                                            );
+                                            _saveListName(listID);
                                             setState(() {
                                               _fetchData();
                                             });
