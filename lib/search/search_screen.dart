@@ -22,41 +22,71 @@ class _SearchScreenState extends State<SearchScreen> {
   int _currentTabIndex = 0; // Thêm biến để theo dõi tab hiện tại
 
   Future<List<Map<String, dynamic>>> _searchCards(String keyword) async {
-    final url = Uri.parse('http://192.168.1.7/api/searchCards/$keyword');
+    final encodedKeyword = Uri.encodeComponent(keyword);
+    final url = Uri.parse(
+        'http://192.168.53.160/api/searchCards/$encodedKeyword/${widget.userID}');
     final response = await http.post(url);
+
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
-      final List<Map<String, dynamic>> cardList =
-          (jsonData['Data'] as List).cast<Map<String, dynamic>>();
-      return cardList;
-    } else {
-      throw Exception('Failed to load card data');
+      final data = jsonData['Data'];
+
+      if (data != null && data is List) {
+        final List<Map<String, dynamic>> cardList =
+            data.cast<Map<String, dynamic>>();
+        return cardList;
+      }
+    }
+
+    try {
+      return await _searchCardResult;
+    } catch (e) {
+      throw Exception('Failed to load data');
     }
   }
 
   Future<List<Map<String, dynamic>>> _searchBoards(String keyword) async {
-    final url = Uri.parse('http://192.168.1.7/api/searchBoards/$keyword');
+    final encodedKeyword = Uri.encodeComponent(keyword);
+    final url = Uri.parse(
+        'http://192.168.53.160/api/searchBoards/$encodedKeyword/${widget.userID}');
     final response = await http.post(url);
+
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
-      final List<Map<String, dynamic>> boardList =
-          (jsonData['Data'] as List).cast<Map<String, dynamic>>();
-      return boardList;
-    } else {
-      throw Exception('Failed to load board data');
+      final data = jsonData['Data'];
+
+      if (data != null && data is List) {
+        final List<Map<String, dynamic>> boardList =
+            data.cast<Map<String, dynamic>>();
+        return boardList;
+      }
+    }
+
+    // Handle search failure or null response
+    try {
+      return await _searchBoardResult;
+    } catch (e) {
+      throw Exception('Failed to load data');
     }
   }
 
   Future<List<Map<String, dynamic>>> _searchCheckList(String keyword) async {
-    final url = Uri.parse('http://192.168.1.7/api/searchCheckList/$keyword');
+    final url = Uri.parse('http://192.168.53.160/api/searchCheckList/$keyword');
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
-      final List<Map<String, dynamic>> checkList =
-          (jsonData['Data'] as List).cast<Map<String, dynamic>>();
-      return checkList;
-    } else {
-      throw Exception('Failed to load board data');
+      final data = jsonData['Data'];
+      if (data != null && data is List) {
+        final List<Map<String, dynamic>> checkList =
+            (jsonData['Data'] as List).cast<Map<String, dynamic>>();
+        return checkList;
+      }
+    }
+
+    try {
+      return await _searchCheckListResult;
+    } catch (e) {
+      throw Exception('Failed to load data');
     }
   }
 

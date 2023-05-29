@@ -53,7 +53,7 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchcardList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.7/api/getLists/${widget.boardID}'));
+        .get(Uri.parse('http://192.168.53.160/api/getLists/${widget.boardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -78,7 +78,7 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   Future<void> _updateList(int listID) async {
-    final url = Uri.parse('http://192.168.1.7/api/updateList/$listID');
+    final url = Uri.parse('http://192.168.53.160/api/updateList/$listID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -103,7 +103,7 @@ class _ListScreenState extends State<ListScreen> {
 
   // Future<List<Map<String, dynamic>>> _fetchCard(int listID) async {
   //   final response = await http
-  //       .get(Uri.parse('http://192.168.1.7/api/getCards/$listID'));
+  //       .get(Uri.parse('http://192.168.53.160/api/getCards/$listID'));
   //   if (response.statusCode == 200) {
   //     try {
   //       final data = jsonDecode(response.body)['Data'];

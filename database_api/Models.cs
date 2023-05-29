@@ -42,10 +42,10 @@ namespace WebApiDemo.Models
         public DateTime CreatedDate { get; set; } 
     }
     public class CheckListItemModel
-    {   
-        public int ChecklistitemID { get; set; }
-        public int ChecklistID { get; set; }
+    {
+        public int CardID { get; set; }
         public string Title { get; set; }
+        public bool Completed { get; set; }
     }
 
     public class ListModel

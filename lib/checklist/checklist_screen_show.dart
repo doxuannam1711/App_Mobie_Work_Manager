@@ -7,9 +7,8 @@ class ChecklistScreenShow extends StatefulWidget {
   final int userID;
   final int cardID;
 
-  const ChecklistScreenShow({super.key, 
-    required this.cardID,required this.userID
-  });
+  const ChecklistScreenShow(
+      {super.key, required this.cardID, required this.userID});
 
   @override
   State<ChecklistScreenShow> createState() => _ChecklistScreenState();
@@ -20,8 +19,8 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
   final _itemNameController = TextEditingController();
   final _itemNameFocusNode = FocusNode();
   bool _isAddingNewItem = false;
-  String _checklistName = '';
-  int _checklistID = 0;
+  String? _checklistName;
+  int? _checklistID; // Update the type to int?
   bool _isEditingName = false;
   bool? _isCheckedFilter;
 
@@ -34,35 +33,40 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
 
   Future<void> _fetchChecklistItems() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.7/api/getChecklists/${widget.cardID}'));
+        Uri.parse('http://192.168.53.160/api/getChecklists/${widget.cardID}'));
     final String jsonData = json.decode(response.body)['Data'];
     final List<dynamic> data = json.decode(jsonData);
+
+    if (data.isEmpty) {
+      setState(() {
+        _checklistID = null;
+        _checklistName = null;
+        _items.clear();
+      });
+      return;
+    }
 
     final List<Map<String, dynamic>> items =
         List<Map<String, dynamic>>.from(data);
 
     setState(() {
       _checklistID = items[0]['ChecklistID'];
-      _checklistName = items[0]['ChecklistTitle'];
+      _checklistName = items[0]['CardName'];
 
-      if (_items.isNotEmpty) {
-        _items.clear();
-      }
-
+      _items.clear();
       _items.addAll(items.map((item) => {
+            'checklistitemID': item['ChecklistitemID'],
             'title': item['Title'],
-            'isChecked': item['IsChecked'] ?? false,
+            'completed': item['Completed'] ?? false,
           }));
     });
   }
 
   Future<void> _deleteChecklistitem(String itemName) async {
     final url =
-        Uri.parse('http://192.168.1.7/api/deleteChecklistitem/$itemName');
+        Uri.parse('http://192.168.53.160/api/deleteChecklistitem/$itemName');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
-      // Success
-      print('Item deleted successfully');
     } else {
       // Error
       print('Failed to delete item. Error: ${response.reasonPhrase}');
@@ -72,13 +76,13 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
   Future<void> addCheckListItem(String itemName) async {
     // create a new CheckListItemModel object with data from form
     CheckListItemModel newItem = CheckListItemModel(
-      checklistID: _checklistID,
+      cardID: widget.cardID,
       title: itemName,
     );
 
     // call the API to add the new checklist item
     final response = await http.post(
-      Uri.parse('http://192.168.1.7/api/addChecklistitem'),
+      Uri.parse('http://192.168.53.160/api/addChecklistitem'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newItem.toJson()),
     );
@@ -87,13 +91,41 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
     if (response.statusCode == 200) {
       // show success message to the user
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Checklist item added successfully!')),
+        const SnackBar(content: Text('Thêm đầu việc thành công!')),
       );
     } else {
       // show error message to the user
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error adding checklist item!')),
       );
+    }
+  }
+
+  Future<void> _updateChecklistItem(
+      int checklistitemID, String title, bool completed) async {
+    final url = Uri.parse(
+        'http://192.168.53.160/api/updatechecklistitem/$checklistitemID');
+    final response = await http.put(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'Title': title,
+        'Completed': completed,
+      }),
+    );
+
+    if (mounted) {
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Cập nhật đầu việc thành công!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Cập nhật đầu việc không thành công!')),
+        );
+      }
     }
   }
 
@@ -124,7 +156,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
         // Display the checklist name as text or as an editable text field
         title: _isEditingName
             ? TextFormField(
-                initialValue: _checklistName,
+                initialValue: _checklistName ?? '',
                 autofocus: true,
                 onChanged: (value) {
                   setState(() {
@@ -132,19 +164,9 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
                   });
                 },
               )
-            : Text(_checklistName),
+            : Text(_checklistName ?? ''),
+
         actions: [
-          // Toggle between displaying the checklist name as text and as an editable text field
-          IconButton(
-            icon: _isEditingName
-                ? const Icon(Icons.check)
-                : const Icon(Icons.edit),
-            onPressed: () {
-              setState(() {
-                _isEditingName = !_isEditingName;
-              });
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.check_box_outline_blank),
             onPressed: () {
@@ -181,16 +203,16 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
             // Display the checklist name as text
             if (!_isEditingName)
               Padding(
-                padding: EdgeInsets.only(left:16),
+                padding: EdgeInsets.only(left: 16),
                 child: Text(
-                  _checklistName,
+                  _checklistName ?? '',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18.0,
                   ),
                 ),
               ),
-              
+
             // Text(
             //   _checklistName,
             //   style: const TextStyle(
@@ -253,7 +275,6 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
                     child: const Text('LƯU'),
                   ),
                 ),
-                
               ],
             ),
             const SizedBox(height: 30.0),
@@ -264,7 +285,8 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
   }
 
   Widget _buildChecklistItem(int index, Map<String, dynamic> item) {
-    bool isChecked = item['isChecked'] ?? false;
+    bool isCompleted = item['completed'] ?? false;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: GestureDetector(
@@ -276,10 +298,12 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
         child: Row(
           children: [
             Checkbox(
-              value: isChecked,
+              value: isCompleted,
               onChanged: (value) {
                 setState(() {
-                  item['isChecked'] = value;
+                  item['completed'] = value!;
+                  _updateChecklistItem(
+                      item['checklistitemID'], item['title'], value!);
                 });
               },
             ),
@@ -303,6 +327,8 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
                           onPressed: () {
                             setState(() {
                               item['isEditable'] = false;
+                              _updateChecklistItem(item['checklistitemID'],
+                                  item['title'], item['completed']!);
                             });
                           },
                         ),
@@ -312,14 +338,14 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
                             setState(() {
                               _items.removeAt(index);
                             });
-                            await _deleteChecklistitem(item['title']);
+                            await _deleteChecklistitem(item['checklistitemID']);
                           },
                         ),
                       ],
                     )
                   : Text(
                       '${item['title']}',
-                      style: isChecked
+                      style: isCompleted
                           ? const TextStyle(
                               decoration: TextDecoration.lineThrough,
                             )
@@ -346,10 +372,7 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
           SizedBox(width: 8.0),
           Text(
             'THÊM ĐẦU MỤC CÔNG VIỆC',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold
-            ),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -424,7 +447,8 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
             box.size.height - box.localToGlobal(Offset.zero).dy;
         if (distance > 0) {
           Scrollable.ensureVisible(context,
-              duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeIn);
         }
       });
     }
@@ -432,16 +456,16 @@ class _ChecklistScreenState extends State<ChecklistScreenShow> {
 }
 
 class CheckListItemModel {
-  final int checklistID;
+  final int cardID;
   final String title;
 
   CheckListItemModel({
-    required this.checklistID,
+    required this.cardID,
     required this.title,
   });
 
   Map<String, dynamic> toJson() => {
-        'ChecklistID': checklistID,
+        'CardID': cardID,
         'Title': title,
       };
 }
