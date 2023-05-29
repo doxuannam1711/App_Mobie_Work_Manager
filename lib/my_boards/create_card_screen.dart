@@ -43,7 +43,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
     'default'
   ];
   List<String> listNames = [];
-  late String selectedListID = '';
+  late int selectedListID = 1;
   late List<dynamic> list;
 
   @override
@@ -58,14 +58,13 @@ class _AddCardScreenState extends State<AddCardScreen> {
 
   Future<void> geAlltLists() async {
     final response = await http.get(Uri.parse(
-        'http://192.168.1.7/api/getAllListOption/${widget.creatorID}'));
+        'http://192.168.53.160/api/getAllListOption/${widget.creatorID}'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as Map<String, dynamic>;
       final jsonString = data['Data'] as String;
       list = jsonDecode(jsonString) as List<dynamic>;
       listNames = list.map((e) => e['ListName'] as String).toList();
-      selectedListID = list.first['ID'].toString();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error fetching lists!')),
@@ -75,14 +74,14 @@ class _AddCardScreenState extends State<AddCardScreen> {
 
   Future<void> getLists() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.7/api/getListOption/${widget.boardID}'));
+        Uri.parse('http://192.168.53.160/api/getListOption/${widget.boardID}'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as Map<String, dynamic>;
       final jsonString = data['Data'] as String;
       list = jsonDecode(jsonString) as List<dynamic>;
       listNames = list.map((e) => e['ListName'] as String).toList();
-      selectedListID = list.first['ID'].toString();
+      selectedListID = list.first['ID'];
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error fetching lists!')),
@@ -92,7 +91,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
 
   Future<void> addCard() async {
     CardModel newCard = CardModel(
-      listID: int.parse(selectedListID),
+      listID: selectedListID,
       creatorID: widget.creatorID,
       cardName: _cardName,
       label: _selectedLabelOption,
@@ -103,7 +102,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
     );
 
     final response = await http.post(
-      Uri.parse('http://192.168.1.7/api/addCard'),
+      Uri.parse('http://192.168.53.160/api/addCard'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newCard.toJson()),
     );
@@ -187,8 +186,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                     selectedListID = list
                         .firstWhere(
                           (element) => element['ListName'] == value,
-                        )['ListID']
-                        .toString();
+                        )['ListID'];
                   });
                 },
                 decoration: const InputDecoration.collapsed(

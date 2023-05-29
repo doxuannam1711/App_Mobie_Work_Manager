@@ -740,9 +740,7 @@ BEGIN
 END
 
 ----------------------------------------QUERY DELETE EVERYTHING ABOUT USERS-------------------------------------------------------
-DELETE FROM checklistitems where ChecklistID IN (SELECT ChecklistID FROM checklists where CardID IN (SELECT CardID From cards where ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=5))))
-
-DELETE FROM checklists where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=5)))
+DELETE FROM checklistitems where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=5)))
 
 DELETE FROM attachments where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=5)))
 
@@ -923,9 +921,7 @@ insert into comments VALUES(3,12,N'Không hiểu kiểu gì lỗi này ở đâu
 insert into attachments VALUES(1,N'https://drive.google.com/uc?id=1IFsLihg2jGUF9vmjk5ox2G25atpNYqlQ&export=download','sample-docx-file-for-testing')
 
 --------------------------------------------------------DELETE EVERYTHING ABOUT CARD---------------------------------------------------------------------------------
-DELETE FROM checklistitems WHERE ChecklistID IN (SELECT ChecklistID FROM checklists where CardID=22)
-
-DELETE FROM checklists WHERE CardID=22
+DELETE FROM checklistitems WHERE CardID=22
 
 DELETE FROM comments WHERE CardID=22
 
@@ -943,9 +939,7 @@ DROP CONSTRAINT FK_cards_assignedTo;
 ALTER TABLE cards
 DROP CONSTRAINT FK_cards_creators;
 ----------------------------------------QUERY DELETE EVERYTHING ABOUT BOARDS-------------------------------------------------------
-DELETE FROM checklistitems WHERE ChecklistID IN (SELECT ChecklistID FROM checklists where CardID IN(SELECT CardID FROM cards where ListID IN(SELECT ListID FROM lists where BoardID=23)))
-
-DELETE FROM checklists WHERE CardID IN(SELECT CardID FROM cards where ListID IN(SELECT ListID FROM lists where BoardID=23))
+DELETE FROM checklistitems WHERE CardID IN(SELECT CardID FROM cards where ListID IN(SELECT ListID FROM lists where BoardID=23))
 
 DELETE FROM attachments where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID =23))
 
@@ -1042,3 +1036,65 @@ SET
     'status',
     @http_status OUT EXEC sp_OADestroy @http PRINT 'Notification sent: ' + @title + ' - ' + @body
 END 
+
+----------------------------------------UPDATE 29/5 -------------------------------
+
+DROP TABLE checklistitems
+DROP TABLE checklists
+
+CREATE TABLE  checklistitems  (
+ChecklistitemID  int IDENTITY(1,1) NOT NULL,
+CardID  int  NOT NULL,
+Title  nvarchar(255) NOT NULL,
+Completed  bit NULL,
+
+CONSTRAINT PK_checklistitems PRIMARY KEY(ChecklistitemID),
+CONSTRAINT FK_cards FOREIGN KEY(CardID) REFERENCES cards(CardID)
+)
+
+
+INSERT into checklistitems values(4,'t5',1)
+SELECT * FROM boards WHERE BoardName LIKE '%' + @Keyword + '%'
+---- SQL TEST ( SAVED ) --------------------------------------
+SELECT *, COUNT(comments.Detail) AS 'index_comment' FROM lists
+LEFT JOIN cards ON lists.ListID = cards.ListID
+LEFT JOIN comments ON comments.cardID = cards.cardID
+WHERE lists.BoardID = 1
+            GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
+            cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
+            cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+            cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor, lists.BoardID, lists.Closed, lists.DateArchived, lists.DateCreated, lists.DateLastActivity,
+			lists.ListID, lists.ListName, lists.Position, lists.Subscribed, comments.CommentID, comments.CardID, comments.Detail, comments.UserID
+
+SELECT lists.*,cards.* FROM lists
+INNER JOIN cards ON lists.ListID = cards.ListID
+LEFT JOIN comments ON comments.cardID = cards.cardID
+WHERE lists.BoardID = 1
+            GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
+            cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
+            cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+            cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor, lists.BoardID, lists.Closed, lists.DateArchived, lists.DateCreated, lists.DateLastActivity,
+			lists.ListID, lists.ListName, lists.Position, lists.Subscribed, comments.CommentID, comments.CardID, comments.Detail
+SELECT cards.*,COUNT(comments.Detail) AS 'index_comment', COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+FROM cards
+LEFT JOIN checklistitems ON checklistitems.CardID = cards.CardID
+WHERE LOWER(CardName) LIKE '%' + @Keyword + '%' and cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @UserID))
+GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
+cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
+cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+ORDER BY cards.CardID DESC;
+
+SELECT cards.*,COUNT(comments.Detail) AS 'index_comment', COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+            FROM cards 
+            LEFT JOIN checklistitems ON checklistitems.cardID = cards.cardID
+			LEFT JOIN comments ON comments.cardID = cards.cardID
+WHERE LOWER(CardName) LIKE '%' + @Keyword + '%' and cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @UserID))
+            GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
+            cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
+            cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+            cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+            ORDER BY cards.CardID DESC;
+
+SELECT * FROM checklistitems WHERE LOWER(checklistitems.Title) LIKE '%' + 't' + '%'
+--------------------------------------------------------------------------------------------------------------------------

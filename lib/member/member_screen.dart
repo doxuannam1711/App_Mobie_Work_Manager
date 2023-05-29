@@ -22,7 +22,7 @@ class _MemberScreenState extends State<MemberScreen> {
 
   Future<List<Map<String, dynamic>>> _getMembersCard() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.7/api/getmembers/${widget.cardID}'));
+        Uri.parse('http://192.168.53.160/api/getmembers/${widget.cardID}'));
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
       if (jsonData['Data'] is String) {
@@ -51,7 +51,7 @@ class _MemberScreenState extends State<MemberScreen> {
 
   Future<List<Map<String, dynamic>>> _getAccount() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.7/api/getAccountLogin'));
+        await http.get(Uri.parse('http://192.168.53.160/api/getAccountLogin'));
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
       if (jsonData['Data'] is String) {
@@ -79,7 +79,7 @@ class _MemberScreenState extends State<MemberScreen> {
   }
 
   Future<void> _deleteMember(int memberID) async {
-    final url = Uri.parse('http://192.168.1.7/api/deleteMember/$memberID');
+    final url = Uri.parse('http://192.168.53.160/api/deleteMember/$memberID');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -95,7 +95,7 @@ class _MemberScreenState extends State<MemberScreen> {
 
   Future<void> addMember(MemberModel newMember) async {
     final response = await http.post(
-      Uri.parse('http://192.168.1.7/api/addMember/'),
+      Uri.parse('http://192.168.53.160/api/addMember/'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newMember.toJson()),
     );
@@ -150,7 +150,7 @@ class _MemberScreenState extends State<MemberScreen> {
                         children: [
                           TextField(
                             decoration: InputDecoration(
-                              hintText: 'Tìm tên người dùng',
+                              hintText: 'Chọn người dùng muốn thêm vào thẻ',
                             ),
                             onChanged: (value) {
                               setState(() {
@@ -202,7 +202,8 @@ class _MemberScreenState extends State<MemberScreen> {
                         },
                         child: Text(
                           'THOÁT',
-                          style: TextStyle(fontSize: 14, color: Colors.blue[900]),
+                          style:
+                              TextStyle(fontSize: 14, color: Colors.blue[900]),
                         ),
                       ),
                     ],
@@ -210,7 +211,7 @@ class _MemberScreenState extends State<MemberScreen> {
                 },
               );
               if (email != null && email.isNotEmpty) {
-              // await _addMember(email);
+                // await _addMember(email);
               }
             },
             icon: const Icon(Icons.add),
@@ -238,20 +239,26 @@ class _MemberScreenState extends State<MemberScreen> {
               ],
             ),
           ),
+          Divider(),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Tìm kiếm thành viên',
-                prefixIcon: const Icon(Icons.search),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _searchKeyword = value;
-                });
-              },
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.person),
+                    const SizedBox(width: 8.0),
+                    Text(
+                      'Danh sách thành viên trong thẻ:',
+                      style:
+                          TextStyle(fontSize: 16.0), // Đặt kích thước mong muốn
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
+          Divider(),
           Expanded(
             child: FutureBuilder(
               future: Future.delayed(Duration(milliseconds: 200)).then((_) =>
@@ -316,9 +323,8 @@ class _MemberScreenState extends State<MemberScreen> {
                                         child: Text(
                                           'HỦY',
                                           style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.blue[900]
-                                          ),
+                                              fontSize: 14,
+                                              color: Colors.blue[900]),
                                         ),
                                       ),
                                       TextButton(
@@ -333,9 +339,8 @@ class _MemberScreenState extends State<MemberScreen> {
                                         child: Text(
                                           'XÓA',
                                           style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.blue[900]
-                                          ),
+                                              fontSize: 14,
+                                              color: Colors.blue[900]),
                                         ),
                                       ),
                                     ],

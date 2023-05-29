@@ -201,11 +201,7 @@ public class ValuesController : ApiControllerBase
         {
             Command.ResetAndOpen(CommandType.Text);
 
-            Command.CommandText = @"DELETE FROM checklistitems WHERE ChecklistID IN (SELECT ChecklistID FROM checklists where CardID IN(SELECT CardID FROM cards where ListID IN(SELECT ListID FROM lists where BoardID=@checklistitemsBoardID)))";
-            Command.Parameters.AddWithValue("@checklistitemsBoardID", boardId);
-            Command.ExecuteNonQuery();
-
-            Command.CommandText = @"DELETE FROM checklists WHERE CardID IN(SELECT CardID FROM cards where ListID IN(SELECT ListID FROM lists where BoardID=@checklistsBoardID))";
+            Command.CommandText = @"DELETE FROM checklistitems WHERE CardID IN(SELECT CardID FROM cards where ListID IN(SELECT ListID FROM lists where BoardID=@checklistsBoardID))";
             Command.Parameters.AddWithValue("@checklistsBoardID", boardId);
             Command.ExecuteNonQuery();
 
@@ -217,11 +213,11 @@ public class ValuesController : ApiControllerBase
             Command.Parameters.AddWithValue("@commentsBoardID", boardId);
             Command.ExecuteNonQuery();
 
-            Command.CommandText = @"delete from notifications where CardID IN ( SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID = @notificationsBoardID))";
+            Command.CommandText = @"delete from notifications where WHERE BoardID = @notificationsBoardID";
             Command.Parameters.AddWithValue("@notificationsBoardID", boardId);
             Command.ExecuteNonQuery();
 
-            Command.CommandText = @"delete from creators  WHERE BoardID=@creatorsBoardID";
+            Command.CommandText = @"delete from creators WHERE BoardID=@creatorsBoardID";
             Command.Parameters.AddWithValue("@creatorsBoardID", boardId);
             Command.ExecuteNonQuery();
 
@@ -254,15 +250,15 @@ public class ValuesController : ApiControllerBase
 
     [HttpPost]
     [Route("api/addChecklistitem")]
-    public IHttpActionResult AddChecklistItem([FromBody] CheckListItemModel checklistitems)
+    public IHttpActionResult AddChecklistItem([FromBody] CheckListItemModel checklistitem)
     {
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"INSERT INTO checklistitems (ChecklistID, Title)
-                                 VALUES (@ChecklistID, @Title)";
-            Command.Parameters.AddWithValue("@ChecklistID", checklistitems.ChecklistID);
-            Command.Parameters.AddWithValue("@Title", checklistitems.Title);
+            Command.CommandText = @"INSERT INTO checklistitems (CardID, Title, Completed)
+                                VALUES (@CardID, @Title, 0)";
+            Command.Parameters.AddWithValue("@CardID", checklistitem.CardID);
+            Command.Parameters.AddWithValue("@Title", checklistitem.Title);
             Command.ExecuteNonQuery();
             var response = new ResultModel { };
             return Ok(response);
@@ -368,24 +364,84 @@ WHERE ListID = @ListID";
         }
     }
 
-
-    [Route("api/searchCards/{keyword}")]
-    public IHttpActionResult SearchCards(string keyword)
+    [HttpPut]
+    [Route("api/updatechecklistitem/{checklistitemID}")]
+    public IHttpActionResult UpdateChecklistitem(int checklistitemID, [FromBody] CheckListItemModel checkListItem)
     {
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
-FROM cards
-LEFT JOIN checklists ON cards.cardID = checklists.cardID
-LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
-WHERE CardName LIKE '%' + @Keyword + '%'
-GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
-cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
-cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
-cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
-ORDER BY cards.CardID DESC;";
+            Command.CommandText = @"UPDATE checklistitems SET 
+Title = @Title,
+Completed = @Completed
+WHERE checklistitemID = @checklistitemID";
+            Command.Parameters.AddWithValue("@Title", checkListItem.Title);
+            Command.Parameters.AddWithValue("@Completed", checkListItem.Completed);
+            Command.Parameters.AddWithValue("@checklistitemID", checklistitemID);
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+
+    [Route("api/getCards/{userId}")]
+    public IHttpActionResult GetCardsWithUserID(int userID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT cards.*,COUNT(comments.Detail) AS 'index_comment', COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+            FROM cards 
+            LEFT JOIN checklistitems ON checklistitems.cardID = cards.cardID
+			LEFT JOIN comments ON comments.cardID = cards.cardID
+            WHERE cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @UserID))
+            GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
+            cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
+            cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+            cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+            ORDER BY cards.CardID DESC;";
+            Command.Parameters.AddWithValue("@UserID", userID);
+
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
+
+
+    [Route("api/searchCards/{keyword}/{userID}")]
+    public IHttpActionResult SearchCards(string keyword,int userID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT cards.*,COUNT(comments.Detail) AS 'index_comment', COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+            FROM cards 
+            LEFT JOIN checklistitems ON checklistitems.cardID = cards.cardID
+			LEFT JOIN comments ON comments.cardID = cards.cardID
+WHERE LOWER(CardName) LIKE '%' + @Keyword + '%' and cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @UserID))
+            GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
+            cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
+            cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+            cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+            ORDER BY cards.CardID DESC;";
             Command.Parameters.AddWithValue("@Keyword", keyword);
+            Command.Parameters.AddWithValue("@UserID", userID);
             DataTable tableBoards = Command.GetDataTable();
 
             var response = new ResultModel
@@ -407,7 +463,7 @@ ORDER BY cards.CardID DESC;";
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"SELECT * FROM checklistitems WHERE checklistitems.Title LIKE '%' + @Keyword + '%'";
+            Command.CommandText = @"SELECT * FROM checklistitems WHERE LOWER(checklistitems.Title) LIKE '%' + @Keyword + '%'";
             Command.Parameters.AddWithValue("@Keyword", keyword);
             DataTable tableBoards = Command.GetDataTable();
 
@@ -526,9 +582,9 @@ ORDER BY cards.CardID DESC;";
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"SELECT checklists.ChecklistID,checklists.ChecklistTitle, checklistitems.Title FROM checklists
-                                 INNER JOIN checklistitems ON checklists.ChecklistID = checklistitems.ChecklistID
-                                 WHERE checklists.CardID = @cardID";
+            Command.CommandText = @"SELECT checklistitems.*,cards.CardName from checklistitems 
+INNER JOIN cards on cards.CardID = checklistitems.CardID
+where checklistitems.CardID = @cardID";
             Command.Parameters.AddWithValue("@cardID", cardID);
             DataTable tableChecklists = Command.GetDataTable();
             var respone = new ResultModel
@@ -551,13 +607,12 @@ ORDER BY cards.CardID DESC;";
             Command.ResetAndOpen(CommandType.Text);
             Command.CommandText = @"SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
 FROM cards
-LEFT JOIN checklists ON cards.cardID = checklists.cardID
-LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+LEFT JOIN checklistitems ON checklistitems.CardID = cards.CardID
 GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
 cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
 cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
 cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
-ORDER BY cards.CardID DESC;";
+ORDER BY cards.CardID DESC";
             DataTable tableNhanVien = Command.GetDataTable();
 
             var respone = new ResultModel
@@ -607,10 +662,10 @@ WHERE cards.CardID = @cardID;";
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+            Command.CommandText = @"SELECT cards.*,COUNT(comments.Detail) AS 'index_comment', COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
 FROM cards
-LEFT JOIN checklists ON cards.cardID = checklists.cardID
-LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+LEFT JOIN checklistitems ON checklistitems.CardID = cards.CardID
+LEFT JOIN comments ON comments.cardID = cards.cardID
 WHERE cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @UserID))
 GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
 cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
@@ -642,16 +697,17 @@ ORDER BY cards.DueDate ASC;";
         {
             Command.ResetAndOpen(CommandType.Text);
             Command.CommandText = @"SELECT cards.*,
+       COUNT(comments.Detail) AS 'index_comment',
        COUNT(checklistitems.ChecklistItemID) AS 'SUM',
        SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
 FROM cards
-LEFT JOIN checklists ON cards.cardID = checklists.cardID
-LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
+LEFT JOIN checklistitems ON checklistitems.CardID = cards.CardID
+LEFT JOIN comments ON comments.cardID = cards.cardID
 WHERE cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @UserID))
-GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist,
+GROUP BY cards.CardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist,
          cards.Label, cards.Comment, cards.CardName, cards.StatusView,
          cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
-         cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+         cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor, comments.Detail
 ORDER BY cards.LabelColor ASC;";
 
             Command.Parameters.AddWithValue("@UserID", userID);
@@ -742,14 +798,17 @@ Where users.UserID = @userID";
         }
     }
 
-    [Route("api/searchBoards/{keyword}")]
-    public IHttpActionResult SearchBoards(string keyword)
+    [Route("api/searchBoards/{keyword}/{userID}")]
+    public IHttpActionResult SearchBoards(string keyword, int userID)
     {
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"SELECT * FROM boards WHERE BoardName LIKE '%' + @Keyword + '%'";
+            Command.CommandText = @"SELECT *
+FROM boards
+WHERE LOWER(boards.BoardName) LIKE '%' + @Keyword + '%' and boards.UserID = @userID";
             Command.Parameters.AddWithValue("@Keyword", keyword);
+            Command.Parameters.AddWithValue("@userID", userID);
             DataTable tableBoards = Command.GetDataTable();
 
             var response = new ResultModel
@@ -1189,12 +1248,7 @@ Where users.UserID = @userID";
             Command.ResetAndOpen(CommandType.Text);
 
             // Delete related records from checklistitems
-            Command.CommandText = @"DELETE FROM checklistitems WHERE ChecklistID IN (SELECT ChecklistID FROM checklists WHERE CardID IN (SELECT CardID FROM cards WHERE ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=@ChecklistItemsUserID))))";
-            Command.Parameters.AddWithValue("@ChecklistItemsUserID", userId);
-            Command.ExecuteNonQuery();
-
-            // Delete related records from checklists
-            Command.CommandText = @"DELETE FROM checklists WHERE CardID IN (SELECT CardID FROM cards WHERE ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=@ChecklistUserID)))";
+            Command.CommandText = @"DELETE FROM checklistitems WHERE CardID IN (SELECT CardID FROM cards WHERE ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID=@ChecklistUserID)))";
             Command.Parameters.AddWithValue("@ChecklistUserID", userId);
             Command.ExecuteNonQuery();
 
@@ -1203,14 +1257,29 @@ Where users.UserID = @userID";
             Command.Parameters.AddWithValue("@AttachmentUserID", userId);
             Command.ExecuteNonQuery();
 
-            // Delete related records from comments
+            // Delete related records from comments foreign key CardID
             Command.CommandText = @"delete from comments where CardID IN ( SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN(SELECT BoardID FROM boards WHERE UserID=@CommentUserID)))";
             Command.Parameters.AddWithValue("@CommentUserID", userId);
             Command.ExecuteNonQuery();
 
-            // Delete related records from notifications
+            // Delete related records from comments foreign key UserID
+            Command.CommandText = @"delete from comments where UserID= @FkCommentUserID";
+            Command.Parameters.AddWithValue("@FkCommentUserID", userId);
+            Command.ExecuteNonQuery();
+
+            // Delete related records from notifications foreign key CardID
             Command.CommandText = @"delete from notifications where CardID IN ( SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID IN(SELECT BoardID FROM boards WHERE UserID=@NotificationUserID)))";
             Command.Parameters.AddWithValue("@NotificationUserID", userId);
+            Command.ExecuteNonQuery();
+
+            // Delete related records from notifications foreign key BoardID
+            Command.CommandText = @"delete from notifications where BoardID IN (SELECT BoardID FROM boards WHERE UserID= @FkBoardNotificationUserID)";
+            Command.Parameters.AddWithValue("@FkBoardNotificationUserID", userId);
+            Command.ExecuteNonQuery();
+
+            // Delete related records from notifications foreign key UserID
+            Command.CommandText = @"delete from notifications where UserID = @FkUserNotificationUserID";
+            Command.Parameters.AddWithValue("@FkUserNotificationUserID", userId);
             Command.ExecuteNonQuery();
 
             // Delete related records from creator
@@ -1233,6 +1302,14 @@ Where users.UserID = @userID";
             Command.Parameters.AddWithValue("@ListUserID", userId);
             Command.ExecuteNonQuery();
 
+            Command.CommandText = @"delete from creators WHERE UserID= @creatorsUserID";
+            Command.Parameters.AddWithValue("@creatorsUserID", userId);
+            Command.ExecuteNonQuery();
+
+            Command.CommandText = @"delete from assignedTo WHERE BoardID=@assignedToUserID";
+            Command.Parameters.AddWithValue("@assignedToUserID", userId);
+            Command.ExecuteNonQuery();
+
             // Delete related records from boards
             Command.CommandText = @"DELETE FROM boards WHERE UserID = @BoardUserID";
             Command.Parameters.AddWithValue("@BoardUserID", userId);
@@ -1252,39 +1329,6 @@ Where users.UserID = @userID";
         }
     }
 
-    [Route("api/getCards/{userId}")]
-    public IHttpActionResult GetCardsWithUserID(int userID)
-    {
-        try
-        {
-            Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"SELECT cards.*, COUNT(checklistitems.ChecklistItemID) AS 'SUM', SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
-            FROM cards 
-            LEFT JOIN checklists ON cards.cardID = checklists.cardID
-            LEFT JOIN checklistitems ON checklists.checklistID = checklistitems.checklistID
-            WHERE cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @UserID))
-            GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
-            cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
-            cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
-            cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
-            ORDER BY cards.CardID DESC;";
-            Command.Parameters.AddWithValue("@UserID", userID);
-
-            DataTable tableNhanVien = Command.GetDataTable();
-
-            var respone = new ResultModel
-            {
-                Data = JsonConvert.SerializeObject(tableNhanVien)
-
-            };
-            return Ok(respone);
-        }
-        catch (Exception ex)
-        {
-            return Ok(ex.Message);
-        }
-
-    }
     [HttpDelete]
     [Route("api/deleteCard/{cardId}")]
     public IHttpActionResult DeleteCard(int cardId)
@@ -1294,12 +1338,7 @@ Where users.UserID = @userID";
             Command.ResetAndOpen(CommandType.Text);
 
             // Delete related records from checklistitems
-            Command.CommandText = @"DELETE FROM checklistitems WHERE ChecklistID IN (SELECT ChecklistID FROM checklists where CardID=@ChecklistItemsCardID)";
-            Command.Parameters.AddWithValue("@ChecklistItemsCardID", cardId);
-            Command.ExecuteNonQuery();
-
-            // Delete related records from checklists
-            Command.CommandText = @"DELETE FROM checklists WHERE CardID=@ChecklistCardID";
+            Command.CommandText = @"DELETE FROM checklistitems WHERE CardID=@ChecklistCardID";
             Command.Parameters.AddWithValue("@ChecklistCardID", cardId);
             Command.ExecuteNonQuery();
 

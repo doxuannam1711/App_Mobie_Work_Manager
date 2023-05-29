@@ -56,21 +56,26 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
 
   Future<List<Map<String, dynamic>>> _searchBoards(String keyword) async {
     final encodedKeyword = Uri.encodeComponent(keyword);
-    final url =
-        Uri.parse('http://192.168.53.160/api/searchBoards/$encodedKeyword');
+    final url = Uri.parse(
+        'http://192.168.53.160/api/searchBoards/$encodedKeyword/${widget.userID}');
     final response = await http.post(url);
+
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
-      final List<Map<String, dynamic>> boardList =
-          (jsonData['Data'] as List).cast<Map<String, dynamic>>();
-      return boardList;
-    } else {
-      // Xử lý khi tìm kiếm thất bại
-      try {
-        return await _fetchBoardList();
-      } catch (e) {
-        throw Exception('Failed to load data');
+      final data = jsonData['Data'];
+
+      if (data != null && data is List) {
+        final List<Map<String, dynamic>> boardList =
+            data.cast<Map<String, dynamic>>();
+        return boardList;
       }
+    }
+
+    // Handle search failure or null response
+    try {
+      return await _fetchBoardList();
+    } catch (e) {
+      throw Exception('Failed to load data');
     }
   }
 
@@ -451,8 +456,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                               child: Text(
                                 'HỦY',
                                 style: TextStyle(
-                                  fontSize: 14, color: Colors.blue[900]
-                                ),
+                                    fontSize: 14, color: Colors.blue[900]),
                               ),
                               onPressed: () {
                                 Navigator.of(context).pop();
@@ -462,9 +466,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                               child: Text(
                                 'XÓA',
                                 style: TextStyle(
-                                  fontSize: 14, 
-                                  color: Colors.blue[900]
-                                ),
+                                    fontSize: 14, color: Colors.blue[900]),
                               ),
                               onPressed: () async {
                                 // TODO: delete board

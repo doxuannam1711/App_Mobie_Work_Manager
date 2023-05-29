@@ -26,7 +26,6 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
   }
 
   String _searchKeyword = "";
-  bool _filterByDate = true;
   final int _cardID = 1;
   DateFormat dateFormat = DateFormat('MMMM dd');
   final List<String> _listAvatar = [
@@ -35,10 +34,10 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
     'https://top10camau.vn/wp-content/uploads/2022/10/avatar-meo-cute-5.jpg',
   ];
   List<Map<String, dynamic>> _searchResult = [];
-  bool _sortByDate = false;
+  int _sortByDate = 1;
   Future<List<Map<String, dynamic>>> _fetchCardList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.7/api/getCards/${widget.userID}'));
+        .get(Uri.parse('http://192.168.53.160/api/getCards/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -63,8 +62,8 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _fetchSortCardList() async {
-    final response =
-        await http.get(Uri.parse('http://192.168.1.7/api/sortCard/${widget.userID}'));
+    final response = await http
+        .get(Uri.parse('http://192.168.53.160/api/sortCard/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -89,8 +88,8 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _fetchSortCardLabel() async {
-    final response =
-        await http.get(Uri.parse('http://192.168.1.7/api/sortCardLabel/${widget.userID}'));
+    final response = await http.get(
+        Uri.parse('http://192.168.53.160/api/sortCardLabel/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -116,21 +115,26 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
 
   Future<List<Map<String, dynamic>>> _searchCards(String keyword) async {
     final encodedKeyword = Uri.encodeComponent(keyword);
-    final url =
-        Uri.parse('http://192.168.1.7/api/searchCards/$encodedKeyword');
+    final url = Uri.parse(
+        'http://192.168.53.160/api/searchCards/$encodedKeyword/${widget.userID}');
     final response = await http.post(url);
+
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
-      final List<Map<String, dynamic>> cardList =
-          (jsonData['Data'] as List).cast<Map<String, dynamic>>();
-      return cardList;
-    } else {
-      // Xử lý khi tìm kiếm thất bại
-      try {
-        return await _fetchCardList();
-      } catch (e) {
-        throw Exception('Failed to load data');
+      final data = jsonData['Data'];
+
+      if (data != null && data is List) {
+        final List<Map<String, dynamic>> cardList =
+            data.cast<Map<String, dynamic>>();
+        return cardList;
       }
+    }
+
+    // Handle search failure or null response
+    try {
+      return await _fetchCardList();
+    } catch (e) {
+      throw Exception('Failed to load data');
     }
   }
 
@@ -187,20 +191,24 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
               children: [
                 const Icon(Icons.filter_alt_outlined),
                 const SizedBox(width: 8),
-                DropdownButton<bool>(
+                DropdownButton<int>(
                   value: _sortByDate,
                   onChanged: (value) {
                     setState(() {
                       _sortByDate = value!;
                     });
                   },
-                  items: const [
+                  items: [
                     DropdownMenuItem(
-                      value: false,
+                      value: 1,
+                      child: Text('Bảng'),
+                    ),
+                    DropdownMenuItem(
+                      value: 2,
                       child: Text('Màu Nhãn'),
                     ),
                     DropdownMenuItem(
-                      value: true,
+                      value: 3,
                       child: Text('Ngày hết hạn'),
                     ),
                   ],
@@ -231,7 +239,11 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
           Expanded(
             child: FutureBuilder<List<Map<String, dynamic>>>(
               future: _searchResult.isEmpty
-                  ? (_sortByDate ? _fetchSortCardList() : _fetchSortCardLabel())
+                  ? (_sortByDate == 1
+                      ? _fetchCardList()
+                      : (_sortByDate == 2
+                          ? _fetchSortCardLabel()
+                          : (_sortByDate == 3 ? _fetchSortCardList() : null)))
                   : Future<List<Map<String, dynamic>>>.value(_searchResult),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
@@ -252,7 +264,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                           card['DueDate'] != null
                               ? DateTime.parse(card['DueDate'])
                               : null,
-                          card['Comment'],
+                          card['index_comment'],
                           card['index_checked'] = card['index_checked'] ?? 2,
                           card['SUM'] = card['SUM'] ?? 2,
                           _listAvatar,
