@@ -179,7 +179,26 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           content:
                               const Text('Mật khẩu nhập lại không trùng khớp.'),
                           actions: [
-                            TextButton(
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        35), // Adjust the value to your desired roundness
+                                  ),
+                                ),
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                  (Set<MaterialState> states) {
+                                    if (states
+                                        .contains(MaterialState.hovered)) {
+                                      return Colors.black;
+                                    }
+                                    return Colors.blue.shade900;
+                                  },
+                                ),
+                              ),
                               onPressed: () {
                                 Navigator.pop(context);
                                 confirmPasswordController
@@ -191,7 +210,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                 'NHẬP LẠI',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.blue[900]
+                                  color: Colors.white
                                 ),
                               ),
                             ),

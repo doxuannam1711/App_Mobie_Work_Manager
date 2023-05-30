@@ -182,7 +182,9 @@ class _SignupScreenState extends State<SignupScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.28,
                 height: MediaQuery.of(context).size.width * 0.28,
@@ -196,7 +198,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   },
                 ),
               ),
-              
+
               // InkWell(
               //   onTap: _openFilePicker,
               //   child: CircleAvatar(
@@ -258,7 +260,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle: TextStyle(
-                    color:Colors.black,
+                    color: Colors.black,
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(35),
@@ -344,6 +346,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
                   onPressed: () async {
+                    final pattern = r'[!@^%&*!#\$()_+"?><:+_-`~/|;]';
+                    final regex = RegExp(pattern);
+
                     if (_addUsername.isEmpty) {
                       userNameFocusNode.requestFocus();
                     } else if (_addFullname.isEmpty) {
@@ -352,6 +357,92 @@ class _SignupScreenState extends State<SignupScreen> {
                       emailFocusNode.requestFocus();
                     } else if (_addPassword.isEmpty) {
                       passwordFocusNode.requestFocus();
+                    } else if (_addPassword.length <= 7) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          backgroundColor: Colors.blue[200],
+                          title: const Text('MẬT KHẨU QUÁ NGẮN'),
+                          content: const Text(
+                              'Mật khẩu phải có độ dài tối thiểu 8 ký tự.'),
+                          actions: [
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        35), // Adjust the value to your desired roundness
+                                  ),
+                                ),
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                  (Set<MaterialState> states) {
+                                    if (states
+                                        .contains(MaterialState.hovered)) {
+                                      return Colors.black;
+                                    }
+                                    return Colors.blue.shade900;
+                                  },
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                passwordFocusNode
+                                    .requestFocus(); // move focus back to password field
+                              },
+                              child: Text(
+                                'NHẬP LẠI',
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else if (regex.hasMatch(_addPassword)) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          backgroundColor: Colors.blue[200],
+                          title: const Text('MẬT KHẨU KHÔNG HỢP LỆ'),
+                          content: const Text(
+                              'Mật khẩu không được chứa các ký tự đặc biệt.'),
+                          actions: [
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        35), // Adjust the value to your desired roundness
+                                  ),
+                                ),
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                  (Set<MaterialState> states) {
+                                    if (states
+                                        .contains(MaterialState.hovered)) {
+                                      return Colors.black;
+                                    }
+                                    return Colors.blue.shade900;
+                                  },
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                passwordFocusNode
+                                    .requestFocus(); // move focus back to password field
+                              },
+                              child: Text(
+                                'NHẬP LẠI',
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
                     } else if (_confirmPassword.isEmpty) {
                       confirmPasswordFocusNode.requestFocus();
                     } else if (_addPassword == _confirmPassword) {
@@ -362,7 +453,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         (route) => false, // Remove all previous routes
                       );
                     } else {
-                      showDialog( 
+                      showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
                           backgroundColor: Colors.blue[200],
@@ -370,7 +461,26 @@ class _SignupScreenState extends State<SignupScreen> {
                           content:
                               const Text('Mật khẩu nhập lại không trùng khớp.'),
                           actions: [
-                            TextButton(
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        35), // Adjust the value to your desired roundness
+                                  ),
+                                ),
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                  (Set<MaterialState> states) {
+                                    if (states
+                                        .contains(MaterialState.hovered)) {
+                                      return Colors.black;
+                                    }
+                                    return Colors.blue.shade900;
+                                  },
+                                ),
+                              ),
                               onPressed: () {
                                 Navigator.pop(context);
                                 confirmPasswordController
@@ -381,9 +491,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               child: Text(
                                 'NHẬP LẠI',
                                 style: TextStyle(
-                                  fontSize: 14, 
-                                  color: Colors.blue[900]
-                                ),
+                                    fontSize: 14, color: Colors.white),
                               ),
                             ),
                           ],

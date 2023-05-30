@@ -47,7 +47,9 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   String? labelName = "red";
   String? label2 = "High";
 
-  String _comment = "test comment";
+  String _comment = "";
+  final commentFocusNode = FocusNode();
+
   String _editComment = "";
 
   var _cardNameController;
@@ -102,8 +104,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<List<Map<String, dynamic>>> getComments() async {
-    final response = await http.get(
-        Uri.parse('http://192.168.1.7/api/getComments/${widget.cardID}'));
+    final response = await http
+        .get(Uri.parse('http://192.168.1.7/api/getComments/${widget.cardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -155,8 +157,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _deleteCard() async {
-    final url =
-        Uri.parse('http://192.168.1.7/api/deleteCard/${widget.cardID}');
+    final url = Uri.parse('http://192.168.1.7/api/deleteCard/${widget.cardID}');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -289,16 +290,54 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                           ),
                           actions: [
                             ElevatedButton(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        35), // Adjust the value to your desired roundness
+                                  ),
+                                ),
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                  (Set<MaterialState> states) {
+                                    if (states
+                                        .contains(MaterialState.hovered)) {
+                                      return Colors.black;
+                                    }
+                                    return Colors.blue.shade900;
+                                  },
+                                ),
+                              ),
                               onPressed: () {
                                 Navigator.pop(context);
                               },
                               child: Text(
                                 'HỦY',
                                 style: TextStyle(
-                                    fontSize: 14, color: Colors.blue[900]),
+                                    fontSize: 14, color: Colors.white),
                               ),
                             ),
                             ElevatedButton(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        35), // Adjust the value to your desired roundness
+                                  ),
+                                ),
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                  (Set<MaterialState> states) {
+                                    if (states
+                                        .contains(MaterialState.hovered)) {
+                                      return Colors.black;
+                                    }
+                                    return Colors.blue.shade900;
+                                  },
+                                ),
+                              ),
                               onPressed: () {
                                 _saveCardName();
                                 Navigator.pop(context);
@@ -306,8 +345,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                               child: Text(
                                 'LƯU',
                                 style: TextStyle(
-                                  fontSize: 14, color: Colors.blue[900]
-                                ),
+                                    fontSize: 14, color: Colors.white),
                               ),
                             ),
                           ],
@@ -354,17 +392,52 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                         ),
                         actions: [
                           ElevatedButton(
+                            style: ButtonStyle(
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      35), // Adjust the value to your desired roundness
+                                ),
+                              ),
+                              backgroundColor:
+                                  MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                                  if (states.contains(MaterialState.hovered)) {
+                                    return Colors.black;
+                                  }
+                                  return Colors.blue.shade900;
+                                },
+                              ),
+                            ),
                             onPressed: () {
                               Navigator.pop(context);
                             },
                             child: Text(
                               'HỦY',
                               style: TextStyle(
-                                fontSize: 14, color: Colors.blue[900]
-                              ),
+                                  fontSize: 14, color: Colors.white),
                             ),
                           ),
                           ElevatedButton(
+                            style: ButtonStyle(
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      35), // Adjust the value to your desired roundness
+                                ),
+                              ),
+                              backgroundColor:
+                                  MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                                  if (states.contains(MaterialState.hovered)) {
+                                    return Colors.black;
+                                  }
+                                  return Colors.blue.shade900;
+                                },
+                              ),
+                            ),
                             onPressed: () {
                               _saveCardName();
                               Navigator.pop(context);
@@ -372,8 +445,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                             child: Text(
                               'LƯU',
                               style: TextStyle(
-                                fontSize: 14, color: Colors.blue[900]
-                              ),
+                                  fontSize: 14, color: Colors.white),
                             ),
                           ),
                         ],
@@ -416,23 +488,57 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                         'Bạn có chắc muốn xóa thẻ này?',
                       ),
                       actions: <Widget>[
-                        TextButton(
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    35), // Adjust the value to your desired roundness
+                              ),
+                            ),
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.hovered)) {
+                                  return Colors.black;
+                                }
+                                return Colors.blue.shade900;
+                              },
+                            ),
+                          ),
                           child: Text(
                             'HỦY',
                             style: TextStyle(
-                              fontSize: 14, color: Colors.blue[900]
-                            ),
+                                fontSize: 14, color: Colors.white),
                           ),
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
                         ),
-                        TextButton(
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    35), // Adjust the value to your desired roundness
+                              ),
+                            ),
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.hovered)) {
+                                  return Colors.black;
+                                }
+                                return Colors.blue.shade900;
+                              },
+                            ),
+                          ),
                           child: Text(
                             'XÓA',
                             style: TextStyle(
-                              fontSize: 14, color: Colors.blue[900]
-                            ),
+                                fontSize: 14, color: Colors.white),
                           ),
                           onPressed: () async {
                             _deleteCard();
@@ -836,6 +942,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                           border: OutlineInputBorder(),
                           hintText: 'Thêm nhận xét',
                         ),
+                        focusNode: commentFocusNode,
                         onChanged: (value) {
                           setState(() {
                             _comment = value;
@@ -845,16 +952,21 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                     ),
                     const SizedBox(width: 8.0),
                     IconButton(
-                      icon: Icon(Icons.send,color: Colors.blue[900],size: 30),
+                      icon: Icon(Icons.send, color: Colors.blue[900], size: 30),
                       onPressed: () async {
-                        _addComment();
-                        await Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => CardsDetailScreen(
-                                widget.cardName, widget.cardID, widget.userID),
-                          ),
-                        );
-                        setState(() {});
+                        if (_comment.isEmpty) {
+                          commentFocusNode.requestFocus();
+                        }else{
+                          _addComment();
+                          await Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => CardsDetailScreen(
+                                  widget.cardName, widget.cardID, widget.userID),
+                            ),
+                          );
+                          setState(() {});
+                        }
+                        
                       },
                     ),
                   ],
@@ -909,7 +1021,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                             IconButton(
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
-                              icon: const Icon(Icons.check),
+                              icon: checkUserID == widget.userID ? const Icon(Icons.check) : const SizedBox(),
                               iconSize: 20,
                               onPressed: () async {
                                 if (checkUserID == widget.userID) {
@@ -930,7 +1042,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
                               iconSize: 20,
-                              icon: const Icon(Icons.delete_outline),
+                              icon: checkUserID == widget.userID ? const Icon(Icons.delete_outline) : const SizedBox(),
                               // alignment: Alignment(-1, -2.5),
                               // alignment: Alignment.topRight,
                               onPressed: () async {

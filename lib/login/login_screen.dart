@@ -162,7 +162,23 @@ class _LoginScreenState extends State<LoginScreen> {
           content:
               const Text('Tên người dùng hoặc mật khẩu không đúng'),
           actions: [
-            TextButton(
+            ElevatedButton(
+              style: ButtonStyle(
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        35), // Adjust the value to your desired roundness
+                  ),
+                ),
+                backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                  (Set<MaterialState> states) {
+                    if (states.contains(MaterialState.hovered)) {
+                      return Colors.black;
+                    }
+                    return Colors.blue.shade900;
+                  },
+                ),
+              ),
               onPressed: () {
                 Navigator.pop(context);
                 _passwordController.clear(); // clear password input
@@ -173,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 'THỬ LẠI',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.blue[900]
+                  color: Colors.white
                 ),
               ),
             ),

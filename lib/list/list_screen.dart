@@ -53,7 +53,7 @@ class _ListScreenState extends State<ListScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchcardList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/getLists/${widget.boardID}'));
+        .get(Uri.parse('http://192.168.1.7/api/getLists/${widget.boardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -78,7 +78,7 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   Future<void> _updateList(int listID) async {
-    final url = Uri.parse('http://192.168.53.160/api/updateList/$listID');
+    final url = Uri.parse('http://192.168.1.7/api/updateList/$listID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -103,7 +103,7 @@ class _ListScreenState extends State<ListScreen> {
 
   // Future<List<Map<String, dynamic>>> _fetchCard(int listID) async {
   //   final response = await http
-  //       .get(Uri.parse('http://192.168.53.160/api/getCards/$listID'));
+  //       .get(Uri.parse('http://192.168.1.7/api/getCards/$listID'));
   //   if (response.statusCode == 200) {
   //     try {
   //       final data = jsonDecode(response.body)['Data'];
@@ -296,8 +296,9 @@ class _ListScreenState extends State<ListScreen> {
                                             context: context,
                                             builder: (_) {
                                               return AlertDialog(
+                                                backgroundColor: Colors.blue[200],
                                                 title: const Text(
-                                                    'Nhập tên danh sách'),
+                                                    'NHẬP TÊN DANH SÁCH'),
                                                 content: TextField(
                                                   controller:
                                                       listNameController,
@@ -311,19 +312,80 @@ class _ListScreenState extends State<ListScreen> {
                                                 ),
                                                 actions: [
                                                   ElevatedButton(
+                                                    style: ButtonStyle(
+                                                      shape: MaterialStateProperty
+                                                          .all<
+                                                              RoundedRectangleBorder>(
+                                                        RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                  35), // Adjust the value to your desired roundness
+                                                        ),
+                                                      ),
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .resolveWith<
+                                                                  Color>(
+                                                        (Set<MaterialState>
+                                                            states) {
+                                                          if (states.contains(
+                                                              MaterialState
+                                                                  .hovered)) {
+                                                            return Colors.black;
+                                                          }
+                                                          return Colors
+                                                              .blue.shade900;
+                                                        },
+                                                      ),
+                                                    ),
                                                     onPressed: () {
                                                       Navigator.pop(context);
                                                     },
-                                                    child: const Text('Hủy'),
+                                                    child: const Text(
+                                                      'HỦY', 
+                                                      style: TextStyle(fontSize: 14, color: Colors.white),
+                                                    ),
                                                   ),
                                                   ElevatedButton(
+                                                    style: ButtonStyle(
+                                                      shape: MaterialStateProperty
+                                                          .all<
+                                                              RoundedRectangleBorder>(
+                                                        RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                  35), // Adjust the value to your desired roundness
+                                                        ),
+                                                      ),
+                                                      backgroundColor:
+                                                          MaterialStateProperty
+                                                              .resolveWith<
+                                                                  Color>(
+                                                        (Set<MaterialState>
+                                                            states) {
+                                                          if (states.contains(
+                                                              MaterialState
+                                                                  .hovered)) {
+                                                            return Colors.black;
+                                                          }
+                                                          return Colors
+                                                              .blue.shade900;
+                                                        },
+                                                      ),
+                                                    ),
                                                     onPressed: () {
                                                       _saveListName(listID);
                                                       setState(() {
                                                         _fetchData();
                                                       });
                                                     },
-                                                    child: const Text('Lưu'),
+                                                    child: const Text(
+                                                      'LƯU',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.white
+                                                      ),
+                                                    ),
                                                   ),
                                                 ],
                                               );

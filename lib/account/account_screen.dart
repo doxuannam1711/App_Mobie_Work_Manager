@@ -446,19 +446,55 @@ class _AccountScreenState extends State<AccountScreen> {
                     'Bạn có chắc muốn xóa tài khoản này?',
                   ),
                   actions: <Widget>[
-                    TextButton(
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                35), // Adjust the value to your desired roundness
+                          ),
+                        ),
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return Colors.black;
+                            }
+                            return Colors.blue.shade900;
+                          },
+                        ),
+                      ),
                       child: Text(
                         'HỦY',
-                        style: TextStyle(fontSize: 14, color: Colors.blue[900]),
+                        style: TextStyle(fontSize: 14, color: Colors.white),
                       ),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
                     ),
-                    TextButton(
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                35), // Adjust the value to your desired roundness
+                          ),
+                        ),
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return Colors.black;
+                            }
+                            return Colors.blue.shade900;
+                          },
+                        ),
+                      ),
                       child: Text(
                         'XÓA',
-                        style: TextStyle(fontSize: 14, color: Colors.blue[900]),
+                        style: TextStyle(fontSize: 14, color: Colors.white),
                       ),
                       onPressed: () async {
                         _deleteUser();
