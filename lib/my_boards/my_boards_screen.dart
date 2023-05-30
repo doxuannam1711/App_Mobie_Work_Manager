@@ -30,7 +30,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchBoardList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/getboards/${widget.userID}'));
+        .get(Uri.parse('http://192.168.1.7/api/getboards/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -57,7 +57,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
   Future<List<Map<String, dynamic>>> _searchBoards(String keyword) async {
     final encodedKeyword = Uri.encodeComponent(keyword);
     final url = Uri.parse(
-        'http://192.168.53.160/api/searchBoards/$encodedKeyword/${widget.userID}');
+        'http://192.168.1.7/api/searchBoards/$encodedKeyword/${widget.userID}');
     final response = await http.post(url);
 
     if (response.statusCode == 200) {
@@ -80,7 +80,7 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
   }
 
   Future<void> _deleteBoard(int boardId) async {
-    final url = Uri.parse('http://192.168.53.160/api/deleteBoard/$boardId');
+    final url = Uri.parse('http://192.168.1.7/api/deleteBoard/$boardId');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -452,21 +452,59 @@ class _MyBoardsScreenState extends State<MyBoardsScreen> {
                             'Bạn có chắc muốn xóa bảng này không?',
                           ),
                           actions: <Widget>[
-                            TextButton(
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        35), // Adjust the value to your desired roundness
+                                  ),
+                                ),
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                  (Set<MaterialState> states) {
+                                    if (states
+                                        .contains(MaterialState.hovered)) {
+                                      return Colors.black;
+                                    }
+                                    return Colors.blue.shade900;
+                                  },
+                                ),
+                              ),
                               child: Text(
                                 'HỦY',
                                 style: TextStyle(
-                                    fontSize: 14, color: Colors.blue[900]),
+                                    fontSize: 14, color: Colors.white),
                               ),
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
                             ),
-                            TextButton(
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        35), // Adjust the value to your desired roundness
+                                  ),
+                                ),
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                  (Set<MaterialState> states) {
+                                    if (states
+                                        .contains(MaterialState.hovered)) {
+                                      return Colors.black;
+                                    }
+                                    return Colors.blue.shade900;
+                                  },
+                                ),
+                              ),
                               child: Text(
                                 'XÓA',
                                 style: TextStyle(
-                                    fontSize: 14, color: Colors.blue[900]),
+                                    fontSize: 14, color: Colors.white),
                               ),
                               onPressed: () async {
                                 // TODO: delete board

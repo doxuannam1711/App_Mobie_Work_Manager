@@ -655,7 +655,25 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
                   title: const Text('MẬT KHẨU CŨ SAI'),
                   content: const Text('Nhập lại mật khẩu cũ.'),
                   actions: [
-                    TextButton(
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                35), // Adjust the value to your desired roundness
+                          ),
+                        ),
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return Colors.black;
+                            }
+                            return Colors.blue.shade900;
+                          },
+                        ),
+                      ),
                       onPressed: () {
                         Navigator.pop(context);
                         oldPasswordController.clear();
@@ -664,7 +682,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
                       },
                       child: Text(
                         'NHẬP LẠI',
-                        style: TextStyle(fontSize: 14, color: Colors.blue[900]),
+                        style: TextStyle(fontSize: 14, color: Colors.white),
                       ),
                     ),
                   ],
@@ -691,7 +709,25 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
                   title: const Text('MẬT KHẨU NHẬP LẠI SAI'),
                   content: const Text('Mật khẩu nhập lại không trùng khớp.'),
                   actions: [
-                    TextButton(
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                35), // Adjust the value to your desired roundness
+                          ),
+                        ),
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return Colors.black;
+                            }
+                            return Colors.blue.shade900;
+                          },
+                        ),
+                      ),
                       onPressed: () {
                         Navigator.pop(context);
                         confirmPasswordController
@@ -701,7 +737,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
                       },
                       child: Text(
                         'NHẬP LẠI',
-                        style: TextStyle(fontSize: 14, color: Colors.blue[900]),
+                        style: TextStyle(fontSize: 14, color: Colors.white),
                       ),
                     ),
                   ],
