@@ -1098,3 +1098,29 @@ WHERE LOWER(CardName) LIKE '%' + @Keyword + '%' and cards.ListID IN (SELECT List
 
 SELECT * FROM checklistitems WHERE LOWER(checklistitems.Title) LIKE '%' + 't' + '%'
 --------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------- UPDATE 30/05 -------------------------------------------------------------------------
+Update notifications SET
+Status = 0 Where notifications.NotificationID = 1
+--------------------
+CREATE TRIGGER [dbo].[trg_checklistitem] ON [dbo].[checklistitems]
+AFTER INSERT
+AS
+BEGIN
+  DECLARE @title nvarchar(255);
+  SELECT @title = N' đã thêm checklist: ' + Title + N' ở thẻ ' FROM inserted;
+  insert into notifications VALUES(1,6,N'Công việc',1,1,@title,'2023-3-8 09:55:21 AM',0)
+END
+------------------------------
+CREATE TRIGGER [dbo].[trg_members] ON [dbo].[members]
+AFTER INSERT
+AS
+BEGIN
+  DECLARE @title nvarchar(255);
+  SELECT @title = N' đã thêm thành viên mới: ' + fullname + N' ở thẻ ' FROM inserted;
+  insert into notifications VALUES(1,1,N'Thẻ Công Việc',1,1,@title,'2023-3-8 09:55:21 AM',0)
+END
+
+----------TEST TRIGGER --------------
+insert into checklistitems VALUES(4,N'Khảo sát c',0)
+insert into members VALUES(N'bui van ba','dsd1s@gmail.com','',3)
+
