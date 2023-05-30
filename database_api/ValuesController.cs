@@ -425,7 +425,7 @@ WHERE checklistitemID = @checklistitemID";
 
 
     [Route("api/searchCards/{keyword}/{userID}")]
-    public IHttpActionResult SearchCards(string keyword,int userID)
+    public IHttpActionResult SearchCards(string keyword, int userID)
     {
         try
         {
@@ -922,14 +922,13 @@ WHERE LOWER(boards.BoardName) LIKE '%' + @Keyword + '%' and boards.UserID = @use
         try
         {
             Command.ResetAndOpen(CommandType.Text);
-            Command.CommandText = @"select notifications.NotificationID,notifications.NotificationType,Content,notifications.CreatedDate,users.Username,boards.BoardName,cards.CardName,cards.CardID,boards.BoardID,boards.Labels from notifications inner join users
-                                    on notifications.UserID = users.UserID
-                                    inner join cards
-                                    on notifications.CardID=cards.CardID
-                                    inner join boards
-                                    on notifications.BoardID=boards.BoardID
-                                    inner join lists
-                                    on notifications.BoardID=lists.BoardID ORDER BY notifications.NotificationID DESC";
+            Command.CommandText = @"SELECT DISTINCT notifications.NotificationID, notifications.NotificationType, notifications.Content, notifications.CreatedDate, users.Username, boards.BoardName, cards.CardName, cards.CardID, boards.BoardID, boards.Labels
+FROM notifications
+INNER JOIN users ON notifications.UserID = users.UserID
+INNER JOIN cards ON notifications.CardID = cards.CardID
+INNER JOIN boards ON notifications.BoardID = boards.BoardID
+INNER JOIN lists ON notifications.BoardID = lists.BoardID
+ORDER BY notifications.NotificationID DESC";
             DataTable tableNhanVien = Command.GetDataTable();
 
             var respone = new ResultModel
@@ -945,6 +944,53 @@ WHERE LOWER(boards.BoardName) LIKE '%' + @Keyword + '%' and boards.UserID = @use
         }
 
     }
+
+    [Route("api/getCountUnread")]
+    public IHttpActionResult GetCountUnread()
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT COUNT(*) AS 'CountNotify' FROM notifications WHERE notifications.Status = 0;";
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
+
+    [Route("api/acceptNotify")]
+    public IHttpActionResult GetacceptNotify()
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"UPDATE notifications SET Status = 1";
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
+
 
     [HttpGet]
     [Route("api/downloadfile")]

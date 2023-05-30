@@ -13,7 +13,7 @@ import 'dart:io';
 
 final Uri _url = Uri.parse('https://flutter.dev');
 
-// final Uri _url = Uri.parse('http://192.168.1.7/api/downloadfile');
+// final Uri _url = Uri.parse('http://192.168.53.160/api/downloadfile');
 class NavDrawer extends StatefulWidget {
   final int userID;
   const NavDrawer(this.userID);
@@ -25,10 +25,16 @@ class NavDrawer extends StatefulWidget {
 
 class _NavDrawerState extends State<NavDrawer> {
   // static const user = UserPreferences.myUser;
+  int unReadNotify = 1;
+  @override
+  void initState() {
+    super.initState();
+    _fetchCountUnread();
+  }
 
   Future<List<Map<String, dynamic>>> getUserList() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.7/api/getAccount/${widget.userID}'));
+        Uri.parse('http://192.168.53.160/api/getAccount/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -55,9 +61,28 @@ class _NavDrawerState extends State<NavDrawer> {
     }
   }
 
+  Future<void> _fetchCountUnread() async {
+    final response =
+        await http.get(Uri.parse('http://192.168.53.160/api/getCountUnread'));
+    if (mounted) {
+      // Kiểm tra widget có đang được hiển thị hay không
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final jsonData = jsonDecode(data['Data']);
+        final List<Map<String, dynamic>> countList =
+            List<Map<String, dynamic>>.from(jsonData);
+        setState(() {
+          unReadNotify = countList.isNotEmpty ? countList[0]['CountNotify'] : 0;
+        });
+      } else {
+        throw Exception('Failed to load board list');
+      }
+    }
+  }
+
   Future<String> getFileCSV(int userId) async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.7/api/writecsv/$userId'));
+        await http.get(Uri.parse('http://192.168.53.160/api/writecsv/$userId'));
     return response.body;
   }
 
@@ -258,11 +283,15 @@ class _NavDrawerState extends State<NavDrawer> {
             ListTile(
               leading: const Icon(Icons.space_dashboard_rounded),
               title: const Text('Các bảng của tôi'),
-              onTap: () => {
+              onTap: () {
+                setState(() {
+                  unReadNotify = 1;
+                });
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                      builder: (context) => MyBoardsScreen(widget.userID)),
-                )
+                    builder: (context) => MyBoardsScreen(widget.userID),
+                  ),
+                );
               },
             ),
             ListTile(
@@ -275,9 +304,46 @@ class _NavDrawerState extends State<NavDrawer> {
                 )
               },
             ),
-            
             const Divider(
               thickness: 2,
+            ),
+            ListTile(
+              onTap: () {
+                setState(() {
+                  unReadNotify = 0;
+                });
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => NotificationScreen(widget.userID),
+                  ),
+                );
+              },
+              leading: unReadNotify != 0
+                  ? Stack(
+                      children: [
+                        const Icon(Icons.notifications),
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(4.0),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              unReadNotify.toString(),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : const Icon(Icons.notifications),
+              title: const Text('Thông báo'),
             ),
             ListTile(
               leading: const Icon(Icons.search),
@@ -286,16 +352,6 @@ class _NavDrawerState extends State<NavDrawer> {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                       builder: (context) => SearchScreen(widget.userID)),
-                )
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.notifications),
-              title: const Text('Thông báo'),
-              onTap: () => {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                      builder: (context) => NotificationScreen(widget.userID)),
                 )
               },
             ),
@@ -325,8 +381,8 @@ class _NavDrawerState extends State<NavDrawer> {
               onTap: () async {
                 getFileCSV(widget.userID);
                 final downloadUrl =
-                    // Uri.parse('http://192.168.1.7/api/downloadfile');
-                    Uri.parse('http://192.168.1.7/api/downloadfile');
+                    // Uri.parse('http://192.168.53.160/api/downloadfile');
+                    Uri.parse('http://192.168.53.160/api/downloadfile');
                 if (!await launchUrl(downloadUrl,
                     mode: LaunchMode.externalApplication)) {
                   throw Exception('Could not launch $downloadUrl');

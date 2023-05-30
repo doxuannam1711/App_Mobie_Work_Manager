@@ -45,6 +45,21 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
   }
 
+  void markNotificationsAsRead() async {
+    try {
+      final response =
+          await http.get(Uri.parse('http://192.168.53.160/api/acceptNotify'));
+      if (response.statusCode == 200) {
+        // Xử lý thành công
+        // Nếu cần thực hiện thêm các thao tác sau khi đánh dấu đã đọc, bạn có thể viết code ở đây
+      } else {
+        throw Exception('Failed to mark notifications as read');
+      }
+    } catch (e) {
+      throw Exception('Failed to mark notifications as read');
+    }
+  }
+
   List<Map<String, dynamic>> get filteredNotifications {
     switch (_selectedFilter) {
       case 'All categories':
@@ -78,6 +93,25 @@ class _NotificationScreenState extends State<NotificationScreen> {
         title: const Text('Thông báo'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: () {
+              markNotificationsAsRead();
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Đã đánh dấu thông báo đã đọc'),
+                ),
+              );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) =>
+                      NotificationScreen(widget.userID),
+                ),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: () {
               showModalBottomSheet(
@@ -87,8 +121,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     child: Wrap(
                       children: <Widget>[
                         ListTile(
-                          leading: const Icon(Icons.markunread),
-                          title: const Text('Chưa đọc'),
+                          leading: const Icon(Icons.credit_card),
+                          title: const Text('Thẻ'),
                           onTap: () {
                             setState(() {
                               _selectedFilter = 'Unread';
@@ -147,7 +181,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           IconData iconData;
           switch (notification['NotificationType']) {
             case 1:
-              iconData = Icons.markunread;
+              iconData = Icons.credit_card;
               break;
             case 2:
               iconData = Icons.notifications;
