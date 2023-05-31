@@ -65,7 +65,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   // Future<Map<String, dynamic>> getUserList() async {
   //   final response =
-  //       await http.get(Uri.parse('http://192.168.1.7/api/getAccount'));
+  //       await http.get(Uri.parse('http://192.168.186.141/api/getAccount'));
   //   if (response.statusCode == 200) {
   //     final data = jsonDecode(response.body);
   //     return data;
@@ -76,7 +76,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   // Future<User> _fetchUserList() async {
   //   final response =
-  //       await http.get(Uri.parse('http://192.168.1.7/api/getAccount'));
+  //       await http.get(Uri.parse('http://192.168.186.141/api/getAccount'));
   //   final jsonresponse = json.decode(response.body);
   //   return User.fromJson(jsonresponse);
 
@@ -84,7 +84,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
   Future<List<Map<String, dynamic>>> getUserList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.7/api/getAccount/${widget.userID}'));
+        .get(Uri.parse('http://192.168.186.141/api/getAccount/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -112,7 +112,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
   }
 
   Future<void> _updateUser(int userID) async {
-    final url = Uri.parse('http://192.168.1.7/api/updateUser/$userID');
+    final url = Uri.parse('http://192.168.186.141/api/updateUser/$userID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -123,7 +123,8 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
         'fullName': _updateFullname,
         'passWord': _updatePassword,
         'email': _updateEmail,
-        'avatarUrl': _updateAvatarUrl.isEmpty?_oldAvatarUrl: _updateAvatarUrl,
+        'avatarUrl':
+            _updateAvatarUrl.isEmpty ? _oldAvatarUrl : _updateAvatarUrl,
         'userID': userID,
       }),
     );
@@ -310,7 +311,7 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
 
                     return _buildProfile(
                         userData["UserID"],
-                        _oldAvatarUrl=userData["AvatarUrl"],
+                        _oldAvatarUrl = userData["AvatarUrl"],
                         _updateUsername = userData["Username"],
                         _updateFullname = userData["Fullname"],
                         _updateEmail = userData["Email"],
@@ -647,7 +648,51 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
         ButtonWidget(
           text: 'LƯU',
           onClicked: () async {
-            if (_oldPassword != password) {
+            final pattern = r'[!@^%&*!#\$()_+"?><:+_-`~/|;]';
+            final regex = RegExp(pattern);
+            if (_oldPassword.isEmpty) {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  backgroundColor: Colors.blue[200],
+                  title: const Text('NHẬP MẬT KHẨU CŨ ĐỂ LƯU THAY ĐỔI'),
+                  content: const Text('Nhập lại mật khẩu cũ.'),
+                  actions: [
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                35), // Adjust the value to your desired roundness
+                          ),
+                        ),
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return Colors.black;
+                            }
+                            return Colors.blue.shade900;
+                          },
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        oldPasswordController.clear();
+                        oldPasswordFocusNode
+                            .requestFocus(); // move focus back to password field
+                      },
+                      child: Text(
+                        'NHẬP LẠI',
+                        style: TextStyle(fontSize: 14, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            } 
+            else if (_oldPassword != password) {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
@@ -688,11 +733,97 @@ class _ProfileAndDisplayScreenState extends State<ProfileAndDisplayScreen> {
                   ],
                 ),
               );
-            } else if (_oldPassword.isEmpty) {
-              oldPasswordFocusNode.requestFocus();
-            } else if (_updatePassword.isEmpty) {
-              updatePasswordFocusNode.requestFocus();
-            } else if (_confirmPassword.isEmpty) {
+            } else if (_updatePassword.isEmpty && _confirmPassword.isEmpty) {
+              _updatePassword = password;
+              _updateUser(userID);
+              await Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                    builder: (context) => AccountScreen(widget.userID)),
+              );
+              setState(() {});
+            } else if (_updatePassword.length <= 7) {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  backgroundColor: Colors.blue[200],
+                  title: const Text('MẬT KHẨU MỚI QUÁ NGẮN'),
+                  content:
+                      const Text('Mật khẩu phải có độ dài tối thiểu 8 ký tự.'),
+                  actions: [
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                35), // Adjust the value to your desired roundness
+                          ),
+                        ),
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return Colors.black;
+                            }
+                            return Colors.blue.shade900;
+                          },
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        updatePasswordFocusNode
+                            .requestFocus(); // move focus back to password field
+                      },
+                      child: Text(
+                        'NHẬP LẠI',
+                        style: TextStyle(fontSize: 14, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            } else if (regex.hasMatch(_updatePassword)) {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  backgroundColor: Colors.blue[200],
+                  title: const Text('MẬT KHẨU MỚI KHÔNG HỢP LỆ'),
+                  content: const Text(
+                      'Mật khẩu không được chứa các ký tự đặc biệt.'),
+                  actions: [
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                35), // Adjust the value to your desired roundness
+                          ),
+                        ),
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return Colors.black;
+                            }
+                            return Colors.blue.shade900;
+                          },
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        updatePasswordFocusNode
+                            .requestFocus(); // move focus back to password field
+                      },
+                      child: Text(
+                        'NHẬP LẠI',
+                        style: TextStyle(fontSize: 14, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            } else if (_confirmPassword.isEmpty && _updatePassword.isNotEmpty) {
               confirmPasswordFocusNode.requestFocus();
             } else if (_updatePassword == _confirmPassword) {
               _updateUser(userID);
