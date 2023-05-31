@@ -25,6 +25,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   String _updatePassword = "";
   String _confirmPassword = "";
 
+  bool isPasswordVisible = false;
+
   @override
   void initState() {
     super.initState();
@@ -32,7 +34,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   Future<void> _changePassword() async {
     final url =
-        Uri.parse('http://192.168.1.7/api/changePassword/${widget.userID}');
+        Uri.parse('http://192.168.186.141/api/changePassword/${widget.userID}');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -90,9 +92,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     borderRadius: BorderRadius.circular(35),
                     borderSide: BorderSide(color: Colors.black),
                   ),
+                  suffixIcon: InkWell(
+                    onTap: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
+                    child: Icon(
+                      isPasswordVisible
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: Colors.black,
+                    ),
+                  ),
                   filled: true,
                   fillColor: Colors.blue[200],
                 ),
+                obscureText: !isPasswordVisible,
                 onChanged: (value) {
                   _updatePassword = value;
                 },
@@ -119,9 +135,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     borderRadius: BorderRadius.circular(35),
                     borderSide: BorderSide(color: Colors.black),
                   ),
+                  suffixIcon: InkWell(
+                    onTap: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
+                    child: Icon(
+                      isPasswordVisible
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: Colors.black,
+                    ),
+                  ),
                   filled: true,
                   fillColor: Colors.blue[200],
                 ),
+                obscureText: !isPasswordVisible,
                 onChanged: (value) {
                   _confirmPassword = value;
                 },
@@ -155,10 +185,100 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     ),
                   ),
                   onPressed: () async {
+                    final pattern = r'[!@^%&*!#\$()_+"?><:+_-`~/|;]';
+                    final regex = RegExp(pattern);
                     if (_updatePassword.isEmpty) {
                       passwordFocusNode.requestFocus();
                     }
-                    else if(_confirmPassword.isEmpty){
+                    else if (_updatePassword.length <= 7) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          backgroundColor: Colors.blue[200],
+                          title: const Text('MẬT KHẨU MỚI QUÁ NGẮN'),
+                          content: const Text(
+                              'Mật khẩu phải có độ dài tối thiểu 8 ký tự.'),
+                          actions: [
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        35), // Adjust the value to your desired roundness
+                                  ),
+                                ),
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                  (Set<MaterialState> states) {
+                                    if (states
+                                        .contains(MaterialState.hovered)) {
+                                      return Colors.black;
+                                    }
+                                    return Colors.blue.shade900;
+                                  },
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                passwordFocusNode
+                                    .requestFocus(); // move focus back to password field
+                              },
+                              child: Text(
+                                'NHẬP LẠI',
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    else if (regex.hasMatch(_updatePassword)) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          backgroundColor: Colors.blue[200],
+                          title: const Text('MẬT KHẨU MỚI KHÔNG HỢP LỆ'),
+                          content: const Text(
+                              'Mật khẩu không được chứa các ký tự đặc biệt.'),
+                          actions: [
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                        35), // Adjust the value to your desired roundness
+                                  ),
+                                ),
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                  (Set<MaterialState> states) {
+                                    if (states
+                                        .contains(MaterialState.hovered)) {
+                                      return Colors.black;
+                                    }
+                                    return Colors.blue.shade900;
+                                  },
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                passwordFocusNode
+                                    .requestFocus(); // move focus back to password field
+                              },
+                              child: Text(
+                                'NHẬP LẠI',
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    else if (_confirmPassword.isEmpty) {
                       confirmPasswordFocusNode.requestFocus();
                     }
                     else if (_updatePassword == _confirmPassword) {
