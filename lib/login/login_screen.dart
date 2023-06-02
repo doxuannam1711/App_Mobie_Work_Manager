@@ -42,8 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _emailController.text = prefs.getString('email') ?? '';
-      _passwordController.text = prefs.getString('password') ?? '';          
-      _rememberMe = prefs.getBool('rememberMe') ?? false;     
+      _passwordController.text = prefs.getString('password') ?? '';
+      _rememberMe = prefs.getBool('rememberMe') ?? false;
     });
   }
 
@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<Map<String, dynamic>> getUserList() async {
     // Change this line
     final response =
-        await http.get(Uri.parse('http://192.168.1.7/api/getAccountLogin'));
+        await http.get(Uri.parse('http://192.168.53.160/api/getAccountLogin'));
     if (response.statusCode == 200) {
       setState(() {
         userList = jsonDecode(response.body);
@@ -159,15 +159,14 @@ class _LoginScreenState extends State<LoginScreen> {
         builder: (context) => AlertDialog(
           backgroundColor: Colors.blue[200],
           title: const Text('ĐĂNG NHẬP THẤT BẠI'),
-          content:
-              const Text('Tên người dùng hoặc mật khẩu không đúng'),
+          content: const Text('Tên người dùng hoặc mật khẩu không đúng'),
           actions: [
             ElevatedButton(
               style: ButtonStyle(
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(
-                        35), // Adjust the value to your desired roundness
+                        10), // Adjust the value to your desired roundness
                   ),
                 ),
                 backgroundColor: MaterialStateProperty.resolveWith<Color>(
@@ -187,10 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               child: Text(
                 'THỬ LẠI',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.white),
               ),
             ),
           ],
@@ -223,113 +219,171 @@ class _LoginScreenState extends State<LoginScreen> {
               //   style: TextStyle(color: Colors.black, fontSize: 16),
               // ),
               const SizedBox(height: 30),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  // labelText: 'TÊN NGƯỜI DÙNG',
-                  hintText: 'TÊN NGƯỜI DÙNG',
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
-                    borderSide: BorderSide(color: Colors.black!),
-                  ),
-                  filled: true,
-                  fillColor: Colors.blue[200],
-                  prefixIcon:  Padding(
-                    padding: EdgeInsets.all(1),
-                    child: ColorFiltered(
-                      colorFilter:
-                          ColorFilter.mode(Colors.blue.shade900, BlendMode.srcIn),
-                      child: Icon(
-                        Icons.person,
-                        color: Colors.blue[900],
+              Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    hintText: 'TÊN NGƯỜI DÙNG',
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          BorderSide.none, // Set the border side to none
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.blue.shade900),
+                    ),
+                    filled: true,
+                    fillColor: Color.fromARGB(255, 251, 234, 234),
+                    prefixIcon: Padding(
+                      padding: EdgeInsets.all(1),
+                      child: ColorFiltered(
+                        colorFilter: ColorFilter.mode(
+                          Colors.blue.shade900,
+                          BlendMode.srcIn,
+                        ),
+                        child: Icon(
+                          Icons.person,
+                          color: Colors.blue[900],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 20),
-              TextFormField(
-                controller: _passwordController,
-                focusNode: passwordFocusNode,
-                decoration: InputDecoration(
-                  // labelText: 'MẬT KHẨU',
-                  hintText: 'MẬT KHẨU',
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
-                    borderSide: BorderSide(color: Colors.black!),
-                  ),
-                  filled: true,
-                  fillColor: Colors.blue[200],
-                  prefixIcon: Padding(
-                    padding: EdgeInsets.all(1),
-                    child: ColorFiltered(
-                      colorFilter: ColorFilter.mode(
-                          Colors.blue.shade900, BlendMode.srcIn),
+              Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: TextFormField(
+                  controller: _passwordController,
+                  focusNode: passwordFocusNode,
+                  decoration: InputDecoration(
+                    // labelText: 'MẬT KHẨU',
+                    hintText: 'MẬT KHẨU',
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          BorderSide(color: Color.fromARGB(255, 3, 102, 250)!),
+                    ),
+                    filled: true,
+                    fillColor: Color.fromARGB(255, 251, 234, 234),
+                    prefixIcon: Padding(
+                      padding: EdgeInsets.all(1),
+                      child: ColorFiltered(
+                        colorFilter: ColorFilter.mode(
+                            Colors.blue.shade900, BlendMode.srcIn),
+                        child: Icon(
+                          Icons.lock,
+                          color: Colors.blue[900],
+                        ),
+                      ),
+                    ),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: InkWell(
+                      onTap: () {
+                        setState(() {
+                          isPasswordVisible = !isPasswordVisible;
+                        });
+                      },
                       child: Icon(
-                        Icons.lock,
+                        isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                         color: Colors.blue[900],
                       ),
                     ),
                   ),
-                  border: const OutlineInputBorder(),
-                  suffixIcon: InkWell(
-                    onTap: () {
-                      setState(() {
-                        isPasswordVisible = !isPasswordVisible;
-                      });
-                    },
-                    child: Icon(
-                      isPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                      color: Colors.blue[900],
-                    ),
-                  ),
+                  obscureText: !isPasswordVisible,
                 ),
-                obscureText: !isPasswordVisible,
               ),
-              // const SizedBox(height: 1.0),
+              const SizedBox(height: 20.0),
               Padding(
-                padding: EdgeInsets.only(right: 10),
+                padding: EdgeInsets.only(left: 0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
                       padding: EdgeInsets.zero,
-                      child: Transform.scale(
-                        scale: 1,
-                        child: Checkbox(
-                          visualDensity: VisualDensity.compact,
-                          activeColor: Colors.blue[900],
-                          value: _rememberMe,
-                          onChanged: (value) {
-                            setState(() {
-                              _rememberMe = value ?? false;
-                            });
+                      child: Row(
+                        children: [
+                          Transform.scale(
+                            scale: 1,
+                            child: Checkbox(
+                              visualDensity: VisualDensity.compact,
+                              activeColor: Colors.blue[900],
+                              value: _rememberMe,
+                              onChanged: (value) {
+                                setState(() {
+                                  _rememberMe = value ?? false;
+                                });
+                              },
+                            ),
+                          ),
+                          Text(
+                            'Nhớ tài khoản',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ForgotPasswordScreen(),
+                          ),
+                        );
+                      },
+                      style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return Colors.black.withOpacity(0.04);
+                            }
+                            return Colors.redAccent; // default value
                           },
                         ),
                       ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.zero,
                       child: Text(
-                        'NHỚ TÀI KHOẢN',
+                        'Quên mật khẩu?',
                         style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.black,
+                          color: Colors.blue.shade900,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),              
-              // const SizedBox(height: 20.0),
+              ),
+
+              const SizedBox(height: 10.0),
               Align(
                 alignment: Alignment.center,
                 child: SizedBox(
@@ -341,7 +395,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                              35), // Adjust the value to your desired roundness
+                              10), // Adjust the value to your desired roundness
                         ),
                       ),
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
@@ -356,7 +410,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: const Text(
                       'ĐĂNG NHẬP',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         color: Colors.white,
                       ),
                     ),
@@ -364,35 +418,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ForgotPasswordScreen(),
-                        ),
-                      );
-                    },
-                    style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.resolveWith<Color>(
-                        (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.hovered)) {
-                            return Colors.black.withOpacity(0.04);
-                          }
-                          return Colors.redAccent; // default value
-                        },
-                      ),
-                    ),
-                    child: Text(
-                      'QUÊN MẬT KHẨU?',
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
                   TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -407,14 +435,26 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (states.contains(MaterialState.hovered)) {
                             return Colors.black.withOpacity(0.04);
                           }
-                          return Colors.redAccent; // default value
+                          return Colors.black; // default value
                         },
                       ),
                     ),
-                    child: Text(
-                      'ĐĂNG KÝ',
-                      style: TextStyle(
-                        color: Colors.black,
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'Chưa có tài khoản? ',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: 'Đăng ký',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue.shade900,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -423,7 +463,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
         ),
-      ), 
+      ),
     );
   }
 }

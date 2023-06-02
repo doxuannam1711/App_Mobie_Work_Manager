@@ -34,7 +34,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   Future<void> _changePassword() async {
     final url =
-        Uri.parse('http://192.168.186.141/api/changePassword/${widget.userID}');
+        Uri.parse('http://192.168.53.160/api/changePassword/${widget.userID}');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -86,10 +86,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     fontSize: 14,
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
+                    borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(color: Colors.black),
                   ),
                   suffixIcon: InkWell(
@@ -129,10 +129,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     fontSize: 14,
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
+                    borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(color: Colors.black),
                   ),
                   suffixIcon: InkWell(

@@ -18,7 +18,7 @@ class AccountScreen extends StatefulWidget {
 class _AccountScreenState extends State<AccountScreen> {
   Future<List<Map<String, dynamic>>> _fetchBoardList() async {
     final response = await http.get(
-        Uri.parse('http://192.168.1.7/api/get3FirstBoards/${widget.userID}'));
+        Uri.parse('http://192.168.53.160/api/get3FirstBoards/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -44,7 +44,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Future<List<Map<String, dynamic>>> getUserList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.7/api/getAccount/${widget.userID}'));
+        .get(Uri.parse('http://192.168.53.160/api/getAccount/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -72,7 +72,7 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Future<void> _deleteUser() async {
-    final url = Uri.parse('http://192.168.1.7/api/deleteUser/${widget.userID}');
+    final url = Uri.parse('http://192.168.53.160/api/deleteUser/${widget.userID}');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -452,7 +452,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
-                                35), // Adjust the value to your desired roundness
+                                10), // Adjust the value to your desired roundness
                           ),
                         ),
                         backgroundColor:
@@ -479,7 +479,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
-                                35), // Adjust the value to your desired roundness
+                                10), // Adjust the value to your desired roundness
                           ),
                         ),
                         backgroundColor:

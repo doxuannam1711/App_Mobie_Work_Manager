@@ -47,7 +47,7 @@ class _CreateScreenState extends State<CreateScreen>
 
     // call the API to add the new board
     final response = await http.post(
-      Uri.parse('http://192.168.1.7/api/addBoard'),
+      Uri.parse('http://192.168.53.160/api/addBoard'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newBoard.toJson()),
     );
@@ -251,7 +251,7 @@ class _CreateScreenState extends State<CreateScreen>
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
-                                35), // Adjust the value to your desired roundness
+                                10), // Adjust the value to your desired roundness
                           ),
                         ),
                         backgroundColor:

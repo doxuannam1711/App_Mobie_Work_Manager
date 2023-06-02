@@ -68,7 +68,7 @@ class _SignupScreenState extends State<SignupScreen> {
   // }
 
   Future<void> _addUser() async {
-    final url = Uri.parse('http://192.168.1.7/api/addUser');
+    final url = Uri.parse('http://192.168.53.160/api/addUser');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -212,117 +212,179 @@ class _SignupScreenState extends State<SignupScreen> {
               //   ),
               // ),
               const SizedBox(height: 20),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Tên đăng nhập',
-                  labelStyle: TextStyle(
-                    color: Colors.black,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  filled: true,
-                  fillColor: Colors.blue[200],
+              Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
                 ),
-                focusNode: userNameFocusNode,
-                onChanged: (value) {
-                  _addUsername = value;
-                },
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: 'Tên đăng nhập',
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          BorderSide.none, // Set the border side to none
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.blue.shade900),
+                    ),
+                    filled: true,
+                    fillColor: Color.fromARGB(255, 251, 234, 234),
+                  ),
+                  focusNode: userNameFocusNode,
+                  onChanged: (value) {
+                    _addUsername = value;
+                  },
+                ),
               ),
               const SizedBox(height: 20),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Tên đầy đủ',
-                  labelStyle: TextStyle(
-                    color: Colors.black,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  filled: true,
-                  fillColor: Colors.blue[200],
+              Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
                 ),
-                focusNode: fullNameFocusNode,
-                onChanged: (value) {
-                  _addFullname = value;
-                },
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: 'Tên đẩy đủ',
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          BorderSide.none, // Set the border side to none
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.blue.shade900),
+                    ),
+                    filled: true,
+                    fillColor: Color.fromARGB(255, 251, 234, 234),
+                  ),
+                  focusNode: fullNameFocusNode,
+                  onChanged: (value) {
+                    _addUsername = value;
+                  },
+                ),
               ),
               const SizedBox(height: 20),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: TextStyle(
-                    color: Colors.black,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  filled: true,
-                  fillColor: Colors.blue[200],
+              Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
                 ),
-                focusNode: emailFocusNode,
-                onChanged: (value) {
-                  _addEmail = value;
-                },
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: 'Email',
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          BorderSide.none, // Set the border side to none
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.blue.shade900),
+                    ),
+                    filled: true,
+                    fillColor: Color.fromARGB(255, 251, 234, 234),
+                  ),
+                  focusNode: emailFocusNode,
+                  onChanged: (value) {
+                    _addUsername = value;
+                  },
+                ),
               ),
               const SizedBox(height: 20),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Mật khẩu',
-                  labelStyle: TextStyle(
-                    color: Colors.black,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  filled: true,
-                  fillColor: Colors.blue[200],
+              Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
                 ),
-                focusNode: passwordFocusNode,
-                onChanged: (value) {
-                  _addPassword = value;
-                },
-                obscureText: true,
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: 'Mật khẩu',
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          BorderSide.none, // Set the border side to none
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.blue.shade900),
+                    ),
+                    filled: true,
+                    fillColor: Color.fromARGB(255, 251, 234, 234),
+                  ),
+                  focusNode: passwordFocusNode,
+                  onChanged: (value) {
+                    _addUsername = value;
+                  },
+                ),
               ),
               const SizedBox(height: 20),
-              TextFormField(
-                controller: confirmPasswordController,
-                decoration: InputDecoration(
-                  labelText: 'Xác nhận lại mật khẩu',
-                  labelStyle: TextStyle(
-                    color: Colors.black,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(35),
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  filled: true,
-                  fillColor: Colors.blue[200],
+              Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
                 ),
-                focusNode: confirmPasswordFocusNode,
-                onChanged: (value) {
-                  _confirmPassword = value;
-                },
-                obscureText: true,
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: 'Xác nhận lại mật khẩu',
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          BorderSide.none, // Set the border side to none
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.blue.shade900),
+                    ),
+                    filled: true,
+                    fillColor: Color.fromARGB(255, 251, 234, 234),
+                  ),
+                  focusNode: confirmPasswordFocusNode,
+                  onChanged: (value) {
+                    _addUsername = value;
+                  },
+                ),
               ),
               const SizedBox(height: 40),
               SizedBox(
@@ -333,7 +395,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
-                            35), // Adjust the value to your desired roundness
+                            10), // Adjust the value to your desired roundness
                       ),
                     ),
                     backgroundColor: MaterialStateProperty.resolveWith<Color>(
@@ -467,7 +529,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(
-                                        35), // Adjust the value to your desired roundness
+                                        10), // Adjust the value to your desired roundness
                                   ),
                                 ),
                                 backgroundColor:
