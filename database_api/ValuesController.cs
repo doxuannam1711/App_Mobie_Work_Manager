@@ -201,27 +201,31 @@ public class ValuesController : ApiControllerBase
         {
             Command.ResetAndOpen(CommandType.Text);
 
-            Command.CommandText = @"DELETE FROM checklistitems WHERE CardID IN(SELECT CardID FROM cards where ListID IN(SELECT ListID FROM lists where BoardID=@checklistsBoardID))";
-            Command.Parameters.AddWithValue("@checklistsBoardID", boardId);
+            Command.CommandText = @"DELETE FROM checklistitems WHERE CardID IN(SELECT CardID FROM cards where ListID IN(SELECT ListID FROM lists where BoardID= @checklistItemsBoardID))";
+            Command.Parameters.AddWithValue("@checklistItemsBoardID", boardId);
             Command.ExecuteNonQuery();
 
-            Command.CommandText = @"DELETE FROM attachments where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID =@attachmentsBoardID))";
+            Command.CommandText = @"DELETE FROM attachments where CardID IN (SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID = @attachmentsBoardID))";
             Command.Parameters.AddWithValue("@attachmentsBoardID", boardId);
             Command.ExecuteNonQuery();
 
-            Command.CommandText = @"delete from comments where CardID IN ( SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID =@commentsBoardID ))";
+            Command.CommandText = @"delete from comments where CardID IN ( SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID = @commentsBoardID ))";
             Command.Parameters.AddWithValue("@commentsBoardID", boardId);
             Command.ExecuteNonQuery();
 
-            Command.CommandText = @"delete from notifications where WHERE BoardID = @notificationsBoardID";
+            Command.CommandText = @"delete from notifications where CardID IN ( SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID =  @notificationsBoardID))";
             Command.Parameters.AddWithValue("@notificationsBoardID", boardId);
             Command.ExecuteNonQuery();
 
-            Command.CommandText = @"delete from creators WHERE BoardID=@creatorsBoardID";
+            Command.CommandText = @"delete from notifications where BoardID= @notificationsCardBoardID";
+            Command.Parameters.AddWithValue("@notificationsCardBoardID", boardId);
+            Command.ExecuteNonQuery();
+
+            Command.CommandText = @"delete from creators  WHERE BoardID= @creatorsBoardID";
             Command.Parameters.AddWithValue("@creatorsBoardID", boardId);
             Command.ExecuteNonQuery();
 
-            Command.CommandText = @"delete from assignedTo WHERE BoardID=@assignedToBoardID";
+            Command.CommandText = @"delete from assignedTo WHERE BoardID= @assignedToBoardID";
             Command.Parameters.AddWithValue("@assignedToBoardID", boardId);
             Command.ExecuteNonQuery();
 
@@ -233,12 +237,10 @@ public class ValuesController : ApiControllerBase
             Command.Parameters.AddWithValue("@ListBoardID", boardId);
             Command.ExecuteNonQuery();
 
-
-            Command.ResetAndOpen(CommandType.Text);
             Command.CommandText = @"DELETE FROM boards WHERE BoardID = @BoardBoardID";
             Command.Parameters.AddWithValue("@BoardBoardID", boardId);
-
             Command.ExecuteNonQuery();
+
             var response = new ResultModel { };
             return Ok(response);
         }
