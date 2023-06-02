@@ -947,6 +947,8 @@ delete from comments where CardID IN ( SELECT CardID from cards where ListID IN(
 
 delete from notifications where CardID IN ( SELECT CardID from cards where ListID IN(SELECT ListID FROM lists WHERE BoardID = 23))
 
+delete from notifications where BoardID= 6
+
 delete from creators  WHERE BoardID=23
 
 delete from assignedTo WHERE BoardID=23
