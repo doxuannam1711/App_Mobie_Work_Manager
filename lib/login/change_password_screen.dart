@@ -34,7 +34,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   Future<void> _changePassword() async {
     final url =
-        Uri.parse('http://192.168.53.160/api/changePassword/${widget.userID}');
+        Uri.parse('http://192.168.1.7/api/changePassword/${widget.userID}');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -106,7 +106,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     ),
                   ),
                   filled: true,
-                  fillColor: Colors.blue[200],
+                  fillColor: Color.fromARGB(255, 251, 234, 234),
                 ),
                 obscureText: !isPasswordVisible,
                 onChanged: (value) {
@@ -149,7 +149,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     ),
                   ),
                   filled: true,
-                  fillColor: Colors.blue[200],
+                  fillColor: Color.fromARGB(255, 251, 234, 234),
                 ),
                 obscureText: !isPasswordVisible,
                 onChanged: (value) {
