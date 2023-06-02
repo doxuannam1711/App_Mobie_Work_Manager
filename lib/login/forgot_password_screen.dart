@@ -5,15 +5,14 @@ import 'package:http/http.dart' as http;
 
 import 'change_password_screen.dart';
 
-
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
   @override
   State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController emailController = TextEditingController();
   final emailFocusNode = FocusNode();
 
@@ -28,7 +27,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Future<Map<String, dynamic>> getUserList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.7/api/getAccountLogin'));
+        await http.get(Uri.parse('http://192.168.53.160/api/getAccountLogin'));
     if (response.statusCode == 200) {
       setState(() {
         userList = jsonDecode(response.body);
@@ -52,8 +51,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   void onPressedNext(BuildContext context) {
     String email = emailController.text;
-    if (email.isNotEmpty &&
-        validateUser(email)) {
+    if (email.isNotEmpty && validateUser(email)) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -67,8 +65,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         builder: (context) => AlertDialog(
           backgroundColor: Colors.blue[200],
           title: const Text('TÀI KHOẢN EMAIL KHÔNG ĐÚNG'),
-          content:
-              const Text('Nhập tài khoản email hợp lệ.'),
+          content: const Text('Nhập tài khoản email hợp lệ.'),
           actions: [
             ElevatedButton(
               style: ButtonStyle(
@@ -95,10 +92,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               },
               child: Text(
                 'NHẬP LẠI',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.white),
               ),
             ),
           ],
@@ -133,24 +127,37 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   height: MediaQuery.of(context).size.width * 0.65,
                 ),
                 const SizedBox(height: 20.0),
-                TextFormField(
-                  controller: emailController,
-                  focusNode: emailFocusNode,
-                  decoration: InputDecoration(
-                    labelText: 'NHẬP TÀI KHOẢN EMAIL ĐỂ ĐỔI MẬT KHẨU',
-                    labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
+                Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 5,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: TextFormField(
+                    controller: emailController,
+                    focusNode: emailFocusNode,
+                    decoration: InputDecoration(
+                      hintText: 'Nhập email của bạn',
+                      labelStyle: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            BorderSide.none, // Set the border side to none
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.blue.shade900),
+                      ),
+                      filled: true,
+                      fillColor: Color.fromARGB(255, 251, 234, 234),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(35),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(35),
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                    filled: true,
-                    fillColor: Colors.blue[200],
                   ),
                 ),
                 const SizedBox(height: 25.0),
@@ -162,7 +169,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                              35), // Adjust the value to your desired roundness
+                              10), // Adjust the value to your desired roundness
                         ),
                       ),
                       backgroundColor: MaterialStateProperty.resolveWith<Color>(
@@ -189,7 +196,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
         ],
       ),
-      
     );
   }
 }

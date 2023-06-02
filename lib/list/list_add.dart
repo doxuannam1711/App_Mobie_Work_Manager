@@ -35,7 +35,7 @@ class _ListsAdd extends State<ListsAdd> with TickerProviderStateMixin {
     );
 
     final response = await http.post(
-      Uri.parse('http://192.168.1.7/api/addList/'),
+      Uri.parse('http://192.168.53.160/api/addList/'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newList.toJson()),
     );
@@ -104,7 +104,7 @@ class _ListsAdd extends State<ListsAdd> with TickerProviderStateMixin {
                         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
-                                35), // Adjust the value to your desired roundness
+                                10), // Adjust the value to your desired roundness
                           ),
                         ),
                         backgroundColor: MaterialStateProperty.resolveWith<Color>(

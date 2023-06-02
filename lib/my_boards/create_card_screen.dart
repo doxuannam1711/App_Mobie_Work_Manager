@@ -330,7 +330,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(
-                          35), // Adjust the value to your desired roundness
+                          10), // Adjust the value to your desired roundness
                     ),
                   ),
                   backgroundColor: MaterialStateProperty.resolveWith<Color>(
