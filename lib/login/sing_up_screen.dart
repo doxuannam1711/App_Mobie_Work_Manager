@@ -22,6 +22,7 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   // late File _imageFile;
+  bool isPasswordVisible = false;
 
   String _addUsername = "";
   String _addFullname = "";
@@ -68,7 +69,7 @@ class _SignupScreenState extends State<SignupScreen> {
   // }
 
   Future<void> _addUser() async {
-    final url = Uri.parse('http://192.168.53.160/api/addUser');
+    final url = Uri.parse('http://192.168.1.7/api/addUser');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -277,7 +278,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   focusNode: fullNameFocusNode,
                   onChanged: (value) {
-                    _addUsername = value;
+                    _addFullname = value;
                   },
                 ),
               ),
@@ -312,7 +313,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   focusNode: emailFocusNode,
                   onChanged: (value) {
-                    _addUsername = value;
+                    _addEmail = value;
                   },
                 ),
               ),
@@ -342,12 +343,26 @@ class _SignupScreenState extends State<SignupScreen> {
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: Colors.blue.shade900),
                     ),
+                    suffixIcon: InkWell(
+                      onTap: () {
+                        setState(() {
+                          isPasswordVisible = !isPasswordVisible;
+                        });
+                      },
+                      child: Icon(
+                        isPasswordVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                    ),
                     filled: true,
                     fillColor: Color.fromARGB(255, 251, 234, 234),
                   ),
                   focusNode: passwordFocusNode,
+                  obscureText: !isPasswordVisible,
                   onChanged: (value) {
-                    _addUsername = value;
+                    _addPassword = value;
                   },
                 ),
               ),
@@ -377,12 +392,26 @@ class _SignupScreenState extends State<SignupScreen> {
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(color: Colors.blue.shade900),
                     ),
+                    suffixIcon: InkWell(
+                      onTap: () {
+                        setState(() {
+                          isPasswordVisible = !isPasswordVisible;
+                        });
+                      },
+                      child: Icon(
+                        isPasswordVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                    ),
                     filled: true,
                     fillColor: Color.fromARGB(255, 251, 234, 234),
                   ),
                   focusNode: confirmPasswordFocusNode,
+                  obscureText: !isPasswordVisible,
                   onChanged: (value) {
-                    _addUsername = value;
+                    _confirmPassword = value;
                   },
                 ),
               ),
