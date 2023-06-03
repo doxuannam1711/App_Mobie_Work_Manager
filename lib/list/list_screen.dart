@@ -212,7 +212,7 @@ class _ListScreenState extends State<ListScreen> {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () async {
-              await Navigator.of(context).push(
+              await Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
                   builder: (context) => ListsAdd(
                     userID: widget.userID,
@@ -296,7 +296,8 @@ class _ListScreenState extends State<ListScreen> {
                                             context: context,
                                             builder: (_) {
                                               return AlertDialog(
-                                                backgroundColor: Colors.blue[200],
+                                                backgroundColor:
+                                                    Colors.blue[200],
                                                 title: const Text(
                                                     'NHẬP TÊN DANH SÁCH'),
                                                 content: TextField(
@@ -342,8 +343,10 @@ class _ListScreenState extends State<ListScreen> {
                                                       Navigator.pop(context);
                                                     },
                                                     child: const Text(
-                                                      'HỦY', 
-                                                      style: TextStyle(fontSize: 14, color: Colors.white),
+                                                      'HỦY',
+                                                      style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: Colors.white),
                                                     ),
                                                   ),
                                                   ElevatedButton(
@@ -382,9 +385,8 @@ class _ListScreenState extends State<ListScreen> {
                                                     child: const Text(
                                                       'LƯU',
                                                       style: TextStyle(
-                                                        fontSize: 14,
-                                                        color: Colors.white
-                                                      ),
+                                                          fontSize: 14,
+                                                          color: Colors.white),
                                                     ),
                                                   ),
                                                 ],
@@ -508,7 +510,7 @@ class _ListScreenState extends State<ListScreen> {
               String title = cardList[index]['CardName'];
               // int test = cardList[index]['ListID'];
               // debugPrint(cardList.toString());
-              String label = cardList[index]['Label'];
+              String label = cardList[index]['LabelColor'];
               // String label = "Medium";
               DateTime? expirationDate =
                   DateTime.tryParse(cardList[index]['DueDate'] ?? '');
@@ -539,12 +541,14 @@ class _ListScreenState extends State<ListScreen> {
 
   Color _getColorFromLabel(String label) {
     switch (label) {
-      case 'High':
+      case 'red':
         return Colors.red;
-      case 'Medium':
+      case 'yellow':
         return Colors.yellow;
-      case 'Low':
+      case 'green':
         return Colors.green;
+      case 'blue':
+        return Colors.blue;
       default:
         return Colors.grey;
     }
@@ -618,7 +622,7 @@ class _ListScreenState extends State<ListScreen> {
                     width: 10,
                     height: 10,
                     decoration: BoxDecoration(
-                      color: _getColorFromLabel(label),
+                      color: _getColorFromLabel(label.trim()),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
