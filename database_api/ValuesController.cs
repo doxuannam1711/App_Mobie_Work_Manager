@@ -1350,14 +1350,6 @@ ORDER BY notifications.NotificationID DESC";
             Command.Parameters.AddWithValue("@ListUserID", userId);
             Command.ExecuteNonQuery();
 
-            Command.CommandText = @"delete from creators WHERE UserID= @creatorsUserID";
-            Command.Parameters.AddWithValue("@creatorsUserID", userId);
-            Command.ExecuteNonQuery();
-
-            Command.CommandText = @"delete from assignedTo WHERE BoardID=@assignedToUserID";
-            Command.Parameters.AddWithValue("@assignedToUserID", userId);
-            Command.ExecuteNonQuery();
-
             // Delete related records from boards
             Command.CommandText = @"DELETE FROM boards WHERE UserID = @BoardUserID";
             Command.Parameters.AddWithValue("@BoardUserID", userId);
