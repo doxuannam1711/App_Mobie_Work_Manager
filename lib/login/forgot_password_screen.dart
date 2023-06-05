@@ -1,9 +1,12 @@
+import 'package:email_otp/email_otp.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application/login/login_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'change_password_screen.dart';
+import 'otp_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -14,6 +17,8 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController emailController = TextEditingController();
+  EmailOTP myauth = EmailOTP();
+
   final emailFocusNode = FocusNode();
 
   Map<String, dynamic> userList = {};
@@ -27,7 +32,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Future<Map<String, dynamic>> getUserList() async {
     final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/getAccountLogin'));
+        await http.get(Uri.parse('http://192.168.1.7/api/getAccountLogin'));
     if (response.statusCode == 200) {
       setState(() {
         userList = jsonDecode(response.body);
@@ -108,6 +113,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       appBar: AppBar(
         title: const Text('Quên mật khẩu'),
         backgroundColor: Colors.blue[900],
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (context) => const LoginScreen()),
+              (route) => false, // Remove all previous routes
+            );
+          },
+          icon: const Icon(
+            Icons.keyboard_arrow_left,
+            size: 32,
+          ),
+        ),
       ),
       body: ListView(
         children: [
@@ -181,7 +199,82 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         },
                       ),
                     ),
-                    onPressed: () => onPressedNext(context),
+                    onPressed: () async {
+                      String email = emailController.text;
+                      if (email.isNotEmpty && validateUser(email)) {
+                        myauth.setConfig(
+                          appEmail: "contact@hdevcoder.com",
+                          appName: "Email OTP",
+                          userEmail: emailController.text,
+                          otpLength: 4,
+                          otpType: OTPType.digitsOnly);
+                        if (await myauth.sendOTP() == true) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text("Mã OTP đã được gửi đi"),
+                          ));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OtpScreen(
+                                myauth: myauth, userID: userID, emailUser: email,
+                              )
+                            )
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text("Oops, Mã OTP gửi thất bại!"),
+                          ));
+                        }
+                      }
+                      else {
+                        // Show error message
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            backgroundColor: Colors.blue[200],
+                            title: const Text('TÀI KHOẢN EMAIL KHÔNG ĐÚNG'),
+                            content: const Text('Nhập tài khoản email hợp lệ.'),
+                            actions: [
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                  shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          35), // Adjust the value to your desired roundness
+                                    ),
+                                  ),
+                                  backgroundColor:
+                                      MaterialStateProperty.resolveWith<Color>(
+                                    (Set<MaterialState> states) {
+                                      if (states
+                                          .contains(MaterialState.hovered)) {
+                                        return Colors.black;
+                                      }
+                                      return Colors.blue.shade900;
+                                    },
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  emailController
+                                      .clear(); // clear password input
+                                  emailFocusNode
+                                      .requestFocus(); // move focus back to password field
+                                },
+                                child: Text(
+                                  'NHẬP LẠI',
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
                     child: const Text(
                       'TIẾP THEO',
                       style: TextStyle(

@@ -55,6 +55,7 @@ dependencies:
   logging: ^1.1.1
   csv: ^5.0.2
   flutter_svg: ^1.1.6
+  email_otp: ^1.0.4
 
 dev_dependencies:
   flutter_test:

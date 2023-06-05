@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import 'forgot_password_screen.dart';
 import 'login_screen.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -64,6 +65,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       appBar: AppBar(
         title: const Text('Đổi mật khẩu'),
         backgroundColor: Colors.blue[900],
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+              (route) => false, // Remove all previous routes
+            );
+          },
+          icon: const Icon(Icons.keyboard_arrow_left,size: 32,),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),

@@ -27,7 +27,7 @@ UserID  int IDENTITY(1,1) NOT NULL,
 Username  varchar(50) NOT NULL,
 Fullname  nvarchar(255) NOT NULL,
 Password  varchar(100) NOT NULL,
-Email  varchar(255) NOT NULL,
+Email  varchar(255) NOT NULL UNIQUE,
 AvatarUrl  varchar(255),
 CreatedDate  datetime ,
 LastLoginTime  datetime ,
@@ -364,6 +364,9 @@ END
 
 ALTER TABLE cards 
 ALTER  COLUMN DueDate date
+
+ALTER TABLE users
+ADD CONSTRAINT unique_fieldName UNIQUE (Email);
 
 ALTER TABLE cards
 DROP COLUMN CompletedStatus;
