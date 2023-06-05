@@ -175,7 +175,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
-                            35), // Adjust the value to your desired roundness
+                            10), // Adjust the value to your desired roundness
                       ),
                     ),
                     backgroundColor: MaterialStateProperty.resolveWith<Color>(
@@ -215,7 +215,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(
-                                        35), // Adjust the value to your desired roundness
+                                        10), // Adjust the value to your desired roundness
                                   ),
                                 ),
                                 backgroundColor:
@@ -259,7 +259,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(
-                                        35), // Adjust the value to your desired roundness
+                                        10), // Adjust the value to your desired roundness
                                   ),
                                 ),
                                 backgroundColor:
@@ -315,7 +315,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(
-                                        35), // Adjust the value to your desired roundness
+                                        10), // Adjust the value to your desired roundness
                                   ),
                                 ),
                                 backgroundColor:
