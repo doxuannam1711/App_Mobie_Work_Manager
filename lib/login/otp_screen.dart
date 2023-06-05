@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:email_otp/email_otp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,8 +33,8 @@ class Otp extends StatelessWidget {
             FocusScope.of(context).nextFocus();
           }
           if (value.isEmpty) {
-            // FocusScope.of(context).previousFocus();
-            FocusScope.of(context).requestFocus();
+            FocusScope.of(context).previousFocus();
+            // FocusScope.of(context).requestFocus();
           }
         },
         decoration: InputDecoration(
@@ -77,8 +79,103 @@ class _OtpScreenState extends State<OtpScreen> {
   TextEditingController otp4Controller = TextEditingController();
 
   EmailOTP myauth = EmailOTP();
+  // int start = 60;
+  // bool wait = false;
+  int countdown = 60;
+  bool isTimeout = false; // Variable to track the timeout status
+  late Timer timeoutTimer; // Timer for the timeout duration
+  // late Timer countdownTimer;
 
   String otpController = "1234";
+
+  @override
+  void initState() {
+    super.initState();
+    startTimeoutCountdown();
+  }
+
+  @override
+  void dispose() {
+    if (timeoutTimer != null && timeoutTimer.isActive) {
+      timeoutTimer.cancel();
+    }
+    super.dispose();
+  }
+  void startTimeoutCountdown() {
+    const otpTimeoutDuration = Duration(seconds: 60);
+    timeoutTimer = Timer.periodic(otpTimeoutDuration, (_) {
+      setState(() {
+        isTimeout = true;
+      });
+      handleResendOtp(); // Resend the OTP
+    });
+    // Countdown timer setup
+    const oneSecond = Duration(seconds: 1);
+    Timer.periodic(oneSecond, (Timer timer) {
+      setState(() {
+        countdown -= 1;
+      });
+      if (countdown == 0) {
+        timer.cancel();
+      }
+    });
+  }
+
+  void handleResendOtp() async {
+    // Reset the timeout status
+    setState(() {
+      isTimeout = false;
+      countdown = 60;
+    });
+
+    // Resend OTP logic here
+    myauth.setConfig(
+      appEmail: "contact@hdevcoder.com",
+      appName: "Email OTP",
+      userEmail: widget.emailUser,
+      otpLength: 4,
+      otpType: OTPType.digitsOnly,
+    );
+
+    if (await myauth.sendOTP() == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Mã OTP đã được gửi đi"),
+        ),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OtpScreen(
+            myauth: myauth,
+            userID: widget.userID,
+            emailUser: widget.emailUser,
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Oops, Mã OTP gửi thất bại!"),
+        ),
+      );
+    }
+  }
+  // void startTimer() {
+  //   const oneSecond = Duration(seconds: 1);
+  //   countdownTimer = Timer.periodic(oneSecond, (timer) {
+  //     if (start == 0) {
+  //       setState(() {
+  //         timer.cancel();
+  //         wait = false;
+  //       });
+  //     } else {
+  //       setState(() {
+  //         start--;
+  //       });
+  //     }
+  //   });
+  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,33 +224,12 @@ class _OtpScreenState extends State<OtpScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextButton(
-                    onPressed: () async{
-                      myauth.setConfig(
-                          appEmail: "contact@hdevcoder.com",
-                          appName: "Email OTP",
-                          userEmail: widget.emailUser,
-                          otpLength: 4,
-                          otpType: OTPType.digitsOnly);
-                        if (await myauth.sendOTP() == true) {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                            content: Text("Mã OTP đã được gửi đi"),
-                          ));
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => OtpScreen(
-                                      myauth: myauth,
-                                      userID: widget.userID,
-                                      emailUser: widget.emailUser,
-                                    )));
-                        } else {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                            content: Text("Oops, Mã OTP gửi thất bại!"),
-                          ));
-                        }
+                    onPressed: (){
+                      if (!isTimeout) {
+                        handleResendOtp();
+                      }
                     },
+                    // isTimeout ? handleResendOtp : null,
                     style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
@@ -164,7 +240,8 @@ class _OtpScreenState extends State<OtpScreen> {
                         },
                       ),
                     ),
-                    child: RichText(
+                    child: 
+                    RichText(
                       text: TextSpan(
                         text: 'Chưa nhận được mã OTP? ',
                         style: TextStyle(
@@ -177,6 +254,14 @@ class _OtpScreenState extends State<OtpScreen> {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.blue.shade900,
+                            ),
+                          ),
+                          TextSpan(
+                            text:
+                                ' (${countdown ~/ 60}:${(countdown % 60).toString().padLeft(2, '0')})', // Display the countdown in mm:ss format
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.pinkAccent,
                             ),
                           ),
                         ],
