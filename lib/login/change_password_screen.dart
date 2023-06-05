@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import 'forgot_password_screen.dart';
 import 'login_screen.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -64,6 +65,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       appBar: AppBar(
         title: const Text('Đổi mật khẩu'),
         backgroundColor: Colors.blue[900],
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+              (route) => false, // Remove all previous routes
+            );
+          },
+          icon: const Icon(Icons.keyboard_arrow_left,size: 32,),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
@@ -165,7 +175,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
-                            35), // Adjust the value to your desired roundness
+                            10), // Adjust the value to your desired roundness
                       ),
                     ),
                     backgroundColor: MaterialStateProperty.resolveWith<Color>(
@@ -205,7 +215,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(
-                                        35), // Adjust the value to your desired roundness
+                                        10), // Adjust the value to your desired roundness
                                   ),
                                 ),
                                 backgroundColor:
@@ -249,7 +259,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(
-                                        35), // Adjust the value to your desired roundness
+                                        10), // Adjust the value to your desired roundness
                                   ),
                                 ),
                                 backgroundColor:
@@ -305,7 +315,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(
-                                        35), // Adjust the value to your desired roundness
+                                        10), // Adjust the value to your desired roundness
                                   ),
                                 ),
                                 backgroundColor:
