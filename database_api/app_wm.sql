@@ -1129,3 +1129,70 @@ END
 insert into checklistitems VALUES(4,N'Khảo sát c',0)
 insert into members VALUES(N'bui van ba','dsd1s@gmail.com','',3)
 
+
+-------------------------------------------------08/06----------------------------------
+
+
+ALTER TABLE cards
+ADD CountAvatar int;
+
+ALTER TABLE cards
+ALTER COLUMN DueDate datetime;
+
+UPDATE cards SET AssignedToID = 3
+
+UPDATE cards SET CountAvatar = 3
+
+UPDATE cards SET CountAvatar = 4 Where cards.CardID = 41
+UPDATE cards SET CountAvatar = 2 Where cards.CardID = 39
+UPDATE cards SET CountAvatar = 1 Where cards.CardID = 38
+UPDATE cards SET CountAvatar = 1 Where cards.CardID = 37
+UPDATE cards SET CountAvatar = 2 Where cards.CardID = 36
+UPDATE cards SET CountAvatar = 4 Where cards.CardID = 35
+
+UPDATE cards SET CountAvatar = 4 Where cards.CardID = 34
+
+
+
+
+UPDATE cards SET DueDate = '2023-09-09 12:00:00'
+
+UPDATE cards SET DueDate = '2023-06-10 12:00:00' Where CardID = 3
+
+UPDATE cards SET DueDate = '2023-02-05 12:00:00' Where CardID = 5
+
+UPDATE cards SET DueDate = '2023-02-22 12:00:00' Where CardID = 6
+
+UPDATE cards SET DueDate = '2023-02-25 12:00:00' Where CardID = 8
+
+------------------------------
+
+ALTER TABLE members
+ADD permission int;
+
+UPDATE members SET permission = 1
+
+----------------trigger-----------
+CREATE TRIGGER [dbo].[trg_members_update] ON [dbo].[members]
+AFTER UPDATE
+AS
+BEGIN
+  DECLARE @title nvarchar(255);
+  DECLARE @permissionName nvarchar(50);
+  
+  SELECT @title = N' đã set quyền cho thành viên: ' + N'Bùi Đức Cường' + N' là ';
+  
+  SELECT @permissionName = CASE permission
+                            WHEN 1 THEN N'Người xem'
+                            WHEN 2 THEN N'Người chỉnh sửa'
+                            ELSE N'Unknown'
+                          END
+  FROM inserted;
+ 
+  SET @title = @title + @permissionName + N' ở thẻ ';
+  INSERT INTO notifications
+  SELECT 1, 1, N'Thẻ Công Việc', 1, 1, @title, GETDATE(), 0
+  FROM inserted;
+END
+
+---------------------

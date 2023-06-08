@@ -5,6 +5,7 @@ class CardDetail {
   String label;
   String listName;
   String dueDate; // Add this field
+  int permission;
 
   CardDetail({
     required this.cardID,
@@ -13,6 +14,7 @@ class CardDetail {
     required this.label,
     required this.listName,
     required this.dueDate, // Initialize with a String value
+    required this.permission, 
   });
 
   factory CardDetail.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class CardDetail {
       label: json['LabelColor'],
       listName: json['ListName'],
       dueDate: json['DueDate'], // Assign value to dueDate field
+      permission: json['permission'],
     );
   }
 }

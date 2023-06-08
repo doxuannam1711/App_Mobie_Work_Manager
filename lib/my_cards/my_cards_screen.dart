@@ -115,6 +115,32 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
     }
   }
 
+  Future<List<Map<String, dynamic>>> _fetchSortCardPriority() async {
+    final response = await http.get(
+        Uri.parse('http://192.168.53.160/api/sortCardHigh/${widget.userID}'));
+    if (response.statusCode == 200) {
+      try {
+        final data = jsonDecode(response.body)['Data'];
+        final cardData = jsonDecode(data);
+        List<dynamic> cardList = [];
+        if (cardData is List) {
+          cardList = cardData;
+        } else if (cardData is Map) {
+          cardList = [cardData];
+        }
+        final resultList = cardList
+            .map((board) =>
+                Map<String, dynamic>.from(board as Map<String, dynamic>))
+            .toList();
+        return resultList;
+      } catch (e) {
+        throw Exception('Failed to decode board list');
+      }
+    } else {
+      throw Exception('Failed to load board list');
+    }
+  }
+
   Future<List<Map<String, dynamic>>> _searchCards(String keyword) async {
     final encodedKeyword = Uri.encodeComponent(keyword);
     final url = Uri.parse(
@@ -213,6 +239,10 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                       value: 3,
                       child: Text('Ngày hết hạn'),
                     ),
+                    DropdownMenuItem(
+                      value: 4,
+                      child: Text('Ưu tiên hàng đầu'),
+                    ),
                   ],
                 ),
               ],
@@ -245,7 +275,11 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                       ? _fetchCardList()
                       : (_sortByDate == 2
                           ? _fetchSortCardLabel()
-                          : (_sortByDate == 3 ? _fetchSortCardList() : null)))
+                          : (_sortByDate == 3
+                              ? _fetchSortCardList()
+                              : (_sortByDate == 4
+                                  ? _fetchSortCardPriority()
+                                  : null))))
                   : Future<List<Map<String, dynamic>>>.value(_searchResult),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
@@ -298,10 +332,12 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
     int checkedItems,
     int totalItems,
     List<String> avatars,
-    int cardID, // add cardID as a parameter
+    int cardID,
     int countAvatar,
   ) {
     Color rectangleColor = Colors.blue;
+    bool expired = false; // Thêm thuộc tính expired
+
     switch (label.trim()) {
       case 'green':
         rectangleColor = Colors.green;
@@ -316,13 +352,18 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
         rectangleColor = Colors.blue;
     }
 
+    // Kiểm tra xem expirationDate có nhỏ hơn thời gian hiện tại không
+    if (expirationDate != null && expirationDate.isBefore(DateTime.now())) {
+      expired = true;
+    }
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CardsDetailScreen(title, cardID,
-                widget.userID), // pass cardID to CardsDetailScreen
+            builder: (context) =>
+                CardsDetailScreen(title, cardID, widget.userID),
           ),
         );
       },
@@ -330,6 +371,9 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
         key: expirationDate == null
             ? const ValueKey('noExpiration')
             : ValueKey(expirationDate),
+        color: expired
+            ? Colors.grey
+            : null, // Thêm màu sắc nền cho thẻ khi hết hạn
         child: ListTile(
           minLeadingWidth: 1,
           leading: Container(
@@ -358,6 +402,11 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                   expirationDate != null
                       ? DateFormat('MMM d').format(expirationDate)
                       : 'No expiration',
+                  style: TextStyle(
+                    color: expired
+                        ? Colors.red
+                        : null, // Thêm màu sắc cho ngày hết hạn khi hết hạn
+                  ),
                 ),
                 const SizedBox(width: 8),
                 const Icon(Icons.comment_outlined, size: 16),
@@ -374,19 +423,17 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ...avatars
-                  .sublist(
-                      0,
-                      countAvatar > 3
-                          ? 2
-                          : countAvatar) // Hiển thị tối đa 2 hoặc countAvatar avatars
-                  .map((avatar) => CircleAvatar(
-                        radius: 14,
-                        backgroundImage: NetworkImage(avatar),
-                      ))
+                  .sublist(0, countAvatar > 3 ? 2 : countAvatar)
+                  .map(
+                    (avatar) => CircleAvatar(
+                      radius: 14,
+                      backgroundImage: NetworkImage(avatar),
+                    ),
+                  )
                   .toList(),
               if (countAvatar > 3)
                 PopupMenuButton(
-                  icon: Icon(Icons.more_horiz, size: 20), // Icon "..."
+                  icon: Icon(Icons.more_horiz, size: 20),
                   itemBuilder: (BuildContext context) {
                     return [
                       PopupMenuItem(

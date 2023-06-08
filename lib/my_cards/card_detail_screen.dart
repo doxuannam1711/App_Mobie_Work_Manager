@@ -65,6 +65,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
         _cardDetail = cardDetail;
         _listName = cardDetail.listName;
         _expirationDate = DateTime.parse(cardDetail.dueDate);
+        permission = cardDetail.permission;
         // _expirationDate = cardDetail.expirationDate;
       });
     });
@@ -99,6 +100,25 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
       final cardData = json.decode(data)[0];
 
       return CardDetail.fromJson(cardData);
+    } else {
+      throw Exception('Failed to load card detail');
+    }
+  }
+
+  Future<List<DateTime>> fetchListDueDate() async {
+    final response =
+        await http.get(Uri.parse('http://192.168.53.160/api/getListDueDate/'));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body)['Data'];
+      final List<dynamic> cardDataList = json.decode(data);
+
+      List<DateTime> dueDates = cardDataList.map((item) {
+        final String dueDateStr = item['DueDate'];
+        return DateTime.parse(dueDateStr);
+      }).toList();
+
+      return dueDates;
     } else {
       throw Exception('Failed to load card detail');
     }
@@ -751,7 +771,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                               onPressed: permission == 1
                                   ? null
                                   : () async {
-                                      final DateTime? picked =
+                                      final DateTime? pickedDate =
                                           await showDatePicker(
                                         context: context,
                                         initialDate:
@@ -760,16 +780,108 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                         lastDate: DateTime.now()
                                             .add(const Duration(days: 365)),
                                       );
-                                      if (picked != null) {
-                                        setState(() {
-                                          _expirationDate = picked;
-                                        });
+                                      if (pickedDate != null) {
+                                        final TimeOfDay? pickedTime =
+                                            await showTimePicker(
+                                          context: context,
+                                          initialTime: _expirationDate != null
+                                              ? TimeOfDay.fromDateTime(
+                                                  _expirationDate!)
+                                              : TimeOfDay.now(),
+                                        );
+                                        if (pickedTime != null) {
+                                          final DateTime pickedDateTime =
+                                              DateTime(
+                                            pickedDate.year,
+                                            pickedDate.month,
+                                            pickedDate.day,
+                                            pickedTime.hour,
+                                            pickedTime.minute,
+                                          );
+
+                                          // Lấy danh sách dữ liệu DueDate từ API
+                                          List<DateTime> existingDueDates =
+                                              await fetchListDueDate();
+
+                                          // Kiểm tra trùng lịch
+                                          bool isDuplicate = existingDueDates
+                                              .contains((date) =>
+                                                  date.year ==
+                                                      pickedDateTime.year &&
+                                                  date.month ==
+                                                      pickedDateTime.month &&
+                                                  date.day ==
+                                                      pickedDateTime.day &&
+                                                  date.hour ==
+                                                      pickedDateTime.hour &&
+                                                  date.minute ==
+                                                      pickedDateTime.minute);
+
+                                          // Kiểm tra khoảng cách thời gian
+                                          bool isWithin2Hours =
+                                              existingDueDates.any((date) =>
+                                                  pickedDateTime.isBefore(
+                                                      date.add(const Duration(
+                                                          hours: 2))) &&
+                                                  pickedDateTime.isAfter(date
+                                                      .subtract(const Duration(
+                                                          hours: 2))));
+
+                                          if (isDuplicate || isWithin2Hours) {
+                                            // Hiển thị thông báo trùng lịch
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text(
+                                                      'Lịch trình đã tồn tại, Bạn vui lòng đặt lịch lại'),
+                                                  content: const Text(
+                                                      'Thời gian đã bị trùng lặp hoặc nằm trong khoảng 2 giờ của lịch trình hiện có.'),
+                                                  actions: <Widget>[
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: const Text('OK'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          } else {
+                                            setState(() {
+                                              _expirationDate = pickedDateTime;
+                                            });
+
+                                            // Hiển thị dialog thành công
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text(
+                                                      'Đặt lịch thành công'),
+                                                  content: Text('Bạn đã đặt lịch thành công cho thẻ công việc: "${widget.cardName}"'),
+                                                  actions: <Widget>[
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: const Text('OK'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }
+                                        }
                                       }
                                     },
                               child: Text(
                                 _expirationDate == null
-                                    ? 'Select date'
-                                    : 'Date: ${_expirationDate!.toString().split(' ')[0]}',
+                                    ? 'Select date and time'
+                                    : _expirationDate.toString(),
                               ),
                             ),
                             IconButton(
@@ -865,12 +977,14 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                             ),
                           );
                         }).toList(),
-                        onChanged: permission != 1 ? (Color? value) {
-                          setState(() {
-                            label = value;
-                            labelName = getColorName(value!);
-                          });
-                        } : null,
+                        onChanged: permission != 1
+                            ? (Color? value) {
+                                setState(() {
+                                  label = value;
+                                  labelName = getColorName(value!);
+                                });
+                              }
+                            : null,
                       ),
                       const SizedBox(height: 30.0),
                       const Text(

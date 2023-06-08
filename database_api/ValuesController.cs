@@ -640,8 +640,31 @@ ORDER BY cards.CardID DESC";
             Command.CommandText = @"SELECT *
 FROM cards
 LEFT JOIN lists ON cards.ListID = lists.ListID
-WHERE cards.CardID = @cardID;";
+LEFT JOIN members ON members.assignedTo = cards.AssignedToID
+WHERE cards.CardID = @cardID and members.id = 1;";
             Command.Parameters.AddWithValue("@cardID", cardID);
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
+    [Route("api/getListDueDate")]
+    public IHttpActionResult GetListDueDate()
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"select cards.DueDate from cards";
             DataTable tableNhanVien = Command.GetDataTable();
 
             var respone = new ResultModel
@@ -749,7 +772,7 @@ ORDER BY cards.LabelColor ASC;";
         GROUP BY cards.CardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist,
          cards.Label, cards.Comment, cards.CardName, cards.StatusView,
          cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
-         cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor, comments.Detail;";
+         cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor, comments.Detail, cards.CountAvatar;";
 
             Command.Parameters.AddWithValue("@UserID", userID);
             DataTable tableNhanVien = Command.GetDataTable();
