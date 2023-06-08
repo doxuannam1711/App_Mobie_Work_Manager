@@ -103,17 +103,16 @@ class _MemberScreenState extends State<MemberScreen> {
       },
       body: jsonEncode(<String, dynamic>{
         'permission': permission,
-        'id': 1
       }),
     );
     if (mounted) {
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('UPDATE successfully!')),
+          const SnackBar(content: Text('Cập nhật thành công!')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('UPDATE failure')),
+          const SnackBar(content: Text('Cập nhật thất bại!')),
         );
       }
     }
@@ -166,8 +165,7 @@ class _MemberScreenState extends State<MemberScreen> {
               final updatedPermission = await showDialog<String>(
                 context: context,
                 builder: (BuildContext context) {
-                  String? selectedPermission =
-                      _members[0]['permission'].toString(); // Giá trị mặc định
+                  String? selectedPermission = "1"; // Giá trị mặc định
                   return FractionallySizedBox(
                     heightFactor: 0.6,
                     child: AlertDialog(
@@ -203,11 +201,7 @@ class _MemberScreenState extends State<MemberScreen> {
                                 ),
                               );
                             }).toList(),
-                            onChanged: (String? value) {
-                              setState(() {
-                                selectedPermission = value;
-                              });
-                            },
+                            onChanged: (String? value) {},
                           ),
                           const SizedBox(height: 10.0),
                           Text(
@@ -223,7 +217,7 @@ class _MemberScreenState extends State<MemberScreen> {
                               fillColor: Colors.grey[200],
                               border: const OutlineInputBorder(),
                             ),
-                            value: 'Người xem', // Mặc định hiển thị viewer
+                            value: 'Người xem',
                             items: ['Người xem', 'Người chỉnh sửa']
                                 .map((permission) {
                               return DropdownMenuItem<String>(
@@ -237,7 +231,9 @@ class _MemberScreenState extends State<MemberScreen> {
                               );
                             }).toList(),
                             onChanged: (String? value) {
-                              // Xử lý khi giá trị thay đổi
+                              setState(() {
+                                selectedPermission = value;
+                              });
                             },
                           ),
                         ],
@@ -293,14 +289,14 @@ class _MemberScreenState extends State<MemberScreen> {
                           ),
                           onPressed: () {
                             // Xử lý khi nhấn nút LƯU
-                            int permission = 0;
+                            int permission = 1;
                             if (selectedPermission == 'Người xem') {
                               permission = 1;
                             } else if (selectedPermission ==
                                 'Người chỉnh sửa') {
                               permission = 2;
                             }
-                            _updateMember(1).then((_) {
+                            _updateMember(permission).then((_) {
                               Navigator.of(context)
                                   .pop(); // Đóng dialog sau khi cập nhật thành công
                             }).catchError((error) {

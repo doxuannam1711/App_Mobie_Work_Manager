@@ -219,37 +219,37 @@ class _SearchScreenState extends State<SearchScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                const Icon(Icons.filter_alt_outlined),
-                const SizedBox(width: 8),
-                DropdownButton<int>(
-                  value: _sortByDate,
-                  onChanged: (value) {
-                    setState(() {
-                      _sortByDate = value!;
-                    });
-                  },
-                  items: [
-                    DropdownMenuItem(
-                      value: 1,
-                      child: Text('Bảng'),
-                    ),
-                    DropdownMenuItem(
-                      value: 2,
-                      child: Text('Thẻ ưu tiên'),
-                    ),
-                    DropdownMenuItem(
-                      value: 3,
-                      child: Text('Ngày hết hạn'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: Row(
+          //     children: [
+          //       const Icon(Icons.filter_alt_outlined),
+          //       const SizedBox(width: 8),
+          //       DropdownButton<int>(
+          //         value: _sortByDate,
+          //         onChanged: (value) {
+          //           setState(() {
+          //             _sortByDate = value!;
+          //           });
+          //         },
+          //         items: [
+          //           DropdownMenuItem(
+          //             value: 1,
+          //             child: Text('Bảng'),
+          //           ),
+          //           DropdownMenuItem(
+          //             value: 2,
+          //             child: Text('Thẻ ưu tiên'),
+          //           ),
+          //           DropdownMenuItem(
+          //             value: 3,
+          //             child: Text('Ngày hết hạn'),
+          //           ),
+          //         ],
+          //       ),
+          //     ],
+          //   ),
+          // ),
           Padding(
             padding: const EdgeInsets.all(8.0),
               child: TextField(
