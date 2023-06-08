@@ -23,7 +23,7 @@ class _MemberScreenState extends State<MemberScreen> {
 
   Future<List<Map<String, dynamic>>> _getMembersCard() async {
     final response = await http.get(
-        Uri.parse('http://192.168.53.160/api/getmembers/${widget.cardID}'));
+        Uri.parse('http://192.168.1.9/api/getmembers/${widget.cardID}'));
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
       if (jsonData['Data'] is String) {
@@ -52,7 +52,7 @@ class _MemberScreenState extends State<MemberScreen> {
 
   Future<List<Map<String, dynamic>>> _getAccount() async {
     final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/getAccountLogin'));
+        await http.get(Uri.parse('http://192.168.1.9/api/getAccountLogin'));
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
       if (jsonData['Data'] is String) {
@@ -80,7 +80,7 @@ class _MemberScreenState extends State<MemberScreen> {
   }
 
   Future<void> _deleteMember(int memberID) async {
-    final url = Uri.parse('http://192.168.53.160/api/deleteMember/$memberID');
+    final url = Uri.parse('http://192.168.1.9/api/deleteMember/$memberID');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -95,7 +95,7 @@ class _MemberScreenState extends State<MemberScreen> {
   }
 
   Future<void> _updateMember(int permission) async {
-    final url = Uri.parse('http://192.168.53.160/api/updateMember');
+    final url = Uri.parse('http://192.168.1.9/api/updateMember');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -120,7 +120,7 @@ class _MemberScreenState extends State<MemberScreen> {
 
   Future<void> addMember(MemberModel newMember) async {
     final response = await http.post(
-      Uri.parse('http://192.168.53.160/api/addMember/'),
+      Uri.parse('http://192.168.1.9/api/addMember/'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newMember.toJson()),
     );
@@ -171,72 +171,74 @@ class _MemberScreenState extends State<MemberScreen> {
                     child: AlertDialog(
                       backgroundColor: Colors.blue[200],
                       title: Text('CẬP NHẬT QUYỀN HẠN'),
-                      content: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Thành viên:',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18.0,
+                      content: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Thành viên:',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18.0,
+                              ),
                             ),
-                          ),
-                          DropdownButtonFormField<String>(
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.grey[200],
-                              border: const OutlineInputBorder(),
-                            ),
-                            value: uniqueMembers.isNotEmpty
-                                ? uniqueMembers[0]['fullname']
-                                : null,
-                            items: uniqueMembers.map((member) {
-                              return DropdownMenuItem<String>(
-                                value: member['fullname'],
-                                child: Text(
-                                  member['fullname'],
-                                  style: const TextStyle(
-                                    color: Colors.black,
+                            DropdownButtonFormField<String>(
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Colors.grey[200],
+                                border: const OutlineInputBorder(),
+                              ),
+                              value: uniqueMembers.isNotEmpty
+                                  ? uniqueMembers[0]['fullname']
+                                  : null,
+                              items: uniqueMembers.map((member) {
+                                return DropdownMenuItem<String>(
+                                  value: member['fullname'],
+                                  child: Text(
+                                    member['fullname'],
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (String? value) {},
-                          ),
-                          const SizedBox(height: 10.0),
-                          Text(
-                            'Quyền hạn:',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18.0,
+                                );
+                              }).toList(),
+                              onChanged: (String? value) {},
                             ),
-                          ),
-                          DropdownButtonFormField<String>(
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.grey[200],
-                              border: const OutlineInputBorder(),
+                            const SizedBox(height: 10.0),
+                            Text(
+                              'Quyền hạn:',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18.0,
+                              ),
                             ),
-                            value: 'Người xem',
-                            items: ['Người xem', 'Người chỉnh sửa']
-                                .map((permission) {
-                              return DropdownMenuItem<String>(
-                                value: permission,
-                                child: Text(
-                                  permission,
-                                  style: const TextStyle(
-                                    color: Colors.black,
+                            DropdownButtonFormField<String>(
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Colors.grey[200],
+                                border: const OutlineInputBorder(),
+                              ),
+                              value: 'Người xem',
+                              items: ['Người xem', 'Người chỉnh sửa']
+                                  .map((permission) {
+                                return DropdownMenuItem<String>(
+                                  value: permission,
+                                  child: Text(
+                                    permission,
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (String? value) {
-                              setState(() {
-                                selectedPermission = value;
-                              });
-                            },
-                          ),
-                        ],
+                                );
+                              }).toList(),
+                              onChanged: (String? value) {
+                                setState(() {
+                                  selectedPermission = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                       actions: [
                         ElevatedButton(
