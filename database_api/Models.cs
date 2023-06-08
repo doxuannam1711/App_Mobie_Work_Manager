@@ -80,6 +80,7 @@ namespace WebApiDemo.Models
         public string Email { get; set; }
         public string AvatarUrl { get; set; }
         public int assignedTo { get; set; }
+        public int permission { get; set; }
 
     }
 }

@@ -16,10 +16,92 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   String _searchKeyword = "";
+  int _sortByDate = 1;
   List<Map<String, dynamic>> _searchCardResult = [];
   List<Map<String, dynamic>> _searchBoardResult = [];
   List<Map<String, dynamic>> _searchCheckListResult = [];
   int _currentTabIndex = 0; // Thêm biến để theo dõi tab hiện tại
+
+  Future<List<Map<String, dynamic>>> _fetchCardList() async {
+    final response = await http
+        .get(Uri.parse('http://192.168.53.160/api/getCards/${widget.userID}'));
+    if (response.statusCode == 200) {
+      try {
+        final data = jsonDecode(response.body)['Data'];
+        final cardData = jsonDecode(data);
+        List<dynamic> cardList = [];
+        if (cardData is List) {
+          cardList = cardData;
+        } else if (cardData is Map) {
+          cardList = [cardData];
+        }
+        final resultList = cardList
+            .map((board) =>
+                Map<String, dynamic>.from(board as Map<String, dynamic>))
+            .toList();
+        return resultList;
+      } catch (e) {
+        throw Exception('Failed to decode board list');
+      }
+    } else {
+      throw Exception('Failed to load board list');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchSortCardHigh() async {
+    final response = await http
+        .get(Uri.parse('http://192.168.53.160/api/sortCardHigh/${widget.userID}'));
+    if (response.statusCode == 200) {
+      try {
+        final data = jsonDecode(response.body)['Data'];
+        final cardData = jsonDecode(data);
+        List<dynamic> cardList = [];
+        if (cardData is List) {
+          cardList = cardData;
+        } else if (cardData is Map) {
+          cardList = [cardData];
+        }
+        final resultList = cardList
+            .map((board) =>
+                Map<String, dynamic>.from(board as Map<String, dynamic>))
+            .toList();
+        return resultList;
+      } catch (e) {
+        throw Exception('Failed to decode board list');
+      }
+    } else {
+      throw Exception('Failed to load board list');
+    }
+  }
+
+
+  Future<List<Map<String, dynamic>>> _fetchSortCardList() async {
+    final response = await http
+        .get(Uri.parse('http://192.168.53.160/api/sortCard/${widget.userID}'));
+    if (response.statusCode == 200) {
+      try {
+        final data = jsonDecode(response.body)['Data'];
+        final cardData = jsonDecode(data);
+        List<dynamic> cardList = [];
+        if (cardData is List) {
+          cardList = cardData;
+        } else if (cardData is Map) {
+          cardList = [cardData];
+        }
+        final resultList = cardList
+            .map((board) =>
+                Map<String, dynamic>.from(board as Map<String, dynamic>))
+            .toList();
+        return resultList;
+      } catch (e) {
+        throw Exception('Failed to decode board list');
+      }
+    } else {
+      throw Exception('Failed to load board list');
+    }
+  }
+
+  
 
   Future<List<Map<String, dynamic>>> _searchCards(String keyword) async {
     final encodedKeyword = Uri.encodeComponent(keyword);
@@ -46,6 +128,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _searchBoards(String keyword) async {
+    
     final encodedKeyword = Uri.encodeComponent(keyword);
     final url = Uri.parse(
         'http://192.168.53.160/api/searchBoards/$encodedKeyword/${widget.userID}');
@@ -138,8 +221,39 @@ class _SearchScreenState extends State<SearchScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              onChanged: _onSearch,
+            child: Row(
+              children: [
+                const Icon(Icons.filter_alt_outlined),
+                const SizedBox(width: 8),
+                DropdownButton<int>(
+                  value: _sortByDate,
+                  onChanged: (value) {
+                    setState(() {
+                      _sortByDate = value!;
+                    });
+                  },
+                  items: [
+                    DropdownMenuItem(
+                      value: 1,
+                      child: Text('Bảng'),
+                    ),
+                    DropdownMenuItem(
+                      value: 2,
+                      child: Text('Thẻ ưu tiên'),
+                    ),
+                    DropdownMenuItem(
+                      value: 3,
+                      child: Text('Ngày hết hạn'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+              child: TextField(
+              onChanged:(value) => _onSearch(value),
               decoration: InputDecoration(
                 hintText: 'Nhập từ khóa',
                 contentPadding: const EdgeInsets.symmetric(
@@ -153,8 +267,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 filled: true,
                 // fillColor: Colors.grey[200],
                 suffixIcon: const Icon(Icons.search),
-              ),
-            ),
+                ),
+              ), 
           ),
           Expanded(
             child: DefaultTabController(
@@ -222,8 +336,9 @@ class _SearchScreenState extends State<SearchScreen> {
       return const Center(
         child: Text('Không tìm thấy thẻ.'),
       );
-    } else {
-      return ListView.builder(
+    } else{
+
+        return ListView.builder(
         itemCount: _searchCardResult.length * 2 -
             1, // Đặt số lượng item để tính cả dấu gạch ngang
         itemBuilder: (context, index) {

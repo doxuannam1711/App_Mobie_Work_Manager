@@ -405,7 +405,7 @@ WHERE checklistitemID = @checklistitemID";
             GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
             cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
             cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
-            cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+            cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor, cards.CountAvatar
             ORDER BY cards.CardID DESC;";
             Command.Parameters.AddWithValue("@UserID", userID);
 
@@ -440,7 +440,7 @@ WHERE LOWER(CardName) LIKE '%' + @Keyword + '%' and cards.ListID IN (SELECT List
             GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
             cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
             cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
-            cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+            cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor, cards.CountAvatar
             ORDER BY cards.CardID DESC;";
             Command.Parameters.AddWithValue("@Keyword", keyword);
             Command.Parameters.AddWithValue("@UserID", userID);
@@ -672,7 +672,7 @@ WHERE cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID
 GROUP BY cards.cardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist, 
 cards.Label, cards.Comment, cards.CardName, cards.StatusView, 
 cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
-cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor
+cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor, cards.CountAvatar
 ORDER BY cards.DueDate ASC;";
 
             Command.Parameters.AddWithValue("@UserID", userID);
@@ -709,8 +709,47 @@ WHERE cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID
 GROUP BY cards.CardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist,
          cards.Label, cards.Comment, cards.CardName, cards.StatusView,
          cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
-         cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor, comments.Detail
+         cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor, comments.Detail, cards.CountAvatar
 ORDER BY cards.LabelColor ASC;";
+
+            Command.Parameters.AddWithValue("@UserID", userID);
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
+
+
+
+    [Route("api/sortCardHigh/{userId}")]
+    public IHttpActionResult GetSortCardHigh(int userID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"SELECT cards.*,
+       COUNT(comments.Detail) AS 'index_comment',
+       COUNT(checklistitems.ChecklistItemID) AS 'SUM',
+       SUM(CASE WHEN checklistitems.Completed = 1 THEN 1 ELSE 0 END) AS 'index_checked'
+        FROM cards
+        LEFT JOIN checklistitems ON checklistitems.CardID = cards.CardID
+        LEFT JOIN comments ON comments.cardID = cards.cardID
+        WHERE cards.ListID IN (SELECT ListID FROM lists WHERE BoardID IN (SELECT BoardID FROM boards WHERE UserID = @UserID)) 
+        and cards.Label = N'High'
+        GROUP BY cards.CardID, cards.ListID, cards.AssignedToID, cards.CreatorID, cards.Checklist,
+         cards.Label, cards.Comment, cards.CardName, cards.StatusView,
+         cards.CreatedDate, cards.StartDate, cards.DueDate, cards.Attachment,
+         cards.Description, cards.Activity, cards.IntCheckList, cards.LabelColor, comments.Detail;";
 
             Command.Parameters.AddWithValue("@UserID", userID);
             DataTable tableNhanVien = Command.GetDataTable();
@@ -1214,6 +1253,48 @@ ORDER BY notifications.NotificationID DESC";
         }
     }
 
+    [HttpPut]
+    [Route("api/updateMember")]
+    public IHttpActionResult UpdateMember([FromBody] MemberModel member)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"UPDATE members SET permission = @permission";
+            Command.Parameters.AddWithValue("@permission", member.permission);
+            Command.ExecuteNonQuery();
+            var response = new ResultModel { };
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+    }
+
+    [Route("api/gettest/{userID}")]
+    public IHttpActionResult GetTests(int userID)
+    {
+        try
+        {
+            Command.ResetAndOpen(CommandType.Text);
+            Command.CommandText = @"select * from boards WHERE boards.userID = @userID";
+            Command.Parameters.AddWithValue("@userID", userID);
+            DataTable tableNhanVien = Command.GetDataTable();
+
+            var respone = new ResultModel
+            {
+                Data = JsonConvert.SerializeObject(tableNhanVien)
+
+            };
+            return Ok(respone);
+        }
+        catch (Exception ex)
+        {
+            return Ok(ex.Message);
+        }
+
+    }
 
     [HttpDelete]
     [Route("api/deleteMember/{memberID}")]

@@ -22,6 +22,7 @@ class CardsDetailScreen extends StatefulWidget {
 class _CardsDetailScreenState extends State<CardsDetailScreen> {
   late CardDetail _cardDetail;
   String _cardName = '';
+  int permission = 2;
   // late String _cardName;
   String _listName = ''; // List within which the card is contained
   String _description = ''; // Description of the card
@@ -91,7 +92,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   Future<CardDetail> fetchCardDetail(int cardID) async {
     final response = await http
-        .get(Uri.parse('http://192.168.1.7/api/getcarddetail/$cardID'));
+        .get(Uri.parse('http://192.168.53.160/api/getcarddetail/$cardID'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['Data'];
@@ -104,8 +105,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<List<Map<String, dynamic>>> getComments() async {
-    final response = await http
-        .get(Uri.parse('http://192.168.1.7/api/getComments/${widget.cardID}'));
+    final response = await http.get(
+        Uri.parse('http://192.168.53.160/api/getComments/${widget.cardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -132,7 +133,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _addComment() async {
-    final url = Uri.parse('http://192.168.1.7/api/addComment');
+    final url = Uri.parse('http://192.168.53.160/api/addComment');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -157,7 +158,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _deleteCard() async {
-    final url = Uri.parse('http://192.168.1.7/api/deleteCard/${widget.cardID}');
+    final url =
+        Uri.parse('http://192.168.53.160/api/deleteCard/${widget.cardID}');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -172,7 +174,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _deleteComment(int commentID) async {
-    final url = Uri.parse('http://192.168.1.7/api/deleteComment/$commentID');
+    final url = Uri.parse('http://192.168.53.160/api/deleteComment/$commentID');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -188,7 +190,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   Future<void> _updateComment(int commentID) async {
     final url = Uri.parse(
-        'http://192.168.1.7/api/updateComment/${widget.userID}/$commentID');
+        'http://192.168.53.160/api/updateComment/${widget.userID}/$commentID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -213,7 +215,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _updateCard(int cardID) async {
-    final url = Uri.parse('http://192.168.1.7/api/updateCard/$cardID');
+    final url = Uri.parse('http://192.168.53.160/api/updateCard/$cardID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -273,86 +275,92 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
             children: [
               Expanded(
                 child: TextButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) {
-                        return AlertDialog(
-                          backgroundColor: Colors.blue[200],
-                          title: const Text('NHẬP TÊN THẺ'),
-                          content: TextField(
-                            controller: _cardNameController,
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Nhập tên thẻ',
-                            ),
-                            onChanged: _updateCardName,
-                          ),
-                          actions: [
-                            ElevatedButton(
-                              style: ButtonStyle(
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        35), // Adjust the value to your desired roundness
+                  onPressed: permission == 1
+                      ? null
+                      : () {
+                          showDialog(
+                            context: context,
+                            builder: (_) {
+                              return AlertDialog(
+                                backgroundColor: Colors.blue[200],
+                                title: const Text('NHẬP TÊN THẺ'),
+                                content: TextField(
+                                  controller: _cardNameController,
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Nhập tên thẻ',
                                   ),
+                                  onChanged: _updateCardName,
                                 ),
-                                backgroundColor:
-                                    MaterialStateProperty.resolveWith<Color>(
-                                  (Set<MaterialState> states) {
-                                    if (states
-                                        .contains(MaterialState.hovered)) {
-                                      return Colors.black;
-                                    }
-                                    return Colors.blue.shade900;
-                                  },
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                'HỦY',
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.white),
-                              ),
-                            ),
-                            ElevatedButton(
-                              style: ButtonStyle(
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                        35), // Adjust the value to your desired roundness
+                                actions: [
+                                  ElevatedButton(
+                                    style: ButtonStyle(
+                                      shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              35), // Adjust the value to your desired roundness
+                                        ),
+                                      ),
+                                      backgroundColor: MaterialStateProperty
+                                          .resolveWith<Color>(
+                                        (Set<MaterialState> states) {
+                                          if (states.contains(
+                                              MaterialState.hovered)) {
+                                            return Colors.black;
+                                          }
+                                          return Colors.blue.shade900;
+                                        },
+                                      ),
+                                    ),
+                                    onPressed: permission == 1
+                                        ? null
+                                        : () {
+                                            Navigator.pop(context);
+                                          },
+                                    child: Text(
+                                      'HỦY',
+                                      style: TextStyle(
+                                          fontSize: 14, color: Colors.white),
+                                    ),
                                   ),
-                                ),
-                                backgroundColor:
-                                    MaterialStateProperty.resolveWith<Color>(
-                                  (Set<MaterialState> states) {
-                                    if (states
-                                        .contains(MaterialState.hovered)) {
-                                      return Colors.black;
-                                    }
-                                    return Colors.blue.shade900;
-                                  },
-                                ),
-                              ),
-                              onPressed: () {
-                                _saveCardName();
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                'LƯU',
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
+                                  ElevatedButton(
+                                    style: ButtonStyle(
+                                      shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              35), // Adjust the value to your desired roundness
+                                        ),
+                                      ),
+                                      backgroundColor: MaterialStateProperty
+                                          .resolveWith<Color>(
+                                        (Set<MaterialState> states) {
+                                          if (states.contains(
+                                              MaterialState.hovered)) {
+                                            return Colors.black;
+                                          }
+                                          return Colors.blue.shade900;
+                                        },
+                                      ),
+                                    ),
+                                    onPressed: permission == 1
+                                        ? null
+                                        : () {
+                                            _saveCardName();
+                                            Navigator.pop(context);
+                                          },
+                                    child: Text(
+                                      'LƯU',
+                                      style: TextStyle(
+                                          fontSize: 14, color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
                     minimumSize: Size(0, 40),
@@ -375,84 +383,90 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                 ),
               ),
               InkWell(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (_) {
-                      return AlertDialog(
-                        backgroundColor: Colors.blue[200],
-                        title: const Text('NHẬP TÊN THẺ'),
-                        content: TextField(
-                          controller: _cardNameController,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: 'Nhập tên thẻ',
-                          ),
-                          onChanged: _updateCardName,
-                        ),
-                        actions: [
-                          ElevatedButton(
-                            style: ButtonStyle(
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      35), // Adjust the value to your desired roundness
+                onTap: permission == 1
+                    ? null
+                    : () {
+                        showDialog(
+                          context: context,
+                          builder: (_) {
+                            return AlertDialog(
+                              backgroundColor: Colors.blue[200],
+                              title: const Text('NHẬP TÊN THẺ'),
+                              content: TextField(
+                                controller: _cardNameController,
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: 'Nhập tên thẻ',
                                 ),
+                                onChanged: _updateCardName,
                               ),
-                              backgroundColor:
-                                  MaterialStateProperty.resolveWith<Color>(
-                                (Set<MaterialState> states) {
-                                  if (states.contains(MaterialState.hovered)) {
-                                    return Colors.black;
-                                  }
-                                  return Colors.blue.shade900;
-                                },
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              'HỦY',
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.white),
-                            ),
-                          ),
-                          ElevatedButton(
-                            style: ButtonStyle(
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      35), // Adjust the value to your desired roundness
+                              actions: [
+                                ElevatedButton(
+                                  style: ButtonStyle(
+                                    shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(35),
+                                      ),
+                                    ),
+                                    backgroundColor: MaterialStateProperty
+                                        .resolveWith<Color>(
+                                      (Set<MaterialState> states) {
+                                        if (states
+                                            .contains(MaterialState.hovered)) {
+                                          return Colors.black;
+                                        }
+                                        return Colors.blue.shade900;
+                                      },
+                                    ),
+                                  ),
+                                  onPressed: permission == 1
+                                      ? null
+                                      : () {
+                                          Navigator.pop(context);
+                                        },
+                                  child: Text(
+                                    'HỦY',
+                                    style: TextStyle(
+                                        fontSize: 14, color: Colors.white),
+                                  ),
                                 ),
-                              ),
-                              backgroundColor:
-                                  MaterialStateProperty.resolveWith<Color>(
-                                (Set<MaterialState> states) {
-                                  if (states.contains(MaterialState.hovered)) {
-                                    return Colors.black;
-                                  }
-                                  return Colors.blue.shade900;
-                                },
-                              ),
-                            ),
-                            onPressed: () {
-                              _saveCardName();
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              'LƯU',
-                              style: TextStyle(
-                                  fontSize: 14, color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
+                                ElevatedButton(
+                                  style: ButtonStyle(
+                                    shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(35),
+                                      ),
+                                    ),
+                                    backgroundColor: MaterialStateProperty
+                                        .resolveWith<Color>(
+                                      (Set<MaterialState> states) {
+                                        if (states
+                                            .contains(MaterialState.hovered)) {
+                                          return Colors.black;
+                                        }
+                                        return Colors.blue.shade900;
+                                      },
+                                    ),
+                                  ),
+                                  onPressed: permission == 1
+                                      ? null
+                                      : () {
+                                          _saveCardName();
+                                          Navigator.pop(context);
+                                        },
+                                  child: Text(
+                                    'LƯU',
+                                    style: TextStyle(
+                                        fontSize: 14, color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
                 child: Icon(
                   Icons.edit,
                   size: 20,
@@ -464,99 +478,111 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
           actions: [
             IconButton(
               icon: const Icon(Icons.check),
-              onPressed: () async {
-                _updateCard(widget.cardID);
-                await Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder: (context) => MyCardsScreen(widget.userID),
-                  ),
-                  (route) => false, // Remove all previous routes
-                );
-                setState(() {});
-              },
+              onPressed: permission == 1
+                  ? null
+                  : () async {
+                      _updateCard(widget.cardID);
+                      await Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => MyCardsScreen(widget.userID),
+                        ),
+                        (route) => false, // Remove all previous routes
+                      );
+                      setState(() {});
+                    },
             ),
             IconButton(
               icon: const Icon(Icons.delete),
-              onPressed: () async {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      backgroundColor: Colors.blue[200],
-                      title: const Text('XÁC NHẬN'),
-                      content: const Text(
-                        'Bạn có chắc muốn xóa thẻ này?',
-                      ),
-                      actions: <Widget>[
-                        ElevatedButton(
-                          style: ButtonStyle(
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                    35), // Adjust the value to your desired roundness
+              onPressed: permission == 1
+                  ? null
+                  : () async {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            backgroundColor: Colors.blue[200],
+                            title: const Text('XÁC NHẬN'),
+                            content: const Text(
+                              'Bạn có chắc muốn xóa thẻ này?',
+                            ),
+                            actions: <Widget>[
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                  shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          35), // Adjust the value to your desired roundness
+                                    ),
+                                  ),
+                                  backgroundColor:
+                                      MaterialStateProperty.resolveWith<Color>(
+                                    (Set<MaterialState> states) {
+                                      if (states
+                                          .contains(MaterialState.hovered)) {
+                                        return Colors.black;
+                                      }
+                                      return Colors.blue.shade900;
+                                    },
+                                  ),
+                                ),
+                                child: Text(
+                                  'HỦY',
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.white),
+                                ),
+                                onPressed: permission == 1
+                                    ? null
+                                    : () {
+                                        Navigator.of(context).pop();
+                                      },
                               ),
-                            ),
-                            backgroundColor:
-                                MaterialStateProperty.resolveWith<Color>(
-                              (Set<MaterialState> states) {
-                                if (states.contains(MaterialState.hovered)) {
-                                  return Colors.black;
-                                }
-                                return Colors.blue.shade900;
-                              },
-                            ),
-                          ),
-                          child: Text(
-                            'HỦY',
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.white),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        ElevatedButton(
-                          style: ButtonStyle(
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                    35), // Adjust the value to your desired roundness
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                  shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          35), // Adjust the value to your desired roundness
+                                    ),
+                                  ),
+                                  backgroundColor:
+                                      MaterialStateProperty.resolveWith<Color>(
+                                    (Set<MaterialState> states) {
+                                      if (states
+                                          .contains(MaterialState.hovered)) {
+                                        return Colors.black;
+                                      }
+                                      return Colors.blue.shade900;
+                                    },
+                                  ),
+                                ),
+                                child: Text(
+                                  'XÓA',
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.white),
+                                ),
+                                onPressed: permission == 1
+                                    ? null
+                                    : () async {
+                                        _deleteCard();
+                                        await Navigator.of(context)
+                                            .pushAndRemoveUntil(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                MyCardsScreen(widget.userID),
+                                          ),
+                                          (route) =>
+                                              false, // Remove all previous routes
+                                        );
+                                        setState(() {});
+                                      },
                               ),
-                            ),
-                            backgroundColor:
-                                MaterialStateProperty.resolveWith<Color>(
-                              (Set<MaterialState> states) {
-                                if (states.contains(MaterialState.hovered)) {
-                                  return Colors.black;
-                                }
-                                return Colors.blue.shade900;
-                              },
-                            ),
-                          ),
-                          child: Text(
-                            'XÓA',
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.white),
-                          ),
-                          onPressed: () async {
-                            _deleteCard();
-                            await Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    MyCardsScreen(widget.userID),
-                              ),
-                              (route) => false, // Remove all previous routes
-                            );
-                            setState(() {});
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
+                            ],
+                          );
+                        },
+                      );
+                    },
             ),
           ],
         ),
@@ -610,18 +636,23 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                               IconButton(
                                 icon: const Icon(
                                     Icons.format_list_numbered_sharp),
-                                onPressed: () {
-                                  // _updateCard(widget.cardID);
-                                  // Navigator.of(context).pop();
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ChecklistScreenShow(
-                                          cardID: widget.cardID,
-                                          userID: widget.userID),
-                                    ),
-                                  );
-                                },
+                                onPressed: permission == 1
+                                    ? null
+                                    : permission == 1
+                                        ? null
+                                        : () {
+                                            // _updateCard(widget.cardID);
+                                            // Navigator.of(context).pop();
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ChecklistScreenShow(
+                                                        cardID: widget.cardID,
+                                                        userID: widget.userID),
+                                              ),
+                                            );
+                                          },
                               ),
                               const Text('Checklist'),
                             ],
@@ -629,15 +660,17 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                           Column(
                             children: [
                               IconButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          AttachmentPage(widget.cardID),
-                                    ),
-                                  );
-                                },
+                                onPressed: permission == 1
+                                    ? null
+                                    : () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                AttachmentPage(widget.cardID),
+                                          ),
+                                        );
+                                      },
                                 icon: const Icon(Icons.attach_file),
                                 tooltip: 'Add Attachment',
                               ),
@@ -647,17 +680,19 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                           Column(
                             children: [
                               IconButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => MemberScreen(
-                                        widget.userID,
-                                        widget.cardID,
-                                      ),
-                                    ),
-                                  );
-                                },
+                                onPressed: permission == 1
+                                    ? null
+                                    : () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => MemberScreen(
+                                              widget.userID,
+                                              widget.cardID,
+                                            ),
+                                          ),
+                                        );
+                                      },
                                 icon: const Icon(Icons.person),
                                 tooltip: 'Add Member',
                               ),
@@ -684,6 +719,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                               border: OutlineInputBorder(),
                               hintText: 'Chạm để thêm một mô tả',
                             ),
+                            enabled: permission != 1,
                             onChanged: (value) {
                               setState(() {
                                 _description = value;
@@ -712,21 +748,24 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             TextButton(
-                              onPressed: () async {
-                                final DateTime? picked = await showDatePicker(
-                                  context: context,
-                                  initialDate:
-                                      _expirationDate ?? DateTime.now(),
-                                  firstDate: DateTime.now(),
-                                  lastDate: DateTime.now()
-                                      .add(const Duration(days: 365)),
-                                );
-                                if (picked != null) {
-                                  setState(() {
-                                    _expirationDate = picked;
-                                  });
-                                }
-                              },
+                              onPressed: permission == 1
+                                  ? null
+                                  : () async {
+                                      final DateTime? picked =
+                                          await showDatePicker(
+                                        context: context,
+                                        initialDate:
+                                            _expirationDate ?? DateTime.now(),
+                                        firstDate: DateTime.now(),
+                                        lastDate: DateTime.now()
+                                            .add(const Duration(days: 365)),
+                                      );
+                                      if (picked != null) {
+                                        setState(() {
+                                          _expirationDate = picked;
+                                        });
+                                      }
+                                    },
                               child: Text(
                                 _expirationDate == null
                                     ? 'Select date'
@@ -734,11 +773,13 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                               ),
                             ),
                             IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _expirationDate = null;
-                                });
-                              },
+                              onPressed: permission == 1
+                                  ? null
+                                  : () {
+                                      setState(() {
+                                        _expirationDate = null;
+                                      });
+                                    },
                               icon: const Icon(Icons.close),
                             ),
                           ],
@@ -774,11 +815,13 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                             ),
                           );
                         }).toList(),
-                        onChanged: (String? value) {
-                          setState(() {
-                            label2 = value;
-                          });
-                        },
+                        onChanged: permission != 1
+                            ? (String? value) {
+                                setState(() {
+                                  label2 = value;
+                                });
+                              }
+                            : null, // Disable DropdownButtonFormField khi permission = 1
                       ),
                       const SizedBox(height: 30.0),
                       const Text(
@@ -822,12 +865,12 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                             ),
                           );
                         }).toList(),
-                        onChanged: (Color? value) {
+                        onChanged: permission != 1 ? (Color? value) {
                           setState(() {
                             label = value;
                             labelName = getColorName(value!);
                           });
-                        },
+                        } : null,
                       ),
                       const SizedBox(height: 30.0),
                       const Text(
@@ -874,7 +917,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                             },
                             child: IconButton(
                               icon: const Icon(Icons.more_vert),
-                              onPressed: () {},
+                              onPressed: permission == 1 ? null : () {},
                             ),
                           ),
                         ],
@@ -956,17 +999,18 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                       onPressed: () async {
                         if (_comment.isEmpty) {
                           commentFocusNode.requestFocus();
-                        }else{
+                        } else {
                           _addComment();
                           await Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
                               builder: (context) => CardsDetailScreen(
-                                  widget.cardName, widget.cardID, widget.userID),
+                                  widget.cardName,
+                                  widget.cardID,
+                                  widget.userID),
                             ),
                           );
                           setState(() {});
                         }
-                        
                       },
                     ),
                   ],
@@ -1021,45 +1065,57 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                             IconButton(
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
-                              icon: checkUserID == widget.userID ? const Icon(Icons.check) : const SizedBox(),
+                              icon: checkUserID == widget.userID
+                                  ? const Icon(Icons.check)
+                                  : const SizedBox(),
                               iconSize: 20,
-                              onPressed: () async {
-                                if (checkUserID == widget.userID) {
-                                  _updateComment(commentID);
-                                  await Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) => CardsDetailScreen(
-                                            widget.cardName,
-                                            widget.cardID,
-                                            widget.userID)),
-                                  );
-                                  setState(() {});
-                                }
-                              },
+                              onPressed: permission == 1
+                                  ? null
+                                  : () async {
+                                      if (checkUserID == widget.userID) {
+                                        _updateComment(commentID);
+                                        await Navigator.of(context)
+                                            .pushReplacement(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CardsDetailScreen(
+                                                      widget.cardName,
+                                                      widget.cardID,
+                                                      widget.userID)),
+                                        );
+                                        setState(() {});
+                                      }
+                                    },
                             ),
                             const SizedBox(width: 15),
                             IconButton(
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
                               iconSize: 20,
-                              icon: checkUserID == widget.userID ? const Icon(Icons.delete_outline) : const SizedBox(),
+                              icon: checkUserID == widget.userID
+                                  ? const Icon(Icons.delete_outline)
+                                  : const SizedBox(),
                               // alignment: Alignment(-1, -2.5),
                               // alignment: Alignment.topRight,
-                              onPressed: () async {
-                                if (checkUserID == widget.userID) {
-                                  print("Deleted");
-                                  _deleteComment(commentID);
+                              onPressed: permission == 1
+                                  ? null
+                                  : () async {
+                                      if (checkUserID == widget.userID) {
+                                        print("Deleted");
+                                        _deleteComment(commentID);
 
-                                  await Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) => CardsDetailScreen(
-                                            widget.cardName,
-                                            widget.cardID,
-                                            widget.userID)),
-                                  );
-                                  setState(() {});
-                                }
-                              },
+                                        await Navigator.of(context)
+                                            .pushReplacement(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CardsDetailScreen(
+                                                      widget.cardName,
+                                                      widget.cardID,
+                                                      widget.userID)),
+                                        );
+                                        setState(() {});
+                                      }
+                                    },
                             ),
                           ],
                         ),
