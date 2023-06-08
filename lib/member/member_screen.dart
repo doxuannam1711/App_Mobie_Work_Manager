@@ -16,6 +16,7 @@ class MemberScreen extends StatefulWidget {
 
 class _MemberScreenState extends State<MemberScreen> {
   List<Map<String, dynamic>> _members = [];
+  List<Map<String, dynamic>> uniqueMembers = [];
   List<Map<String, dynamic>> _users = [];
   List<Map<String, dynamic>> _searchResult = [];
   String _searchKeyword = '';
@@ -93,6 +94,31 @@ class _MemberScreenState extends State<MemberScreen> {
     }
   }
 
+  Future<void> _updateMember(int permission) async {
+    final url = Uri.parse('http://192.168.53.160/api/updateMember');
+    final response = await http.put(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'permission': permission,
+        'id': 1
+      }),
+    );
+    if (mounted) {
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('UPDATE successfully!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('UPDATE failure')),
+        );
+      }
+    }
+  }
+
   Future<void> addMember(MemberModel newMember) async {
     final response = await http.post(
       Uri.parse('http://192.168.53.160/api/addMember/'),
@@ -117,6 +143,7 @@ class _MemberScreenState extends State<MemberScreen> {
     _getMembersCard().then((members) {
       setState(() {
         _members = members;
+        uniqueMembers = _members.toSet().toList();
       });
     });
     _getAccount().then((users) {
@@ -134,6 +161,171 @@ class _MemberScreenState extends State<MemberScreen> {
         backgroundColor: Colors.blue[900],
         title: const Text('Thành viên'),
         actions: [
+          IconButton(
+            onPressed: () async {
+              final updatedPermission = await showDialog<String>(
+                context: context,
+                builder: (BuildContext context) {
+                  String? selectedPermission =
+                      _members[0]['permission'].toString(); // Giá trị mặc định
+                  return FractionallySizedBox(
+                    heightFactor: 0.6,
+                    child: AlertDialog(
+                      backgroundColor: Colors.blue[200],
+                      title: Text('CẬP NHẬT QUYỀN HẠN'),
+                      content: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Thành viên:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                              border: const OutlineInputBorder(),
+                            ),
+                            value: uniqueMembers.isNotEmpty
+                                ? uniqueMembers[0]['fullname']
+                                : null,
+                            items: uniqueMembers.map((member) {
+                              return DropdownMenuItem<String>(
+                                value: member['fullname'],
+                                child: Text(
+                                  member['fullname'],
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (String? value) {
+                              setState(() {
+                                selectedPermission = value;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 10.0),
+                          Text(
+                            'Quyền hạn:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                              border: const OutlineInputBorder(),
+                            ),
+                            value: 'Người xem', // Mặc định hiển thị viewer
+                            items: ['Người xem', 'Người chỉnh sửa']
+                                .map((permission) {
+                              return DropdownMenuItem<String>(
+                                value: permission,
+                                child: Text(
+                                  permission,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (String? value) {
+                              // Xử lý khi giá trị thay đổi
+                            },
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  35, // Adjust the value to your desired roundness
+                                ),
+                              ),
+                            ),
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.hovered)) {
+                                  return Colors.black;
+                                }
+                                return Colors.blue.shade900;
+                              },
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            'HỦY',
+                            style: TextStyle(fontSize: 14, color: Colors.white),
+                          ),
+                        ),
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  35, // Adjust the value to your desired roundness
+                                ),
+                              ),
+                            ),
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.hovered)) {
+                                  return Colors.black;
+                                }
+                                return Colors.blue.shade900;
+                              },
+                            ),
+                          ),
+                          onPressed: () {
+                            // Xử lý khi nhấn nút LƯU
+                            int permission = 0;
+                            if (selectedPermission == 'Người xem') {
+                              permission = 1;
+                            } else if (selectedPermission ==
+                                'Người chỉnh sửa') {
+                              permission = 2;
+                            }
+                            _updateMember(1).then((_) {
+                              Navigator.of(context)
+                                  .pop(); // Đóng dialog sau khi cập nhật thành công
+                            }).catchError((error) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Cập nhật quyền thất bại')),
+                              );
+                            });
+                          },
+                          child: Text(
+                            'LƯU',
+                            style: TextStyle(fontSize: 14, color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+              if (updatedPermission != null && updatedPermission.isNotEmpty) {
+                // Cập nhật thành công, xử lý các bước tiếp theo
+              }
+            },
+            icon: const Icon(Icons.perm_identity_outlined),
+          ),
           IconButton(
             onPressed: () async {
               final email = await showDialog<String>(

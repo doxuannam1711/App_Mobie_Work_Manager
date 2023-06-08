@@ -32,6 +32,8 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
     'https://png.pngtree.com/png-vector/20191027/ourlarge/pngtree-cute-pug-avatar-with-a-yellow-background-png-image_1873432.jpg',
     'https://dogily.vn/wp-content/uploads/2022/12/Anh-avatar-cho-Shiba-4.jpg',
     'https://top10camau.vn/wp-content/uploads/2022/10/avatar-meo-cute-5.jpg',
+    'https://top10camau.vn/wp-content/uploads/2022/10/avatar-meo-cute-5.jpg',
+    'https://top10camau.vn/wp-content/uploads/2022/10/avatar-meo-cute-5.jpg',
   ];
   List<Map<String, dynamic>> _searchResult = [];
   int _sortByDate = 1;
@@ -268,7 +270,9 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                           card['index_checked'] = card['index_checked'] ?? 2,
                           card['SUM'] = card['SUM'] ?? 2,
                           _listAvatar,
-                          card['CardID'], // pass cardID to _buildCard
+                          card['CardID'],
+                          card['CountAvatar'] ??
+                              3, // Set the default value to 3 if CountAvatar is null
                         );
                       },
                     );
@@ -295,6 +299,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
     int totalItems,
     List<String> avatars,
     int cardID, // add cardID as a parameter
+    int countAvatar,
   ) {
     Color rectangleColor = Colors.blue;
     switch (label.trim()) {
@@ -368,14 +373,37 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircleAvatar(
-                  radius: 14, backgroundImage: NetworkImage(avatars[0])),
-              const SizedBox(width: 2),
-              CircleAvatar(
-                  radius: 14, backgroundImage: NetworkImage(avatars[1])),
-              const SizedBox(width: 2),
-              CircleAvatar(
-                  radius: 14, backgroundImage: NetworkImage(avatars[2])),
+              ...avatars
+                  .sublist(
+                      0,
+                      countAvatar > 3
+                          ? 2
+                          : countAvatar) // Hiển thị tối đa 2 hoặc countAvatar avatars
+                  .map((avatar) => CircleAvatar(
+                        radius: 14,
+                        backgroundImage: NetworkImage(avatar),
+                      ))
+                  .toList(),
+              if (countAvatar > 3)
+                PopupMenuButton(
+                  icon: Icon(Icons.more_horiz, size: 20), // Icon "..."
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      PopupMenuItem(
+                        child: CircleAvatar(
+                          radius: 14,
+                          backgroundImage: NetworkImage(avatars[2]),
+                        ),
+                      ),
+                      PopupMenuItem(
+                        child: CircleAvatar(
+                          radius: 14,
+                          backgroundImage: NetworkImage(avatars[3]),
+                        ),
+                      ),
+                    ];
+                  },
+                ),
             ],
           ),
         ),
