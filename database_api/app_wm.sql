@@ -1170,7 +1170,7 @@ UPDATE cards SET DueDate = '2023-02-25 12:00:00' Where CardID = 8
 ALTER TABLE members
 ADD permission int;
 
-UPDATE members SET permission = 1
+UPDATE members SET permission = 2
 
 ----------------trigger-----------
 CREATE TRIGGER [dbo].[trg_members_update] ON [dbo].[members]

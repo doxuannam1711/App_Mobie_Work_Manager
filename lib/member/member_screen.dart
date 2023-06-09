@@ -20,10 +20,12 @@ class _MemberScreenState extends State<MemberScreen> {
   List<Map<String, dynamic>> _users = [];
   List<Map<String, dynamic>> _searchResult = [];
   String _searchKeyword = '';
+  int permission = 2;
+  String permissionName = '';
 
   Future<List<Map<String, dynamic>>> _getMembersCard() async {
-    final response = await http.get(
-        Uri.parse('http://192.168.1.9/api/getmembers/${widget.cardID}'));
+    final response = await http
+        .get(Uri.parse('http://192.168.32.141/api/getmembers/${widget.cardID}'));
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
       if (jsonData['Data'] is String) {
@@ -52,7 +54,7 @@ class _MemberScreenState extends State<MemberScreen> {
 
   Future<List<Map<String, dynamic>>> _getAccount() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.9/api/getAccountLogin'));
+        await http.get(Uri.parse('http://192.168.32.141/api/getAccountLogin'));
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
       if (jsonData['Data'] is String) {
@@ -80,7 +82,7 @@ class _MemberScreenState extends State<MemberScreen> {
   }
 
   Future<void> _deleteMember(int memberID) async {
-    final url = Uri.parse('http://192.168.1.9/api/deleteMember/$memberID');
+    final url = Uri.parse('http://192.168.32.141/api/deleteMember/$memberID');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -95,7 +97,7 @@ class _MemberScreenState extends State<MemberScreen> {
   }
 
   Future<void> _updateMember(int permission) async {
-    final url = Uri.parse('http://192.168.1.9/api/updateMember');
+    final url = Uri.parse('http://192.168.32.141/api/updateMember');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -120,7 +122,7 @@ class _MemberScreenState extends State<MemberScreen> {
 
   Future<void> addMember(MemberModel newMember) async {
     final response = await http.post(
-      Uri.parse('http://192.168.1.9/api/addMember/'),
+      Uri.parse('http://192.168.32.141/api/addMember/'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newMember.toJson()),
     );
@@ -143,6 +145,14 @@ class _MemberScreenState extends State<MemberScreen> {
       setState(() {
         _members = members;
         uniqueMembers = _members.toSet().toList();
+        permission =
+            uniqueMembers.isNotEmpty ? uniqueMembers[0]['permission'] : 0;
+        permissionName = '';
+        if (permission == 2) {
+          permissionName = 'Người chỉnh sửa';
+        } else {
+          permissionName = 'Người xem';
+        }
       });
     });
     _getAccount().then((users) {
@@ -218,7 +228,7 @@ class _MemberScreenState extends State<MemberScreen> {
                                 fillColor: Colors.grey[200],
                                 border: const OutlineInputBorder(),
                               ),
-                              value: 'Người xem',
+                              value: permissionName,
                               items: ['Người xem', 'Người chỉnh sửa']
                                   .map((permission) {
                                 return DropdownMenuItem<String>(
@@ -289,8 +299,7 @@ class _MemberScreenState extends State<MemberScreen> {
                               },
                             ),
                           ),
-                          onPressed: () {
-                            // Xử lý khi nhấn nút LƯU
+onPressed: () {
                             int permission = 1;
                             if (selectedPermission == 'Người xem') {
                               permission = 1;
@@ -301,6 +310,21 @@ class _MemberScreenState extends State<MemberScreen> {
                             _updateMember(permission).then((_) {
                               Navigator.of(context)
                                   .pop(); // Đóng dialog sau khi cập nhật thành công
+                              _getMembersCard().then((members) {
+                                setState(() {
+                                  _members = members;
+                                  uniqueMembers = _members.toSet().toList();
+                                  permission = uniqueMembers.isNotEmpty
+                                      ? uniqueMembers[0]['permission']
+                                      : 0;
+                                  permissionName = '';
+                                  if (permission == 2) {
+                                    permissionName = 'Người chỉnh sửa';
+                                  } else {
+                                    permissionName = 'Người xem';
+                                  }
+                                });
+                              });
                             }).catchError((error) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -308,6 +332,7 @@ class _MemberScreenState extends State<MemberScreen> {
                               );
                             });
                           },
+
                           child: Text(
                             'LƯU',
                             style: TextStyle(fontSize: 14, color: Colors.white),

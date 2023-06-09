@@ -93,7 +93,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   Future<CardDetail> fetchCardDetail(int cardID) async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/getcarddetail/$cardID'));
+        .get(Uri.parse('http://192.168.32.141/api/getcarddetail/$cardID'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['Data'];
@@ -107,7 +107,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   Future<List<DateTime>> fetchListDueDate() async {
     final response =
-        await http.get(Uri.parse('http://192.168.53.160/api/getListDueDate/'));
+        await http.get(Uri.parse('http://192.168.32.141/api/getListDueDate/'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['Data'];
@@ -125,8 +125,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<List<Map<String, dynamic>>> getComments() async {
-    final response = await http.get(
-        Uri.parse('http://192.168.53.160/api/getComments/${widget.cardID}'));
+    final response = await http
+        .get(Uri.parse('http://192.168.32.141/api/getComments/${widget.cardID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -153,7 +153,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _addComment() async {
-    final url = Uri.parse('http://192.168.53.160/api/addComment');
+    final url = Uri.parse('http://192.168.32.141/api/addComment');
     final response = await http.post(
       url,
       headers: <String, String>{
@@ -165,21 +165,23 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
         'detail': _comment,
       }),
     );
+    if (mounted) {
+      // Kiểm tra widget có đang được hiển thị hay không
 
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Comment added successfully!')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Comment added failed!')),
-      );
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Comment added successfully!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Comment added failed!')),
+        );
+      }
     }
   }
 
   Future<void> _deleteCard() async {
-    final url =
-        Uri.parse('http://192.168.53.160/api/deleteCard/${widget.cardID}');
+    final url = Uri.parse('http://192.168.32.141/api/deleteCard/${widget.cardID}');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -194,7 +196,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _deleteComment(int commentID) async {
-    final url = Uri.parse('http://192.168.53.160/api/deleteComment/$commentID');
+    final url = Uri.parse('http://192.168.32.141/api/deleteComment/$commentID');
     final response = await http.delete(url);
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -210,7 +212,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
 
   Future<void> _updateComment(int commentID) async {
     final url = Uri.parse(
-        'http://192.168.53.160/api/updateComment/${widget.userID}/$commentID');
+        'http://192.168.32.141/api/updateComment/${widget.userID}/$commentID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -235,7 +237,7 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
   }
 
   Future<void> _updateCard(int cardID) async {
-    final url = Uri.parse('http://192.168.53.160/api/updateCard/$cardID');
+    final url = Uri.parse('http://192.168.32.141/api/updateCard/$cardID');
     final response = await http.put(
       url,
       headers: <String, String>{
@@ -861,7 +863,8 @@ class _CardsDetailScreenState extends State<CardsDetailScreen> {
                                                 return AlertDialog(
                                                   title: const Text(
                                                       'Đặt lịch thành công'),
-                                                  content: Text('Bạn đã đặt lịch thành công cho thẻ công việc: "${widget.cardName}"'),
+                                                  content: Text(
+                                                      'Bạn đã đặt lịch thành công cho thẻ công việc: "${widget.cardName}"'),
                                                   actions: <Widget>[
                                                     ElevatedButton(
                                                       onPressed: () {

@@ -24,7 +24,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchCardList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/getCards/${widget.userID}'));
+        .get(Uri.parse('http://192.168.32.141/api/getCards/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -50,7 +50,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchSortCardHigh() async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/sortCardHigh/${widget.userID}'));
+        .get(Uri.parse('http://192.168.32.141/api/sortCardHigh/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -77,7 +77,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<List<Map<String, dynamic>>> _fetchSortCardList() async {
     final response = await http
-        .get(Uri.parse('http://192.168.53.160/api/sortCard/${widget.userID}'));
+        .get(Uri.parse('http://192.168.32.141/api/sortCard/${widget.userID}'));
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body)['Data'];
@@ -106,7 +106,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Future<List<Map<String, dynamic>>> _searchCards(String keyword) async {
     final encodedKeyword = Uri.encodeComponent(keyword);
     final url = Uri.parse(
-        'http://192.168.53.160/api/searchCards/$encodedKeyword/${widget.userID}');
+        'http://192.168.32.141/api/searchCards/$encodedKeyword/${widget.userID}');
     final response = await http.post(url);
 
     if (response.statusCode == 200) {
@@ -131,7 +131,7 @@ class _SearchScreenState extends State<SearchScreen> {
     
     final encodedKeyword = Uri.encodeComponent(keyword);
     final url = Uri.parse(
-        'http://192.168.53.160/api/searchBoards/$encodedKeyword/${widget.userID}');
+        'http://192.168.32.141/api/searchBoards/$encodedKeyword/${widget.userID}');
     final response = await http.post(url);
 
     if (response.statusCode == 200) {
@@ -154,7 +154,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _searchCheckList(String keyword) async {
-    final url = Uri.parse('http://192.168.53.160/api/searchCheckList/$keyword');
+    final url = Uri.parse('http://192.168.32.141/api/searchCheckList/$keyword');
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
