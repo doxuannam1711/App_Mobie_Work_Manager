@@ -97,20 +97,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Future<void> _initializeDriveApi() async {
     final credentials = ServiceAccountCredentials.fromJson({
-      "type": "service_account",
-      "project_id": "appworkmanager",
-      "private_key_id": "51c1bc83a5942a5af73dd21bee9d350cac497637",
-      "private_key":
-          "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDsEg4VyFcOaqXD\nOOaSIF3+8ltQmCmDV37sTrRZEadn97UXdTgawKEN51bVkDCzvN279FAubExCF+7x\n5aSuey1MQ3QA6d1wQ3tJYfPRJ1fxG+xpkkfnP+z5/e7a6I7/5fo7DTzD27Z2mJmh\nSASHvBnARna8+9nkWkZAUv6LiGSnr3KJ0yIw6d6f32PjMixPVUkmVcFuFCP7tvZ5\n3fm849FcNzsFaA9P7pV0G/iV+wGXAsFrgNTOHQSjXW+kWr2aIVyvYsv3cMHsSl3V\ntHn3zjFN3eIgG1/PC5MEDSxdL10BFYE2zJMAP/YX+mmrGKy62hXB1MYTkDUIPrdr\nVsVi+EKHAgMBAAECggEAa3ug/Bv2PzMhe+xZVqj0AxM3rk9Jf2qD+HWxOWiHTxgC\nVMbjH5MbASiWabA37G4Oivgm1awrYGBjQ7HqNCMTMcj4dT4Fu4qOBJBboZwHN1ke\nX8bhhBGgBQawDO2bxjlgoChbxVUxE3hRYpRWs7JaCyhKAautvoG3wKvJB6C3K30f\nYqxU75RWfKDS4YfWXd/ilG48fvRcLPEui0R8eDRTWGV/Yad2lYqtg0t4CL2HgmFY\n3dlSHAVN0lQ8WjS9B3mpUVfUz/I7QDcu+K6VtiZaxCYdRfHBLWmRo5bfIyrm2tJ2\nYSj2ootiG01kJwLn1uvYdoCPiycDHrYWNsut1RKdoQKBgQD/nf6er8LZg7CSOt7Y\nc79mRrlEQHfVm0vrjxbhZRDrNCH/wK9/zMP7AfQDZ5AZXZYQMmPdpLXFmmCHKQKt\nV8fpa/TjPivGaRJ+T95IkG1GE21+Lnlrpw3kZpoXm2bw0HbYTLV4r4lJJJi3QAAR\nAaPv9nwemgFrfLCHW0zJjGdLlwKBgQDsbJDrjlHFOnTzdQyKPrE5jFdokaFS8DJj\ni/mwnv3TVfd/T2dSCFMdWauzJxPQ1EH/ypVcNxwO1KufDBGXKwQjgm0pTXXtFjjd\n4qKRR9cZuWOaf+d4q/ygWtFWIag3J5MKp2ZaLQGNAPnFZHjr8S+h8YhsfEoxXdWL\nBa9CkZNekQKBgCRx4lu9s4pPvF0dB6jU1/U9IC0bA/rwqWJshFaekkr2o+JTFrKh\n/09KeAAERAdZ0It+o752PXRvDlQ3BKqyWU5ulfvQYW1ojbp0qLyv2uSi4HmdJrKy\nnshx2IaFIag0EL3GMhmC7ZAAJ8X42gmSsk0EV64FRy6MGJ8z5T7XReMBAoGBAIuh\nqw2T5nNnjP7kmF1lnWHxowYdTHwhZIEqgHNx01NnqF7GVK08QWpKNX//ilKBqeEa\nko/99FJGBH5QsGrpeu5F75a/KvC1eSyC16SaG04UEeGDvP+mA/Po703BXwoEE3Ht\nYCPOBOZ0Nw//wPMIZStt7Ta1SVRSqPYMi2/zbmghAoGBANdWLdTQonO5bm0GBhQ/\njxb9pvRsm5jmzqqOFkDOxkVh6M9XbnPlkzuztsGYmBY3Z5rgv/yi8uVOS2MKgfn0\nwX0ABthxc2cGLETvo/qKSPcJTCQhglwOuRKdkm9DC0sa7l1XbS7JDh1D4Bp6q0i8\nwGMvoOpjZPEf86003zPDZAVb\n-----END PRIVATE KEY-----\n",
-      "client_email": "appworkmanager@appworkmanager.iam.gserviceaccount.com",
-      "client_id": "115180400866275325068",
-      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-      "token_uri": "https://oauth2.googleapis.com/token",
-      "auth_provider_x509_cert_url":
-          "https://www.googleapis.com/oauth2/v1/certs",
-      "client_x509_cert_url":
-          "https://www.googleapis.com/robot/v1/metadata/x509/appworkmanager%40appworkmanager.iam.gserviceaccount.com",
-      "universe_domain": "googleapis.com"
+      //json file of your google drive api
     });
     final client = await clientViaServiceAccount(
         credentials, [drive.DriveApi.driveFileScope]);
